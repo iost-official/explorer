@@ -1,0 +1,344 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+    padding-top: 50px;
+}
+
+a {
+    color: #7cb5ec;
+}
+
+.navbar-brand {
+    padding: 8px 20px;
+}
+
+.navbar-brand img {
+    width: 30px;
+}
+
+.list-banner {
+    font-size: 16px;
+    height: 50px;
+    border-bottom: solid 3px #f7f7f7;
+}
+
+.list-banner > .list-title {
+    line-height: 50px;
+}
+
+.list-banner > a {
+    line-height: 50px;
+}
+
+.list-body {
+    height: 760px;
+    padding-left: 0;
+    list-style: none;
+    overflow: auto;
+}
+
+.list-body::-webkit-scrollbar {
+  display: none;
+}
+
+.list-body > li {
+    display: flex;
+    height:  110px;
+    border-bottom: solid 3px #f7f7f7;
+    padding: 15px 15px 0 0;
+}
+
+.list-body a {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+}
+
+.list-body span {
+    display: block;
+    text-align: center;
+}
+
+.list-body > li > .list-body-left {
+    flex-shrink: 0;
+    background-color: #808080;
+    width: 135px;
+    height: 70px;
+    overflow: hidden;
+}
+
+.list-body-left > * {
+    color: #fff;
+}
+
+.list-body-left > a, .list-body-left > span {
+    margin-top: 10px;
+}
+
+.list-body > li > .list-body-right {
+    /*height: 100px;*/
+}
+
+.list-body-right {
+  text-align: left;
+    /*width: 100px;*/
+}
+
+.list-body-right {
+    margin-left: 10px;
+}
+
+.list-body-right > span {
+    margin-top: 10px;
+}
+
+.list-body-right > a {
+    margin-top: 12px;
+    text-align: left;
+}
+
+.list-body-right > p {
+    margin: 0 0 10px;
+}
+
+.explorer-header {
+    background-color: #f5f5f5;
+}
+
+.explorer-header ol {
+    padding-bottom: 0;
+    padding-top: 30px;
+}
+
+.explorer-brief > .col-md-4 > p:first-child {
+    font-size: 25px;
+    line-height: 60px;
+    border-bottom: 1px solid #f7f7f7;
+}
+
+.explorer-brief > .col-md-4 > p:not(:first-child) {
+    font-size: 16px;
+}
+
+.explorer-brief > .col-md-4 > p > span:last-child {
+    float: right;
+}
+
+.explorer-brief h4 {
+    margin-top: 25px;
+}
+
+.explorer-brief p:last-child {
+    text-align: right;
+    font-size: 15px;
+    margin-top: 30px;
+    color: #a7a7a7;
+}
+
+.transaction-detail {
+  text-align: left;
+}
+
+.transaction-detail a {
+    display: inline;
+    font-size: 13px;
+}
+
+.transaction-detail p {
+    margin: 0;
+}
+
+.rainbow-border-0, .rainbow-border-8 {
+    border-left: 2px solid #5555AA;
+}
+
+.rainbow-border-3, .rainbow-border-5 {
+    border-left: 2px solid #96EE11;
+}
+
+.rainbow-border-1, .rainbow-border-6 {
+    border-left: 2px solid #1196EE;
+}
+
+.rainbow-border-2, .rainbow-border-7 {
+    border-left: 2px solid #DD226D;
+}
+
+.rainbow-border-4, .rainbow-border-9 {
+    border-left: 2px solid #E61A1A;
+}
+
+.footer {
+    margin-top: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #000;
+    color: #fff;
+}
+
+.footer-banner {
+    border-bottom: 1px dotted;
+}
+
+.footer-banner h2 {
+    display: inline-block;
+    border-bottom: 2px solid #3498db;
+    margin-bottom: -2px;
+    font-weight: 300;
+}
+
+.footer-left img {
+    width: 60px;
+}
+
+.footer ul {
+    list-style: none;
+    padding-left: 10px;
+
+}
+.footer ul li {
+    margin-top: 10px;
+}
+
+.block-information {
+    margin-top: 20px;
+}
+
+.account-overview th {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.explorer-table {
+  text-align: left;
+}
+
+.txs-table > tbody > tr > td > a, .account-tx-table > tbody > tr > td > a {
+  max-width: 250px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txs-table > tbody > tr > td > span, .account-tx-table > tbody > tr > td > span {
+  max-width: 200px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table {
+  text-align: left;
+}
+
+.address-txns-head {
+  text-align: left;
+}
+
+.address-txns-head .col-md-8 {
+  padding-left: 0px;
+}
+
+.address-txns-head .col-md-4 {
+  text-align: right;
+}
+
+.address-txns-head .col-md-4 a {
+  border: 1px solid #ccc;
+  padding: 5px 13px;
+  font-weight: 800;
+}
+
+.apply-iost tbody tr:first-child td {
+  border-top: 0;
+}
+
+.apply-iost thead tr th {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 40px;
+}
+
+.applyAddressPrivateKey p {
+  text-align: center;
+}
+
+.applyAddressPrivateKey > p:first-child {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.applyAddressPrivateKey div {
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.applyAddressPrivateKey div p {
+  width: 70%;
+  padding: 5px;
+  font-size: 20px;
+}
+
+.applyAddressPrivateKey > p:not(first-child) {
+  font-size: 16px;
+}
+
+.progress {
+  margin-bottom: 0;
+}
+
+#applyIOSTModal {
+   position: fixed;
+   top: 20%;
+   left: 50%;
+   bottom: 0;
+   left: 0;
+   z-index: 10040;
+   overflow: auto;
+   overflow-y: auto;
+}
+
+#applyIOSTModal p {
+  font-size: 16px;
+  text-align: left;
+}
+
+.applyAddressPrivateKey span {
+  font-weight: 600;
+}
+
+#banner-luckybet {
+  margin-top: 20px;
+  text-align: left;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.swal2-container .swal2-popup {
+  min-width:460px !important;
+}
+
+.iti-flag {background-image: url("../images/flags.png");}
+ 
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2 / 1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  .iti-flag {background-image: url("../images/flags@2x.png");}
+}
+
+.intl-tel-input {
+  width: 100%;
+}
+
+#feedback {
+  margin-top: 50px;
+}
+
+#luckyBetIntro {
+  text-align: left;
+  font-size: 14px;
+  color: #f00;
+  font-weight: 600;
+  margin-top: 20px;
+}
