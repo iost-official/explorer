@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"explorer/model"
-	"github.com/labstack/echo"
 	"net/http"
 	"strconv"
-	"explorer/model/db"
+
+	"github.com/iost-official/explorer/backend/model"
+	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/labstack/echo"
 )
 
 const (
@@ -35,7 +36,7 @@ func GetBlocks(c echo.Context) error {
 
 	blkList, err := model.GetBlock(pageInt64, 30)
 	if err != nil {
-		return c.String(http.StatusOK, "error: " + err.Error())
+		return c.String(http.StatusOK, "error: "+err.Error())
 	}
 
 	for _, v := range blkList {

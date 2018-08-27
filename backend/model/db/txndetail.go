@@ -175,7 +175,7 @@ func GetTxDetailLastPage(eachPage int64) (int64, error) {
 	if txsInt64Len%eachPage == 0 {
 		pageLast = txsInt64Len / eachPage
 	} else {
-		pageLast = txsInt64Len / eachPage + 1
+		pageLast = txsInt64Len/eachPage + 1
 	}
 
 	return pageLast, nil

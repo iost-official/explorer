@@ -2,6 +2,8 @@ package db
 
 import (
 	"log"
+	"strconv"
+	"strings"
 
 	"gopkg.in/mgo.v2/bson"
 
@@ -10,8 +12,6 @@ import (
 	"github.com/iost-official/prototype/rpc"
 	"github.com/iost-official/prototype/vm/lua"
 	"github.com/syndtr/goleveldb/leveldb/errors"
-	"strconv"
-	"strings"
 )
 
 type ExplorerTx struct {
@@ -113,12 +113,12 @@ func (et *ExplorerTx) GenerateMgoTx() *MgoTx {
 	contractCode := et.Tx.Contract.Code()
 	codeList := strings.Split(contractCode, `"`)
 	var (
-		to string
-		amount   float64
+		to     string
+		amount float64
 	)
 	if len(codeList) >= 5 {
 		//if len(codeList[1]) != 0 {
-			//from = codeList[1]
+		//from = codeList[1]
 		//}
 		if len(codeList[3]) != 0 {
 			to = codeList[3]

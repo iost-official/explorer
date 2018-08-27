@@ -1,7 +1,7 @@
 package main
 
 import (
-	"explorer/controller"
+	"github.com/iost-official/explorer/backend/controller"
 
 	"github.com/labstack/echo"
 )

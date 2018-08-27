@@ -1,9 +1,9 @@
 package db
 
 import (
-	"explorer/util/transport"
-
 	"gopkg.in/mgo.v2"
+
+	"github.com/iost-official/explorer/backend/util/transport"
 )
 
 const Db = "explorer"

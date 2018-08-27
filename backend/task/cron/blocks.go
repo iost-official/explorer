@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	"explorer/model/blockchain"
-	"explorer/model/db"
-
 	"gopkg.in/mgo.v2/bson"
+
+	"github.com/iost-official/explorer/backend/model/blockchain"
+	"github.com/iost-official/explorer/backend/model/db"
 )
 
 func UpdateBlocks(wg *sync.WaitGroup) {
@@ -63,7 +63,7 @@ func UpdateBlocks(wg *sync.WaitGroup) {
 	}
 }
 
-func UpdateBlockPay(wg *sync.WaitGroup)  {
+func UpdateBlockPay(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	txnDC, err := db.GetCollection("txnsdetail")

@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+
 	"gopkg.in/mgo.v2/bson"
 )
 

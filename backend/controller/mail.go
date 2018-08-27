@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"github.com/labstack/echo"
-	"explorer/model/mail"
 	"log"
 	"net/http"
+
+	"github.com/iost-official/explorer/backend/model/mail"
+	"github.com/labstack/echo"
 )
 
 func SendMail(c echo.Context) error {

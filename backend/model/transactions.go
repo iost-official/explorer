@@ -1,11 +1,10 @@
 package model
 
 import (
-	"explorer/model/db"
-
-	"github.com/iost-official/prototype/rpc"
-	"explorer/model/blockchain"
+	"github.com/iost-official/explorer/backend/model/blockchain"
+	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/prototype/common"
+	"github.com/iost-official/prototype/rpc"
 )
 
 const (

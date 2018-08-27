@@ -1,11 +1,12 @@
 package db
 
 import (
+	"encoding/hex"
 	"log"
 
-	"github.com/iost-official/prototype/rpc"
 	"gopkg.in/mgo.v2/bson"
-	"encoding/hex"
+
+	"github.com/iost-official/prototype/rpc"
 )
 
 func GetBlocks(start, limit int) ([]*rpc.BlockInfo, error) {
@@ -96,10 +97,10 @@ func GetTopBlock() (*rpc.BlockInfo, error) {
 func GetBlockLastPage(eachPage int64) int64 {
 	var pageLast int64
 	if topBlock, err := GetTopBlock(); err == nil {
-		if topBlock.Head.Number % eachPage == 0 {
+		if topBlock.Head.Number%eachPage == 0 {
 			pageLast = topBlock.Head.Number / eachPage
 		} else {
-			pageLast = topBlock.Head.Number / eachPage + 1
+			pageLast = topBlock.Head.Number/eachPage + 1
 		}
 	}
 

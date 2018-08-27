@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"log"
@@ -10,20 +11,18 @@ import (
 	"strings"
 	"time"
 
-	"explorer/util/session"
-
+	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/util/session"
 	"github.com/labstack/echo"
-	"encoding/json"
-	"explorer/model/db"
 )
 
 const (
 	VerifyCodeLen     = 6
 	MobileMaxSendTime = 1
 
-	AccountSid        = "AC47b8c0b922a3eb016f263869ac0d2951"
-	AuthToken         = "0daee011527a806c76792d46cd71dd13"
-	TwilioSmsUrl      = "https://api.twilio.com/2010-04-01/Accounts/" + AccountSid + "/Messages.json"
+	AccountSid   = "AC47b8c0b922a3eb016f263869ac0d2951"
+	AuthToken    = "0daee011527a806c76792d46cd71dd13"
+	TwilioSmsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + AccountSid + "/Messages.json"
 )
 
 type CommOutput struct {
@@ -36,8 +35,8 @@ var (
 	verifySeed     = rand.NewSource(time.Now().UnixNano())
 	verifyCodeList = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
-	ErrEmptySSID = errors.New("empty session id")
-	ErrGreCaptcha = errors.New("reCAPTCHA check failed")
+	ErrEmptySSID         = errors.New("empty session id")
+	ErrGreCaptcha        = errors.New("reCAPTCHA check failed")
 	ErrMobileApplyExceed = errors.New("mobile applied earlier today")
 )
 
@@ -85,7 +84,6 @@ func SendSMS(c echo.Context) error {
 	log.Printf("sendSMS ssid: %s, vc: %s\n", sess.SessionID(), vc)
 
 	mobileSendNum++
-	
 
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	return c.JSON(http.StatusOK, &CommOutput{0, "ok"})

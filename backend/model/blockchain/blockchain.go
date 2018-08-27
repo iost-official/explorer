@@ -4,11 +4,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/iost-official/prototype/transport"
-
 	"golang.org/x/net/context"
 
 	"github.com/iost-official/prototype/rpc"
+	"github.com/iost-official/prototype/transport"
 )
 
 var ErrEmptyBlock = errors.New("no block found.")
@@ -73,10 +72,10 @@ func GetTopBlock() (*rpc.BlockInfo, error) {
 func GetBlockLastPage(eachPage int64) int64 {
 	var pageLast int64
 	if topBlock, err := GetTopBlock(); err == nil {
-		if topBlock.Head.Number % eachPage == 0 {
+		if topBlock.Head.Number%eachPage == 0 {
 			pageLast = topBlock.Head.Number / eachPage
 		} else {
-			pageLast = topBlock.Head.Number / eachPage + 1
+			pageLast = topBlock.Head.Number/eachPage + 1
 		}
 	}
 

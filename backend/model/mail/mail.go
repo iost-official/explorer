@@ -21,7 +21,7 @@ import (
 
 var gmailClient *gmail.Service
 
-func init()  {
+func init() {
 	ctx := context.Background()
 
 	b, err := ioutil.ReadFile("client_secret.json")
