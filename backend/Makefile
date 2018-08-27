@@ -4,7 +4,7 @@ TARGET = explorer
 
 all:$(TARGET)
 
-explorer: main.go template.go
+explorer: main.go
 	$(GO) build -o $@ $^
 
 clean:

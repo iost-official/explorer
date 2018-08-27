@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/iost-official/explorer/backend/model/blockchain"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/prototype/common"
 	"github.com/iost-official/prototype/rpc"
@@ -75,10 +74,6 @@ func GenerateTxnOutput(trans *db.MgoTx) *TransactionOutput {
 		Age:         modifyIntToTimeStr(timestamp),
 		UTCTime:     formatUTCTime(timestamp),
 		Code:        trans.Code,
-	}
-
-	if output.To == "Bet" {
-		output.To = blockchain.BetHash
 	}
 
 	return output

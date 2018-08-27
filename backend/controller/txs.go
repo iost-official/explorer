@@ -1,16 +1,11 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/iost-official/explorer/backend/model"
-	"github.com/iost-official/explorer/backend/model/blockchain"
-	"github.com/iost-official/explorer/backend/model/cache"
 	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/prototype/common"
-	"github.com/iost-official/prototype/core/tx"
 	"github.com/labstack/echo"
 )
 
@@ -39,10 +34,6 @@ func GetTxs(c echo.Context) error {
 	page := c.QueryParam("p")
 	address := c.QueryParam("a")
 	blk := c.QueryParam("b")
-
-	if address == blockchain.BetHash {
-		address = "Bet"
-	}
 
 	pageInt64, err := strconv.ParseInt(page, 10, 64)
 	if err != nil {
@@ -99,21 +90,6 @@ func GetTxsDetail(c echo.Context) error {
 	txHash := c.Param("id")
 	if txHash == "" {
 		return nil
-	}
-
-	if txHash == blockchain.BetHash {
-		txnInterface, _ := cache.GlobalCache.Get("betMainCode")
-		fmt.Println(txnInterface)
-		txn, _ := txnInterface.(*tx.Tx)
-		if txn == nil {
-			return nil
-		}
-
-		return c.JSON(http.StatusOK, &BetTxsOutput{
-			Time: txn.Time,
-			From: common.Base58Encode(txn.Publisher.Pubkey),
-			Code: txn.Contract.Code(),
-		})
 	}
 
 	txn, err := db.GetTxnDetailByHash(txHash)

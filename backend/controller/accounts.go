@@ -120,10 +120,6 @@ func GetAccountDetail(c echo.Context) error {
 		return nil
 	}
 
-	if address == blockchain.BetHash {
-		address = "Bet"
-	}
-
 	account, err := db.GetAccountByAddress(address)
 	if err != nil {
 		return err
@@ -137,10 +133,6 @@ func GetAccountTxs(c echo.Context) error {
 	address := c.Param("id")
 	if address == "" {
 		return nil
-	}
-
-	if address == blockchain.BetHash {
-		address = "Bet"
 	}
 
 	page := c.QueryParam("p")

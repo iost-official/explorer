@@ -36,13 +36,13 @@ func main() {
 	e.POST("/api/applyIOST", controller.ApplyIOST)
 
 	// lucky bet
-	e.GET("/api/luckyBetBlockInfo", controller.GetBetInfo)
-	e.POST("/api/luckyBet", controller.GetLuckyBet)
-	e.POST("/api/luckyBetBenchMark", controller.GetLuckyBetBenchMark)
-	e.GET("/api/luckyBet/round/:id", controller.GetBetRound)
-	e.GET("/api/luckyBet/addressBet/:id", controller.GetAddressBet)
-	e.GET("/api/luckyBet/latestBetInfo", controller.GetLatestBetInfo)
-	e.GET("/api/luckyBet/todayRanking", controller.GetTodayTop10Address)
+	//e.GET("/api/luckyBetBlockInfo", controller.GetBetInfo)
+	//e.POST("/api/luckyBet", controller.GetLuckyBet)
+	//e.POST("/api/luckyBetBenchMark", controller.GetLuckyBetBenchMark)
+	//e.GET("/api/luckyBet/round/:id", controller.GetBetRound)
+	//e.GET("/api/luckyBet/addressBet/:id", controller.GetAddressBet)
+	//e.GET("/api/luckyBet/latestBetInfo", controller.GetLatestBetInfo)
+	//e.GET("/api/luckyBet/todayRanking", controller.GetTodayTop10Address)
 
 
 	e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
