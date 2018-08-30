@@ -1,77 +1,106 @@
 package blkchain
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
+	"time"
+
+	"github.com/iost-official/Go-IOS-Protocol/core/tx"
+	"github.com/iost-official/explorer/backend/model/blkchain/rpc"
+	"github.com/iost-official/explorer/backend/util/transport"
 )
 
 func GetCurrentBlockHeight() (int64, error) {
-	body, err := RPCRequest("GET", BlockHeightRPCUrl, nil)
+	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return 0, err
 	}
 
-	var blkHeight *BlockHeight
-	err = json.Unmarshal(body, &blkHeight)
+	client := rpc.NewApisClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	rs, err := client.GetHeight(ctx, &rpc.VoidReq{})
 	if err != nil {
 		return 0, err
 	}
 
-	return blkHeight.Height.Int64()
+	return rs.Height, nil
 }
 
-func GetTxByHash(hash string) (*Tx, error) {
-	getTxByHashRPCUrl := GetTxByHashRPCUrlPrefix + hash
-	body, err := RPCRequest("GET", getTxByHashRPCUrl, nil)
+func GetTxByHash(hash string) (*tx.TxRaw, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	var tx *Tx
-	err = json.Unmarshal(body, &tx)
+	client := rpc.NewApisClient(conn)
 
-	return tx, err
-}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
 
-func GetBlockByHash(hash string, complete bool) (*BlockInfo, error) {
-	getBlockByHashRPCUrl := fmt.Sprintf("%s%s/%t", GetBlockByHashRPCUrlPrefix, hash, complete)
-	body, err := RPCRequest("GET", getBlockByHashRPCUrl, nil)
+	rs, err := client.GetTxByHash(ctx, &rpc.HashReq{
+		Hash: hash,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	var block *BlockInfo
-	err = json.Unmarshal(body, &block)
-
-	return block, err
+	return rs, nil
 }
 
-func GetBlockByNum(num int64, complete bool) (*BlockInfo, error) {
-	getBlockByNumRPCUrl := fmt.Sprintf("%s%d/%t", GetBlockByNumRPCUrlPrefix, num, complete)
-	body, err := RPCRequest("GET", getBlockByNumRPCUrl, nil)
+func GetBlockByHash(hash string, complete bool) (*rpc.BlockInfo, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	var block *BlockInfo
-	err = json.Unmarshal(body, &block)
+	client := rpc.NewApisClient(conn)
 
-	return block, err
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return client.GetBlockByHash(ctx, &rpc.BlockByHashReq{
+		Hash:     hash,
+		Complete: complete,
+	})
+}
+
+func GetBlockByNum(num int64, complete bool) (*rpc.BlockInfo, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	client := rpc.NewApisClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return client.GetBlockByNum(ctx, &rpc.BlockByNumReq{
+		Num:      num,
+		Complete: complete,
+	})
 }
 
 func GetBalance(address string) (int64, error) {
-	getBalanceRPCUrl := GetBalanceRPCUrlPrefix + address + "/0"
-	body, err := RPCRequest("GET", getBalanceRPCUrl, nil)
+	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return 0, err
 	}
 
-	println(string(body))
-	var balance *Balance
-	err = json.Unmarshal(body, &balance)
+	client := rpc.NewApisClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	rs, err := client.GetBalance(ctx, &rpc.GetBalanceReq{
+		ID:              address,
+		UseLongestChain: false,
+	})
 	if err != nil {
 		return 0, err
 	}
 
-	return balance.Balance.Int64()
+	return rs.Balance, nil
 }
