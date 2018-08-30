@@ -1,5 +1,5 @@
 package blockchain
 
 const (
-	RPCAddress = "18.179.143.193:30303"
+	RPCAddress = "47.75.223.44:30303"
 )
