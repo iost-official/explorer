@@ -11,5 +11,6 @@ func main()  {
 	ws.Add(2)
 	go cron.UpdateBlocks2(ws)
 	go cron.ProcessFailedSyncBlocks(ws)
+	cron.UpdateTxns(ws)
 	ws.Wait()
 }

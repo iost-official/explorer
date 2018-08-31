@@ -13,6 +13,7 @@ const (
 const (
 	CollectionBlocks  = "blocks"
 	CollectionTxs     = "txs"
+	CollectionFlatTx  = "flatxs"
 	CollectionFBlocks = "fBlocks"
 )
 
