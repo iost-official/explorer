@@ -33,7 +33,7 @@ func GetLastBlockNumber() (int64, error) {
 		return -1, nil
 	}
 	var block Block
-	err = collection.Find(bson.M{}).Sort("-number").One(&block)
+	err = collection.Find(bson.M{}).Sort("-blockNumber").One(&block)
 	if err != nil && err.Error() == "not found" {
 		return 0, nil
 	}
