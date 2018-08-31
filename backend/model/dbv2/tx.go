@@ -18,7 +18,7 @@ type SignatureRaw struct {
 }
 
 type Tx struct {
-	Height     int64           `bson:"height"`
+	BlockNumber     int64           `bson:"blockNumber"`
 	Time       int64           `bson:"time"`
 	Hash       string          `bson:"hash"`
 	Expiration int64           `bson:"expiration"`
