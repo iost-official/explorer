@@ -24,10 +24,10 @@ type Tx struct {
 	Expiration int64           `bson:"expiration"`
 	GasPrice   int64           `bson:"gasPrice"`
 	GasLimit   int64           `bson:"gasLimit"`
-	Actions    []*ActionRaw    `bson:"actions"`
+	Actions    []ActionRaw    `bson:"actions"`
 	Signers    []string        `bson:"signers"`
-	Signs      []*SignatureRaw `bson:"signs"`
-	Publisher  *SignatureRaw   `bson:"publisher"`
+	Signs      []SignatureRaw `bson:"signs"`
+	Publisher  SignatureRaw   `bson:"publisher"`
 }
 
 func RpcGetTxByHash(txHash string) (*Tx, error) {
@@ -36,22 +36,22 @@ func RpcGetTxByHash(txHash string) (*Tx, error) {
 		return nil, err
 	}
 	txRaw := txRes.TxRaw
-	actions := make([]*ActionRaw, len(txRaw.Actions))
+	actions := make([]ActionRaw, len(txRaw.Actions))
 	for i, v := range txRaw.Actions {
-		actions[i] = &ActionRaw{
+		actions[i] = ActionRaw{
 			Contract:   v.Contract,
 			ActionName: v.ActionName,
 			Data:       v.Data,
 		}
 	}
-	publisher := &SignatureRaw{
+	publisher := SignatureRaw{
 		Algorithm: txRaw.Publisher.Algorithm,
 		Sig:       common.Base58Encode(txRaw.Publisher.Sig),
 		PubKey:    common.Base58Encode(txRaw.Publisher.PubKey),
 	}
-	signs := make([]*SignatureRaw, len(txRaw.Signs))
+	signs := make([]SignatureRaw, len(txRaw.Signs))
 	for i, v := range txRaw.Signs {
-		signs[i] = &SignatureRaw{
+		signs[i] = SignatureRaw{
 			Algorithm: v.Algorithm,
 			Sig:       common.Base58Encode(v.Sig),
 			PubKey:    common.Base58Encode(v.PubKey),
