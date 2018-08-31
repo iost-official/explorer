@@ -1,5 +1,5 @@
 package db
 
 const (
-	MongoLink = "mongodb://47.75.223.44:17839"
+	MongoLink = "mongodb://127.0.0.1:27017"
 )

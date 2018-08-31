@@ -10,6 +10,12 @@ const (
 	Db = "explorer"
 )
 
+const (
+	CollectionBlocks  = "blocks"
+	CollectionTxs     = "txs"
+	CollectionFBlocks = "fBlocks"
+)
+
 func GetDb() (*mgo.Database, error) {
 	mongoClient, err := transport.GetMongoClient(MongoLink)
 	if err != nil {
