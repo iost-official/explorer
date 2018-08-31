@@ -45,7 +45,8 @@ type FlatTx struct {
 	Publisher   SignatureRaw   `bson:"publisher"`
 	From        string         `bson:"from"`
 	To          string         `bson:"to"`
-	Amount      float64          `bson:"amount"`  // 转发数量
+	Amount      float64        `bson:"amount"`      // 转发数量
+	ActionIndex int            `bson:"actionIndex"` // action 索引
 }
 
 func RpcGetTxByHash(txHash string) (*Tx, error) {
@@ -88,7 +89,6 @@ func RpcGetTxByHash(txHash string) (*Tx, error) {
 	}, nil
 }
 
-
 func (tx *Tx) ToFlatTx() []FlatTx {
 	flatTx := make([]FlatTx, len(tx.Actions))
 
@@ -97,30 +97,30 @@ func (tx *Tx) ToFlatTx() []FlatTx {
 		var amount float64
 		if v.ActionName == "Transfer" {
 			var tmp []interface{}
-			json.Unmarshal([]byte(v.Data), &tmp)  // TODO check error
+			json.Unmarshal([]byte(v.Data), &tmp) // TODO check error
 			from = tmp[0].(string)
 			to = tmp[1].(string)
 			amount = tmp[2].(float64)
 		}
 		flatTx[i] = FlatTx{
 			BlockNumber: tx.BlockNumber,
-			Time: tx.Time,
-			Hash: tx.Hash,
-			Expiration: tx.Expiration,
-			GasPrice: tx.GasPrice,
-			GasLimit: tx.GasLimit,
-			Signers: tx.Signers,
-			Publisher: tx.Publisher,
-			Signs: tx.Signs,
-			Action: v,
-			From: from,
-			To: to,
-			Amount: amount,
+			Time:        tx.Time,
+			Hash:        tx.Hash,
+			Expiration:  tx.Expiration,
+			GasPrice:    tx.GasPrice,
+			GasLimit:    tx.GasLimit,
+			Signers:     tx.Signers,
+			Publisher:   tx.Publisher,
+			Signs:       tx.Signs,
+			Action:      v,
+			From:        from,
+			To:          to,
+			Amount:      amount,
+			ActionIndex: i,
 		}
 	}
 	return flatTx
 }
-
 
 func byteSliceArrayToStringArray(origin [][]byte) []string {
 	vsm := make([]string, len(origin))
