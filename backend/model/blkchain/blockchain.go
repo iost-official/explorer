@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/iost-official/Go-IOS-Protocol/core/tx"
 	"github.com/iost-official/explorer/backend/model/blkchain/rpc"
 	"github.com/iost-official/explorer/backend/util/transport"
 )
@@ -28,7 +27,7 @@ func GetCurrentBlockHeight() (int64, error) {
 	return rs.Height, nil
 }
 
-func GetTxByHash(hash string) (*tx.TxRaw, error) {
+func GetTxByHash(hash string) (*rpc.TxRes, error) {
 	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return nil, err
