@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"fmt"
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/explorer/backend/model/dbv2"
@@ -44,7 +43,6 @@ func UpdateTxns(wg *sync.WaitGroup) {
 		for _, txn := range txns {
 			originTxn := *txn
 			newTxn, err := dbv2.RpcGetTxByHash(originTxn.Hash)
-			fmt.Println(newTxn)
 
 			if err != nil {
 				log.Println("UpdateTxns RpcGetTxByHash error:", err)
@@ -80,11 +78,10 @@ func UpdateTxns(wg *sync.WaitGroup) {
 						"signers":    newTxn.Signers,
 						"signs":      newTxn.Signs,
 						"publisher":  newTxn.Publisher}})
-
-			fmt.Println(newTxn)
 		}
 
 		start += step
+		log.Println("start = ", start)
 	}
 }
 
