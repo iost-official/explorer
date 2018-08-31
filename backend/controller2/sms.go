@@ -50,7 +50,6 @@ func init() {
 }
 
 func SendSMS(c echo.Context) error {
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	mobile := c.FormValue("mobile")
 	gcaptcha := c.FormValue("gcaptcha")
 
