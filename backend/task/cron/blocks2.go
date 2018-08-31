@@ -155,7 +155,9 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 			if err != nil {
 				log.Println("Process failed blocks rpc call error:", err)
 				fBlock.RetryTimes++
-				fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"retryTimes": fBlock.RetryTimes})
+				fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"$set": bson.M{
+					"retryTimes": fBlock.RetryTimes,
+				}})
 				continue
 			}
 
@@ -172,7 +174,9 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 				if nil != err {
 					log.Println("Process failed blocks insert block error", err)
 					fBlock.RetryTimes++
-					fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"retryTimes": fBlock.RetryTimes})
+					fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"$set": bson.M{
+						"retryTimes": fBlock.RetryTimes,
+					}})
 					continue
 				}
 			}
@@ -188,12 +192,16 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 				err := txCollection.Insert(txs...)
 				if nil != err {
 					fBlock.RetryTimes++
-					fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"retryTimes": fBlock.RetryTimes})
+					fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"$set": bson.M{
+						"retryTimes": fBlock.RetryTimes,
+					}})
 					log.Println("UpdateBlock2 insert txs error", err)
 					continue
 				}
 			}
-			fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"processed": true})
+			fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"$set": bson.M{
+				"processed": true,
+			}})
 		}
 	}
 }
