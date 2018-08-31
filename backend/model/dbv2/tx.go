@@ -31,6 +31,7 @@ type Tx struct {
 	Publisher   SignatureRaw   `bson:"publisher"`
 }
 
+// 将 Tx.Actions 打平后的数据结构， 如果actionName == Transfer 则会解析出 from, to, amount
 type FlatTx struct {
 	BlockNumber int64          `bson:"blockNumber"`
 	Time        int64          `bson:"time"`
