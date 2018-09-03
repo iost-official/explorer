@@ -48,6 +48,48 @@ func GetTxByHash(hash string) (*rpc.TxRes, error) {
 	return rs, nil
 }
 
+func GetTxReceiptByHash(hash string) (*rpc.TxReceiptRes, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	client := rpc.NewApisClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	rs, err := client.GetTxReceiptByHash(ctx, &rpc.HashReq{
+		Hash: hash,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return rs, nil
+}
+
+func GetTxReceiptByTxHash(hash string) (*rpc.TxReceiptRes, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	client := rpc.NewApisClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	rs, err := client.GetTxReceiptByTxHash(ctx, &rpc.HashReq{
+		Hash: hash,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return rs, nil
+}
+
 func GetBlockByHash(hash string, complete bool) (*rpc.BlockInfo, error) {
 	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
