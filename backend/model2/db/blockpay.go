@@ -13,7 +13,7 @@ type BlockPay struct {
 
 
 func GetBlockPayListByHeight(heightList []int64) (map[int64]*BlockPay, error) {
-	blkPC, err := GetCollection("blockpay")
+	blkPC, err := GetCollection(CollectionBlockPay)
 	if err != nil {
 		log.Println("GetBlockPayByHeight get blockpay collection error:", err)
 		return nil, err

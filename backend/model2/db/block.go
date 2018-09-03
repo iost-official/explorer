@@ -64,13 +64,17 @@ func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
 		return nil, err
 	}
 
-	var hashes []string
-	err = txnC.Find(bson.M{"blockNumber": blockNumber}).Select(bson.M{"hash": 1}).All(hashes)
+	var hashes []*struct{ Hash string `bson:"hash"` }
+	err = txnC.Find(bson.M{"blockNumber": blockNumber}).Select(bson.M{"hash": 1, "_id": 0}).All(&hashes)
 	if nil != err {
 		log.Println("query block tx failed", err)
 		return nil, err
 	}
-	return &hashes, nil
+	result := make([]string, len(hashes))
+	for index, hash := range hashes {
+		result[index] = hash.Hash
+	}
+	return &result, nil
 }
 
 func GetBlockInfoByNum(num int64) (*Block, *[]string, error) {
