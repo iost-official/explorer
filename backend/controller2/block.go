@@ -30,7 +30,6 @@ func GetIndexBlocks(c echo.Context) error {
 		v.TxList = nil
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	return c.JSON(http.StatusOK, top10Blks)
 }
 
@@ -63,7 +62,6 @@ func GetBlocks(c echo.Context) error {
 		db.GetBlockLastPage(BlockEachPageNum),
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	return c.JSON(http.StatusOK, output)
 }
 
@@ -76,6 +74,5 @@ func GetBlockDetail(c echo.Context) error {
 
 	blkInfo, err := db.GetBlockByHeight(int64(blkIdInt))
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	return c.JSON(http.StatusOK, model2.GenerateBlockOutput(blkInfo))
 }
