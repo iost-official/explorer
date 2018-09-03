@@ -107,26 +107,26 @@ func GetAccountLastPage(eachPage int64) (int64, error) {
 	return pageLast, nil
 }
 
-//func GetAccountTxnLastPage(address string, eachPage int64) (int64, error) {
-//	txnLen, err := GetTxnDetailLenByAccount(address)
-//	if err != nil {
-//		return 0, err
-//	}
-//	txnLenInt64 := int64(txnLen)
-//
-//	var pageLast int64
-//	if txnLenInt64%eachPage == 0 {
-//		pageLast = txnLenInt64 / eachPage
-//	} else {
-//		pageLast = txnLenInt64/eachPage + 1
-//	}
-//
-//	if pageLast == 0 {
-//		pageLast = 1
-//	}
-//
-//	return pageLast, nil
-//}
+func GetAccountTxnLastPage(address string, eachPage int64) (int64, error) {
+	txnLen, err := GetTxnDetailLenByAccount(address)
+	if err != nil {
+		return 0, err
+	}
+	txnLenInt64 := int64(txnLen)
+
+	var pageLast int64
+	if txnLenInt64%eachPage == 0 {
+		pageLast = txnLenInt64 / eachPage
+	} else {
+		pageLast = txnLenInt64/eachPage + 1
+	}
+
+	if pageLast == 0 {
+		pageLast = 1
+	}
+
+	return pageLast, nil
+}
 
 func SaveApplyTestIOST(at *ApplyTestIOST) error {
 	applyC, err := GetCollection("applyTestIOST")
@@ -189,4 +189,23 @@ func GetAddressNonce(address string) (int64, error) {
 	}
 
 	return addressNonce.Nonce, nil
+}
+
+
+func GetTxnDetailLenByAccount(account string) (int, error) {
+	txnDC, err := GetCollection("txnsdetail")
+	if err != nil {
+		log.Println("GetTopTxnDetail get txnsdetail collection error:", err)
+		return 0, err
+	}
+
+	fromLen, err := txnDC.Find(bson.M{"from": account}).Count()
+	if err != nil {
+		log.Println("GetTxnDetailLenByAccount get from len error:", err)
+	}
+	toLen, err := txnDC.Find(bson.M{"to": account}).Count()
+	if err != nil {
+		log.Println("GetTxnDetailLenByAccount get to len error:", err)
+	}
+	return fromLen + toLen, err
 }
