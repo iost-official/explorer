@@ -9,5 +9,6 @@ const (
 	CollectionBlocks  = "blocks"
 	CollectionTxs     = "txs"
 	CollectionFBlocks = "fBlocks"
+	CollectionAccount = "accounts"
 )
 
