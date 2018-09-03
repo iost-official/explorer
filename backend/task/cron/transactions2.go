@@ -12,7 +12,6 @@ func UpdateTxns(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ticker := time.NewTicker(time.Second * 2)
-	var start = 0
 
 	txnC, err := db.GetCollection(db.CollectionTxs)
 
@@ -25,6 +24,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 
 	if err != nil {
 		log.Println("UpdateTxns get flatxs collection error:", err)
+		return
 	}
 
 	for range ticker.C {
@@ -32,7 +32,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 		var txns = make([]*db.Tx, 0)
 
 		err = txnC.Find(bson.M{"time": bson.M{"$ne": 0}}).
-			Sort("_id").Skip(start).Limit(step).All(&txns)
+			Sort("_id").Limit(step).All(&txns)
 
 		if err != nil {
 			log.Println("UpdateTxns query txns collection error:", err)
@@ -40,30 +40,29 @@ func UpdateTxns(wg *sync.WaitGroup) {
 		}
 
 		for _, txn := range txns {
-			originTxn := *txn
-			newTxn, err := db.RpcGetTxByHash(originTxn.Hash)
+			newTxn, err := db.RpcGetTxByHash(txn.Hash)
 
 			if err != nil {
 				log.Println("UpdateTxns RpcGetTxByHash error:", err)
 				continue
 			}
 
-			flatxs := newTxn.ToFlatTx()
-			var tmpFlatx db.FlatTx
+			flatxns := newTxn.ToFlatTx()
+			var tmpFlatxn db.FlatTx
 
-			for _, tx := range flatxs {
+			for _, tx := range flatxns {
 				err := flatxnC.Find(bson.M{"actionIndex": tx.ActionIndex,
-					"hash": tx.Hash}).One(&tmpFlatx)
+					"hash": tx.Hash}).One(&tmpFlatxn)
 
 				if err != nil {
-					flatxnC.Insert(tx)
+					err = flatxnC.Insert(tx)
+
+					if err != nil {
+
+					}
 				} else {
 					continue
 				}
-			}
-
-			if originTxn.Time != 0 {
-				continue
 			}
 
 			txnC.Update(bson.M{"hash": newTxn.Hash},
@@ -78,8 +77,5 @@ func UpdateTxns(wg *sync.WaitGroup) {
 						"signs":      newTxn.Signs,
 						"publisher":  newTxn.Publisher}})
 		}
-
-		start += step
-		log.Println("start = ", start)
 	}
 }
