@@ -48,7 +48,6 @@ func GetAccounts(start, limit int) ([]*Account, error) {
 func GetAccountByAddress(address string) (*Account, error) {
 	accountC, err := GetCollection("accounts")
 	if err != nil {
-		log.Println("GetAccountByAddress get collection error:", err)
 		return nil, err
 	}
 
@@ -208,4 +207,16 @@ func GetTxnDetailLenByAccount(account string) (int, error) {
 		log.Println("GetTxnDetailLenByAccount get to len error:", err)
 	}
 	return fromLen + toLen, err
+}
+
+func GetAccountTxCount (address string) (int, error) {
+	ftxCol, err := GetCollection(CollectionFlatTx)
+	if err != nil {
+		return 0, err
+	}
+	num, err := ftxCol.Find(bson.M{"$or": []bson.M{
+		bson.M{"from": address},
+		bson.M{"to": address},
+	}}).Count()
+	return num, err
 }

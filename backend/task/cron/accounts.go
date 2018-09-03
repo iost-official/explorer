@@ -1,75 +1,70 @@
 package cron
 
-
-import "sync"
+import (
+	"fmt"
+	"github.com/iost-official/explorer/backend/model/blkchain"
+	"github.com/iost-official/explorer/backend/model2/db"
+	"github.com/globalsign/mgo/bson"
+	"sync"
+	"log"
+	"time"
+)
 
 func UpdateAccounts (wg *sync.WaitGroup) {
 	defer wg.Done()
+
+	flatTxCol, err := db.GetCollection(db.CollectionFlatTx)
+	if err != nil {
+		log.Println("Flat Collection get failed")
+	}
+
+	accountCol, err := db.GetCollection(db.CollectionAccount)
+	if err != nil {
+		log.Println("Account collection get failed")
+	}
+
+	ticker := time.NewTicker(time.Second * 10)
+	for _ = range ticker.C {
+		fmt.Println("Update account info")
+		var query = bson.M{"actionName": "Transfer"}
+		cursor, err := db.GetAccountTaskCursor()
+		if err == nil {
+			query["_id"] = bson.M{"$gt": cursor}
+		}
+		var txs []db.FlatTx
+		err = flatTxCol.Find(query).Sort("_id").Limit(50).All(&txs)
+		for _, ft := range txs {
+			fromB, err := blkchain.GetBalance(ft.From)
+			if err != nil {
+				fmt.Println("Get balance failed", err)
+			}
+			fromCount, err := db.GetAccountTxCount(ft.From)
+			if err != nil {
+				fmt.Println("Get txcount error", err)
+			}
+			_, err = accountCol.Upsert(bson.M{"address": ft.From}, bson.M{"$set": bson.M{"balance": fromB, "tx_count": fromCount}})   // TODO: check error update
+			if err != nil {
+				fmt.Println("Update failed", err)
+			}
+			toB, err := blkchain.GetBalance(ft.To)
+			if err != nil {
+				fmt.Println("Get balance failed", err)
+			}
+			toCount, err := db.GetAccountTxCount(ft.To)
+			if err != nil {
+				fmt.Println("Get tx failed", err)
+			}
+			_, err = accountCol.Upsert(bson.M{"address": ft.To}, bson.M{"$set": bson.M{"balance": toB, "tx_count": toCount}})
+			if err != nil {
+				fmt.Println("Update failed", err)
+			}
+		}
+
+		if len(txs) > 0 {
+			err = db.UpdateAccountTaskCursor(txs[len(txs)-1].Id)
+			fmt.Println("Update cursor error: ", err)
+		}
+
+	}
 }
 
-/*func UpdateAccounts(wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	txnDC, err := db.GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("UpdateAccounts get collection error:", err)
-		return
-	}
-
-	accountC, err := db.GetCollection("accounts")
-	if err != nil {
-		log.Println("UpdateAccounts get collection error:", err)
-		return
-	}
-
-	queryFrom := bson.M{
-		"from": bson.M{
-			"$ne": "",
-		},
-	}
-	queryTo := bson.M{
-		"to": bson.M{
-			"$ne": "",
-		},
-	}
-
-	ticker := time.NewTicker(time.Second * 60)
-	for _ = range ticker.C {
-		fromList := make([]string, 0)
-		err = txnDC.Find(queryFrom).Distinct("from", &fromList)
-		if err != nil {
-			log.Println("UpdateAccounts find from error:", err)
-			continue
-		}
-
-		toList := make([]string, 0)
-		err = txnDC.Find(queryTo).Distinct("to", &toList)
-		if err != nil {
-			log.Println("UpdateAccounts find to error:", err)
-		}
-
-		fromList = append(fromList, toList...)
-
-		for _, account := range fromList {
-			balance, err := blockchain.GetBalanceByKey(account)
-			if err != nil {
-				log.Println("UpdateAccounts GetBalanceByKey error:", err)
-			}
-
-			txnLen, err := db.GetTxnDetailLenByAccount(account)
-			if err != nil {
-				log.Println("UpdateAccounts GetTxnDetailLenByAccount error:", err)
-			}
-
-			selector := bson.M{
-				"address": account,
-			}
-			accountC.Upsert(selector, &db.Account{
-				Address: account,
-				Balance: balance,
-				TxCount: txnLen,
-			})
-			log.Println("UpdateAccounts address:", account, "amount:", balance, "updated.")
-		}
-	}
-}*/

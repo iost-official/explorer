@@ -82,9 +82,6 @@ func GetAccounts(c echo.Context) error {
 
 func GetAccountDetail(c echo.Context) error {
 	address := c.Param("id")
-	if address == "" {
-		return nil
-	}
 
 	account, err := db.GetAccountByAddress(address)
 	if err != nil {

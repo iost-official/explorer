@@ -12,5 +12,6 @@ const (
 	CollectionFBlocks = "fBlocks"
 	CollectionAccount = "accounts"
 	CollectionBlockPay = "blockPay"
+	CollectionTaskCursor = "taskCursors"
 )
 
