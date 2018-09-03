@@ -8,7 +8,6 @@ import (
 )
 
 func SendMail(c echo.Context) error {
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	to := c.FormValue("email")
 	content := c.FormValue("content")
 

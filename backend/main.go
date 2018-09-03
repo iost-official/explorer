@@ -2,12 +2,14 @@ package main
 
 import (
 	"github.com/iost-official/explorer/backend/controller2"
+	"github.com/iost-official/explorer/backend/middleware"
 	"github.com/labstack/echo"
 )
 
 func main() {
 	e := echo.New()
 	e.Debug = true
+	e.Use(middleware.CorsHeader)
 
 	// index
 	e.GET("/api/market", controller2.GetMarket)
