@@ -20,7 +20,7 @@ func main() {
 
 	// transactions
 	//e.GET("/api/txs", controller.GetTxs)
-	//e.GET("/api/tx/:id", controller.GetTxsDetail)
+	e.GET("/api/tx/:id", controller2.GetTxsDetail)
 
 	// accounts
 	//e.GET("/api/accounts", controller.GetAccounts)
@@ -33,8 +33,6 @@ func main() {
 	// applyIOST
 	e.POST("/api/sendSMS", controller2.SendSMS)
 	//e.POST("/api/applyIOST", controller2.ApplyIOST)
-
-
 
 	//e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
 
