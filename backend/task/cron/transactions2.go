@@ -32,7 +32,8 @@ func UpdateTxns(wg *sync.WaitGroup) {
 		step := 300
 		var txns = make([]*dbv2.Tx, 0)
 
-		err = txnC.Find(bson.M{}).Sort("_id").Skip(start).Limit(step).All(&txns)
+		err = txnC.Find(bson.M{"time": bson.M{"$ne": 0}}).
+			Sort("_id").Skip(start).Limit(step).All(&txns)
 
 		if err != nil {
 			log.Println("UpdateTxns query txns collection error:", err)
