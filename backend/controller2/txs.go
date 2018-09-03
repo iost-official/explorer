@@ -1,8 +1,8 @@
 package controller2
 
 import (
+	"github.com/iost-official/explorer/backend/model2"
 	"github.com/labstack/echo"
-	"log"
 	"net/http"
 )
 
@@ -20,11 +20,11 @@ const (
 //	TotalLen int                        `json:"total_len"`
 //}
 
-type BetTxsOutput struct {
-	From string `json:"from"`
-	Time int64  `json:"time"`
-	Code string `json:"code"`
-}
+//type BetTxsOutput struct {
+//	From string `json:"From"`
+//	Time int64  `json:"time"`
+//	Code string `json:"code"`
+//}
 
 // e.GET("/txs", getBlock)
 //func GetTxs(c echo.Context) error {
@@ -85,16 +85,12 @@ type BetTxsOutput struct {
 func GetTxsDetail(c echo.Context) error {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	txHash := c.Param("id")
-	log.Println("txHash = ", txHash)
 
 	if txHash == "" {
 		return nil
 	}
 
-	txnOutput := BetTxsOutput{
-		"test",
-	1,
-	"test_code"}
+	txnOut := model2.GetDetailTxn(txHash)
 
 	//txn, err := db.GetTxnDetailByHash(txHash)
 	//if err != nil {
@@ -103,5 +99,5 @@ func GetTxsDetail(c echo.Context) error {
 	//
 	//txnOutput := model.GenerateTxnOutput(txn)
 
-	return c.JSON(http.StatusOK, txnOutput)
+	return c.JSON(http.StatusOK, txnOut)
 }
