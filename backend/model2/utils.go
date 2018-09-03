@@ -3,7 +3,6 @@ package model2
 import (
 	"fmt"
 	"time"
-	//"github.com/iost-official/prototype/consensus/common"
 )
 
 func modifyIntToTimeStr(intTime int64) string {
@@ -53,7 +52,7 @@ func modifyBlockIntToTimeStr(intTime int64) string {
 }
 
 //func ConvertSlotTimeToTimeStamp(soltTime int64) int64 {
-//	t := consensus_common.Timestamp{soltTime}
+//	t := consensus.Consensus.Timestamp{soltTime}
 //	unixSec := t.ToUnixSec()
 //
 //	return unixSec

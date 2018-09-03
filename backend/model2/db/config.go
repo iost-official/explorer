@@ -11,6 +11,6 @@ const (
 	CollectionFlatTx  = "flatxs"
 	CollectionFBlocks = "fBlocks"
 	CollectionAccount = "accounts"
-	CollectionBlockPay = "blockPay"
+	CollectionBlockPay = "blockPays"
 )
 

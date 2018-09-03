@@ -146,7 +146,6 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 	for range ticker.C {
 		var fBlockList = make([]*db.FailBlock, 0)
 		fBlockCollection.Find(query).Sort("blockNumber").All(&fBlockList)
-		log.Println("remain to process block count", len(fBlockList))
 		for _, fBlock := range fBlockList {
 			block, txHashes, err := db.GetBlockInfoByNum(fBlock.BlockNumber)
 
@@ -237,19 +236,19 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 					"blockNumber": bson.M{
 						"$gte": topHeightInPay,
 					},
-					"gasLimit": bson.M{
-						"$gt": 0,
+					"time": bson.M{
+						"$ne": 0,
 					},
 				},
 			},
 			{
 				"$group": bson.M{
-					"_id": "blockNumber",
+					"_id": "$blockNumber",
 					"avggasprice": bson.M{
-						"$avg": "gasPrice",
+						"$avg": "$gasPrice",
 					},
 					"totalgaslimit": bson.M{
-						"$sum": "gasLimit",
+						"$sum": "$gasLimit",
 					},
 				},
 			},
@@ -261,6 +260,8 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 			log.Println("UpdateBlockPay pipeline error:", err)
 			continue
 		}
+
+		log.Println("Update block pay len", len(payList))
 
 		for _, pay := range payList {
 			selector := bson.M{

@@ -44,7 +44,7 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 
 		txList, err := db.GetBlockTxnHashes(v.BlockNumber)
 
-		if nil != err {
+		if nil == err {
 			output.TxList = *txList
 		} else {
 			log.Println("get block txn list fail", err)
@@ -57,7 +57,8 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 }
 
 func GenerateBlockOutput(bInfo *db.Block) *BlockOutput {
-	timestamp := bInfo.Time
+	//todo when rpc fix this, change it to normal
+	timestamp := bInfo.Time * 3
 	return &BlockOutput{
 		Height:     bInfo.BlockNumber,
 		ParentHash: bInfo.ParentHash,
