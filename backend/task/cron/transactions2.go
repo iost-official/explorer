@@ -31,7 +31,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 		step := 300
 		var txns = make([]*db.Tx, 0)
 
-		err = txnC.Find(bson.M{"time": bson.M{"$ne": 0}}).
+		err = txnC.Find(bson.M{"time": bson.M{"$eq": 0}}).
 			Sort("_id").Limit(step).All(&txns)
 
 		if err != nil {

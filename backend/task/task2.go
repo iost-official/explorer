@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
-	"github.com/iost-official/explorer/backend/model/dbv2"
+	"github.com/iost-official/explorer/backend/model2/db"
 	"log"
 )
 
@@ -18,7 +18,7 @@ func main () {
 
 	//fmt.Println("block info", block.Txs)
 	//fmt.Println("block info", block.Txhash)
-	lastNum, err := dbv2.GetLastBlockNumber()
+	lastNum, err := db.GetLastBlockNumber()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,7 +43,7 @@ func main () {
 	fmt.Println(txRes.TxRaw.Actions)
 
 	//fmt.Println(block1.Txs)
-	tx, err := dbv2.RpcGetTxByHash(txHash)
+	tx, err := db.RpcGetTxByHash(txHash)
 	if err != nil {
 		log.Fatal(err)
 	}
