@@ -227,7 +227,7 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 				continue
 			}
 		} else {
-			topHeightInPay = topPay.Height
+			topHeightInPay = topPay.Height + 1
 		}
 
 		queryPip := []bson.M{
@@ -260,8 +260,6 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 			log.Println("UpdateBlockPay pipeline error:", err)
 			continue
 		}
-
-		log.Println("Update block pay len", len(payList))
 
 		for _, pay := range payList {
 			selector := bson.M{
