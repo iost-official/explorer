@@ -51,21 +51,21 @@ func UpdateTxns(wg *sync.WaitGroup) {
 			var tmpFlatxn db.FlatTx
 
 			for _, tx := range flatxns {
-				err := flatxnC.Find(bson.M{"actionIndex": tx.ActionIndex,
+				errFind := flatxnC.Find(bson.M{"actionIndex": tx.ActionIndex,
 					"hash": tx.Hash}).One(&tmpFlatxn)
 
-				if err != nil {
-					err = flatxnC.Insert(tx)
+				// flatxn not found
+				if errFind != nil {
+					errInsert := flatxnC.Insert(tx)
 
-					if err != nil {
-
+					if errInsert != nil {
+						log.Println("failed to insert to flatxnC")
+						//	TODO: save those record to database to try again
 					}
-				} else {
-					continue
 				}
 			}
 
-			txnC.Update(bson.M{"hash": newTxn.Hash},
+			errUpdate := txnC.Update(bson.M{"hash": newTxn.Hash},
 				bson.M{
 					"$set": bson.M{
 						"time":       newTxn.Time,
@@ -76,6 +76,11 @@ func UpdateTxns(wg *sync.WaitGroup) {
 						"signers":    newTxn.Signers,
 						"signs":      newTxn.Signs,
 						"publisher":  newTxn.Publisher}})
+
+			if errUpdate != nil {
+				log.Println("failed to update txn")
+				//	TODO: save failed record to database to try again
+			}
 		}
 	}
 }
