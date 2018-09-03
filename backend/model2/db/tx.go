@@ -48,6 +48,7 @@ type FlatTx struct {
 	To          string         `bson:"to"`
 	Amount      float64        `bson:"amount"`      // 转发数量
 	ActionIndex int            `bson:"actionIndex"` // action 索引
+	ActionName  string         `bson:"actionName"`  // action 类型
 }
 
 func RpcGetTxByHash(txHash string) (*Tx, error) {
@@ -121,6 +122,7 @@ func (tx *Tx) ToFlatTx() []FlatTx {
 			To:          to,
 			Amount:      amount,
 			ActionIndex: i,
+			ActionName:  v.ActionName,
 		}
 	}
 	return flatTx
