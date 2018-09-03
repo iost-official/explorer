@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/iost-official/explorer/backend/model/blkchain/rpc"
 	"github.com/iost-official/explorer/backend/util/transport"
 )
@@ -19,7 +20,7 @@ func GetCurrentBlockHeight() (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	rs, err := client.GetHeight(ctx, &rpc.VoidReq{})
+	rs, err := client.GetHeight(ctx, &empty.Empty{})
 	if err != nil {
 		return 0, err
 	}
