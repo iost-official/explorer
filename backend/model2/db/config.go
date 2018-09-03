@@ -11,6 +11,7 @@ const (
 	CollectionFlatTx  = "flatxs"
 	CollectionFBlocks = "fBlocks"
 	CollectionAccount = "accounts"
+	CollectionTaskCursor = "taskCursors"
 	CollectionBlockPay = "blockPays"
 )
 

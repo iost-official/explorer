@@ -5,6 +5,7 @@ import (
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
+	"github.com/globalsign/mgo/bson"
 )
 
 type ActionRaw struct {
@@ -34,6 +35,7 @@ type Tx struct {
 
 // 将 Tx.Actions 打平后的数据结构， 如果actionName == Transfer 则会解析出 from, to, amount
 type FlatTx struct {
+	Id          bson.ObjectId  `bson:"_id,omitempty"`
 	BlockNumber int64          `bson:"blockNumber"`
 	Time        int64          `bson:"time"`
 	Hash        string         `bson:"hash"`
