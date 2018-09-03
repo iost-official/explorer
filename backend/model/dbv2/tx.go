@@ -2,6 +2,7 @@ package dbv2
 
 import (
 	"encoding/json"
+	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
 )
@@ -42,7 +43,7 @@ type FlatTx struct {
 	Action      ActionRaw      `bson:"action"`
 	Signers     []string       `bson:"signers"`
 	Signs       []SignatureRaw `bson:"signs"`
-	Publisher   SignatureRaw   `bson:"publisher"`
+	Publisher   string         `bson:"publisher"`
 	From        string         `bson:"from"`
 	To          string         `bson:"to"`
 	Amount      float64        `bson:"amount"`      // 转发数量
@@ -102,6 +103,9 @@ func (tx *Tx) ToFlatTx() []FlatTx {
 			to = tmp[1].(string)
 			amount = tmp[2].(float64)
 		}
+
+		pubKey := common.Base58Decode(tx.Publisher.PubKey)
+		publisher := account.GetIDByPubkey([]byte(pubKey))
 		flatTx[i] = FlatTx{
 			BlockNumber: tx.BlockNumber,
 			Time:        tx.Time,
@@ -110,7 +114,7 @@ func (tx *Tx) ToFlatTx() []FlatTx {
 			GasPrice:    tx.GasPrice,
 			GasLimit:    tx.GasLimit,
 			Signers:     tx.Signers,
-			Publisher:   tx.Publisher,
+			Publisher:   publisher,
 			Signs:       tx.Signs,
 			Action:      v,
 			From:        from,

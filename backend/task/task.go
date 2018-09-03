@@ -8,8 +8,9 @@ import (
 var ws = new(sync.WaitGroup)
 
 func main()  {
-	ws.Add(2)
+	ws.Add(3)
 	go cron.UpdateBlocks2(ws)
 	go cron.ProcessFailedSyncBlocks(ws)
+	go cron.UpdateTxns(ws)
 	ws.Wait()
 }
