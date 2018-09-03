@@ -1,10 +1,9 @@
 package transport
 
 import (
+	"github.com/globalsign/mgo"
 	"sync"
 	"time"
-
-	"gopkg.in/mgo.v2"
 )
 
 var (

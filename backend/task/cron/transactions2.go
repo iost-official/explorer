@@ -2,8 +2,7 @@ package cron
 
 import (
 	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/explorer/backend/model/dbv2"
+	"github.com/iost-official/explorer/backend/model2/db"
 	"log"
 	"sync"
 	"time"
@@ -13,16 +12,16 @@ func UpdateTxns(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	ticker := time.NewTicker(time.Second * 2)
-	var start int = 0
+	var start = 0
 
-	txnC, err := db.GetCollection(dbv2.CollectionTxs)
+	txnC, err := db.GetCollection(db.CollectionTxs)
 
 	if err != nil {
 		log.Println("UpdateTxns get txns collection error:", err)
 		return
 	}
 
-	flatxnC, err := db.GetCollection(dbv2.CollectionFlatTx)
+	flatxnC, err := db.GetCollection(db.CollectionFlatTx)
 
 	if err != nil {
 		log.Println("UpdateTxns get flatxs collection error:", err)
@@ -30,7 +29,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 
 	for range ticker.C {
 		step := 300
-		var txns = make([]*dbv2.Tx, 0)
+		var txns = make([]*db.Tx, 0)
 
 		err = txnC.Find(bson.M{}).Sort("_id").Skip(start).Limit(step).All(&txns)
 
@@ -41,7 +40,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 
 		for _, txn := range txns {
 			originTxn := *txn
-			newTxn, err := dbv2.RpcGetTxByHash(originTxn.Hash)
+			newTxn, err := db.RpcGetTxByHash(originTxn.Hash)
 
 			if err != nil {
 				log.Println("UpdateTxns RpcGetTxByHash error:", err)
@@ -49,7 +48,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 			}
 
 			flatxs := newTxn.ToFlatTx()
-			var tmpFlatx dbv2.FlatTx
+			var tmpFlatx db.FlatTx
 
 			for _, tx := range flatxs {
 				err := flatxnC.Find(bson.M{"actionIndex": tx.ActionIndex,

@@ -1,9 +1,9 @@
-package dbv2
+package db
 
 import (
+	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 )
 
@@ -55,6 +55,22 @@ func GetTopBlock2() (*Block, error) {
 	}
 
 	return topBlk, nil
+}
+
+func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
+	txnC, err := GetCollection(CollectionTxs)
+	if nil != err {
+		log.Println("Get block txn hashes failed", err)
+		return nil, err
+	}
+
+	var hashes []string
+	err = txnC.Find(bson.M{"blockNumber": blockNumber}).Select(bson.M{"hash": 1}).All(hashes)
+	if nil != err {
+		log.Println("query block tx failed", err)
+		return nil, err
+	}
+	return &hashes, nil
 }
 
 func GetBlockInfoByNum(num int64) (*Block, *[]string, error) {

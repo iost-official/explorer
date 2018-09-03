@@ -1,10 +1,9 @@
 package db
 
 import (
+	"github.com/globalsign/mgo/bson"
 	"log"
 	"time"
-
-	"gopkg.in/mgo.v2/bson"
 )
 
 type Account struct {

@@ -1,33 +1,36 @@
 package db
+
+import "log"
+
 //
-//import (
-//	"encoding/hex"
-//	"log"
+import (
+	"encoding/hex"
+	"log"
+
+	"gopkg.in/mgo.v2/bson"
+
+	"github.com/iost-official/prototype/rpc"
+)
 //
-//	"gopkg.in/mgo.v2/bson"
-//
-//	"github.com/iost-official/prototype/rpc"
-//)
-//
-//func GetBlocks(start, limit int) ([]*rpc.BlockInfo, error) {
-//	collection, err := GetCollection("blocks")
-//	if err != nil {
-//		log.Println("GetBlock get collection error:", err)
-//		return nil, err
-//	}
-//
-//	var (
-//		emptyQuery  interface{}
-//		blkInfoList []*rpc.BlockInfo
-//	)
-//	err = collection.Find(emptyQuery).Sort("-head.number").Skip(start).Limit(limit).All(&blkInfoList)
-//	if err != nil {
-//		log.Println("GetBlock collection find error:", err)
-//		return nil, err
-//	}
-//
-//	return blkInfoList, nil
-//}
+func GetBlocks(start, limit int) ([]*rpc.BlockInfo, error) {
+	collection, err := GetCollection("blocks")
+	if err != nil {
+		log.Println("GetBlock get collection error:", err)
+		return nil, err
+	}
+
+	var (
+		emptyQuery  interface{}
+		blkInfoList []*rpc.BlockInfo
+	)
+	err = collection.Find(emptyQuery).Sort("-head.number").Skip(start).Limit(limit).All(&blkInfoList)
+	if err != nil {
+		log.Println("GetBlock collection find error:", err)
+		return nil, err
+	}
+
+	return blkInfoList, nil
+}
 //
 //func GetBlockByLayer(layer int64) (*rpc.BlockInfo, error) {
 //	// wait implement...

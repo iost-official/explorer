@@ -1,4 +1,4 @@
-package dbv2
+package db
 
 import (
 	"encoding/json"

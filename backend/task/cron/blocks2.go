@@ -1,10 +1,10 @@
 package cron
 
 import (
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model/blkchain"
-	"github.com/iost-official/explorer/backend/model/dbv2"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/iost-official/explorer/backend/model2/db"
 	"log"
 	"sync"
 	"time"
@@ -13,13 +13,13 @@ import (
 func UpdateBlocks2(ws *sync.WaitGroup) {
 	defer ws.Done()
 
-	collection, err := dbv2.GetCollection(dbv2.CollectionBlocks)
+	collection, err := db.GetCollection(db.CollectionBlocks)
 	if nil != err {
 		log.Println("can not get blocks collection when update", err)
 		return
 	}
 
-	txCollection, err := dbv2.GetCollection(dbv2.CollectionTxs)
+	txCollection, err := db.GetCollection(db.CollectionTxs)
 
 	if nil != err {
 		log.Println("can not get txs collection when update", err)
@@ -27,9 +27,9 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 	}
 
 	//record sync failed blocks
-	fBlockCollection, err := dbv2.GetCollection(dbv2.CollectionFBlocks)
+	fBlockCollection, err := db.GetCollection(db.CollectionFBlocks)
 
-	ticker := time.NewTicker(time.Second * 5)
+	ticker := time.NewTicker(time.Second * 2)
 
 	for range ticker.C {
 		var topHeightInChain int64 = 0
@@ -44,7 +44,7 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 
 		topHeightInChain = topBlcHeight
 
-		topBlkInMongo, err := dbv2.GetTopBlock2()
+		topBlkInMongo, err := db.GetTopBlock2()
 
 		if err != nil {
 			log.Println("updateBlock get topBlk in mongo error:", err)
@@ -58,7 +58,7 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 		var insertLen int
 		for ; topHeightInMongo <= topHeightInChain; topHeightInMongo++ {
 
-			block, txHashes, err := dbv2.GetBlockInfoByNum(topHeightInMongo)
+			block, txHashes, err := db.GetBlockInfoByNum(topHeightInMongo)
 
 			if nil != err {
 				log.Println("UpdateBlock2 GetBlockInfoByNum error", err)
@@ -86,7 +86,7 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 			if nil != txHashes {
 				txs := make([]interface{}, len(*txHashes))
 				for index, txHash := range *txHashes {
-					txs[index] = dbv2.Tx{
+					txs[index] = db.Tx{
 						Hash:        txHash,
 						BlockNumber: topHeightInMongo,
 					}
@@ -115,21 +115,19 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 	defer ws.Done()
 
-	log.Println("start process f block task")
-
-	collection, err := dbv2.GetCollection(dbv2.CollectionBlocks)
+	collection, err := db.GetCollection(db.CollectionBlocks)
 	if nil != err {
 		log.Println("can not get blocks collection when update", err)
 		return
 	}
 
-	fBlockCollection, err := dbv2.GetCollection(dbv2.CollectionFBlocks)
+	fBlockCollection, err := db.GetCollection(db.CollectionFBlocks)
 	if nil != err {
 		log.Println("Process failed sync blocks get f blocks collection error", err)
 		return
 	}
 
-	txCollection, err := dbv2.GetCollection(dbv2.CollectionTxs)
+	txCollection, err := db.GetCollection(db.CollectionTxs)
 
 	if nil != err {
 		log.Println("Process failed sync blocks get txs collection error", err)
@@ -143,14 +141,14 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 		},
 	}
 
-	ticker := time.NewTicker(time.Second * 5)
+	ticker := time.NewTicker(time.Second * 2)
 
 	for range ticker.C {
-		var fBlockList = make([]*dbv2.FailBlock, 0)
+		var fBlockList = make([]*db.FailBlock, 0)
 		fBlockCollection.Find(query).Sort("blockNumber").All(&fBlockList)
 		log.Println("remain to process block count", len(fBlockList))
 		for _, fBlock := range fBlockList {
-			block, txHashes, err := dbv2.GetBlockInfoByNum(fBlock.BlockNumber)
+			block, txHashes, err := db.GetBlockInfoByNum(fBlock.BlockNumber)
 
 			if err != nil {
 				log.Println("Process failed blocks rpc call error:", err)
@@ -184,7 +182,7 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 			if nil != txHashes {
 				txs := make([]interface{}, len(*txHashes))
 				for index, txHash := range *txHashes {
-					txs[index] = dbv2.Tx{
+					txs[index] = db.Tx{
 						Hash:        txHash,
 						BlockNumber: fBlock.BlockNumber,
 					}
@@ -206,8 +204,76 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 	}
 }
 
+func UpdateBlockPay(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	txnC, err := db.GetCollection(db.CollectionTxs)
+	if err != nil {
+		log.Println("UpdateBlockCost get collection error:", err)
+		return
+	}
+
+	blkPC, err := db.GetCollection(db.CollectionBlockPay)
+	if err != nil {
+		log.Println("UpdateBlockCost get collection error:", err)
+		return
+	}
+
+	ticker := time.NewTicker(time.Second * 2)
+	for range ticker.C {
+		var topHeightInPay int64 = 0
+		topPay, err := db.GetTopBlockPay()
+		if err != nil {
+			if err.Error() != "not found" {
+				continue
+			}
+		} else {
+			topHeightInPay = topPay.Height
+		}
+
+		queryPip := []bson.M{
+			{
+				"$match": bson.M{
+					"blockNumber": bson.M{
+						"$gte": topHeightInPay,
+					},
+					"gasLimit": bson.M{
+						"$gt": 0,
+					},
+				},
+			},
+			{
+				"$group": bson.M{
+					"_id": "blockNumber",
+					"avggasprice": bson.M{
+						"$avg": "gasPrice",
+					},
+					"totalgaslimit": bson.M{
+						"$sum": "gasLimit",
+					},
+				},
+			},
+		}
+
+		var payList []*db.BlockPay
+		err = txnC.Pipe(queryPip).All(&payList)
+		if err != nil {
+			log.Println("UpdateBlockPay pipeline error:", err)
+			continue
+		}
+
+		for _, pay := range payList {
+			selector := bson.M{
+				"_id": pay.Height,
+			}
+			blkPC.Upsert(selector, pay)
+			log.Println("UpdateBlockPay block:", pay.Height, "inserted")
+		}
+	}
+}
+
 func recordFailedUpdateBlock(blockNumber int64, fBlockCollection *mgo.Collection) error {
-	fBlock := dbv2.FailBlock{
+	fBlock := db.FailBlock{
 		BlockNumber: blockNumber,
 		RetryTimes:  0,
 		Processed:   false,
