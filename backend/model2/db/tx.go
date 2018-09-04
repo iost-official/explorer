@@ -126,8 +126,8 @@ func RpcGetTxByHash(txHash string) (*Tx, error) {
 	}, nil
 }
 
-func (tx *Tx) ToFlatTx() []FlatTx {
-	flatTx := make([]FlatTx, len(tx.Actions))
+func (tx *Tx) ToFlatTx() []*FlatTx {
+	flatTx := make([]*FlatTx, len(tx.Actions))
 
 	for i, v := range tx.Actions {
 		var from, to string
@@ -142,7 +142,7 @@ func (tx *Tx) ToFlatTx() []FlatTx {
 
 		pubKey := common.Base58Decode(tx.Publisher.PubKey)
 		publisher := account.GetIDByPubkey([]byte(pubKey))
-		flatTx[i] = FlatTx{
+		flatTx[i] = &FlatTx{
 			BlockNumber: tx.BlockNumber,
 			Time:        tx.Time,
 			Hash:        tx.Hash,
