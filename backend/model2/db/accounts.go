@@ -10,7 +10,7 @@ type Account struct {
 	Address string  `json:"address"`
 	Balance float64 `json:"balance"`
 	Percent float64 `json:"percent"`
-	TxCount int     `json:"tx_count"`
+	TxCount int     `json:"txCount"`
 }
 
 type ApplyTestIOST struct {
@@ -29,10 +29,8 @@ type AddressNonce struct {
 func GetAccounts(start, limit int) ([]*Account, error) {
 	accountC, err := GetCollection("accounts")
 	if err != nil {
-		log.Println("GetAccounts get collection error:", err)
 		return nil, err
 	}
-
 	query := bson.M{
 		"balance": bson.M{"$ne": 0},
 	}
@@ -67,16 +65,12 @@ func GetAccountByAddress(address string) (*Account, error) {
 func GetAccountsTotalLen() (int, error) {
 	accountC, err := GetCollection("accounts")
 	if err != nil {
-		log.Println("GetAccounts get collection error:", err)
 		return 0, err
 	}
-
 	query := bson.M{
 		"balance": bson.M{"$ne": 0},
 	}
-	totalLen, err := accountC.Find(query).Count()
-
-	return totalLen, err
+	return accountC.Find(query).Count()
 }
 
 func GetAccountLastPage(eachPage int64) (int64, error) {
@@ -233,7 +227,7 @@ func GetTxnListByAccount(account string, start, limit int) ([]*FlatTx, error) {
 		},
 	}
 	var txnList []*FlatTx
-	err = txnDC.Find(query).Skip(start).Limit(limit).All(&txnList)
+	err = txnDC.Find(query).Sort("-blockNumber").Skip(start).Limit(limit).All(&txnList)
 	if err != nil {
 		return nil, err
 	}

@@ -8,12 +8,12 @@ import (
 )
 
 type AccountsOutput struct {
-	AccountList []*db.Account `json:"account_list"`
+	AccountList []*db.Account `json:"accountList"`
 	Page        int64         `json:"page"`
-	PagePrev    int64         `json:"page_prev"`
-	PageNext    int64         `json:"page_next"`
-	PageLast    int           `json:"page_last"`
-	TotalLen    int           `json:"total_len"`
+	PagePrev    int64         `json:"pagePrev"`
+	PageNext    int64         `json:"pageNext"`
+	PageLast    int           `json:"pageLast"`
+	TotalLen    int           `json:"totalLen"`
 }
 
 /*type AccountDetailOutput struct {
@@ -24,9 +24,9 @@ type AccountsOutput struct {
 
 type AccountTxs struct {
 	Address  string       `json:"address"`
-	TxnList  []*db.FlatTx `json:"txn_list"`
-	TxnLen   int64        `json:"txn_len"`
-	PageLast int64        `json:"page_last"`
+	TxnList  []*db.FlatTx `json:"txnList"`
+	TxnLen   int64        `json:"txnLen"`
+	PageLast int64        `json:"pageLast"`
 }
 
 func init() {
@@ -80,6 +80,7 @@ func GetAccounts(c echo.Context) error {
 }
 
 func GetAccountDetail(c echo.Context) error {
+	// TODO 实时获取数据
 	address := c.Param("id")
 
 	account, err := db.GetAccountByAddress(address)

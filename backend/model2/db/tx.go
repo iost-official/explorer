@@ -9,20 +9,20 @@ import (
 )
 
 type ActionRaw struct {
-	Contract   string `bson:"contract"`
-	ActionName string `bson:"actionName"`
-	Data       string `bson:"data"`
+	Contract   string `bson:"contract" json:"contract"`
+	ActionName string `bson:"actionName" json:"actionName"`
+	Data       string `bson:"data" json:"data"`
 }
 
 type SignatureRaw struct {
-	Algorithm int32  `bson:"algorithm"`
-	Sig       string `bson:"sig"`
-	PubKey    string `bson:"pubKey"`
+	Algorithm int32  `bson:"algorithm" json:"algorithm"`
+	Sig       string `bson:"sig" json:"sig"`
+	PubKey    string `bson:"pubKey" json:"pubKey"`
 }
 
 type ReceiptRaw struct {
-	Type    int32  `bson:"type"`
-	Content string `bson:"content"`
+	Type    int32  `bson:"type" json:"type"`
+	Content string `bson:"content" json:"content"`
 }
 
 type TxReceiptRaw struct {
@@ -49,22 +49,22 @@ type Tx struct {
 
 // 将 Tx.Actions 打平后的数据结构， 如果actionName == Transfer 则会解析出 from, to, amount
 type FlatTx struct {
-	Id          bson.ObjectId  `bson:"_id,omitempty"`
-	BlockNumber int64          `bson:"blockNumber"`
-	Time        int64          `bson:"time"`
-	Hash        string         `bson:"hash"`
-	Expiration  int64          `bson:"expiration"`
-	GasPrice    int64          `bson:"gasPrice"`
-	GasLimit    int64          `bson:"gasLimit"`
-	Action      ActionRaw      `bson:"action"`
-	Signers     []string       `bson:"signers"`
-	Signs       []SignatureRaw `bson:"signs"`
-	Publisher   string         `bson:"publisher"`
-	From        string         `bson:"from"`
-	To          string         `bson:"to"`
-	Amount      float64        `bson:"amount"`      // 转发数量
-	ActionIndex int            `bson:"actionIndex"` // action 索引
-	ActionName  string         `bson:"actionName"`  // action 类型
+	Id          bson.ObjectId  `bson:"_id,omitempty" json:"id"`
+	BlockNumber int64          `bson:"blockNumber" json:"blockNumber"`
+	Time        int64          `bson:"time" json:"time"`
+	Hash        string         `bson:"hash" json:"hash"`
+	Expiration  int64          `bson:"expiration" json:"expiration"`
+	GasPrice    int64          `bson:"gasPrice" json:"gasPrice"`
+	GasLimit    int64          `bson:"gasLimit" json:"gasLimit"`
+	Action      ActionRaw      `bson:"action" json:"action"`
+	Signers     []string       `bson:"signers" json:"signers"`
+	Signs       []SignatureRaw `bson:"signs" json:"signs"`
+	Publisher   string         `bson:"publisher" json:"publisher"`
+	From        string         `bson:"from" json:"from"`
+	To          string         `bson:"to" json:"to"`
+	Amount      float64        `bson:"amount" json:"amount"`      // 转发数量
+	ActionIndex int            `bson:"actionIndex" json:"actionIndex"` // action 索引
+	ActionName  string         `bson:"actionName" json:"actionName"`  // action 类型
 }
 
 func RpcGetTxByHash(txHash string) (*Tx, error) {
