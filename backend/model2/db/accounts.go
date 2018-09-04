@@ -101,7 +101,7 @@ func GetAccountLastPage(eachPage int64) (int64, error) {
 }
 
 func GetAccountTxnLastPage(address string, eachPage int64) (int64, error) {
-	txnLen, err := GetTxnDetailLenByAccount(address)
+	txnLen, err := GetFlatTxnLenByAccount(address)
 	if err != nil {
 		return 0, err
 	}
@@ -184,26 +184,29 @@ func GetAddressNonce(address string) (int64, error) {
 	return addressNonce.Nonce, nil
 }
 
-
-func GetTxnDetailLenByAccount(account string) (int, error) {
-	txnDC, err := GetCollection("txnsdetail")
+func GetFlatTxnLenByAccount(account string) (int, error) {
+	txnDC, err := GetCollection(CollectionFlatTx)
 	if err != nil {
-		log.Println("GetTopTxnDetail get txnsdetail collection error:", err)
+		log.Println("GetFlatTxnLenByAccount CollectionFlatTx collection error:", err)
 		return 0, err
 	}
 
 	fromLen, err := txnDC.Find(bson.M{"from": account}).Count()
 	if err != nil {
-		log.Println("GetTxnDetailLenByAccount get from len error:", err)
+		log.Println("GetFlatTxnLenByAccount get from len error:", err)
+
+		return 0, err
 	}
 	toLen, err := txnDC.Find(bson.M{"to": account}).Count()
 	if err != nil {
-		log.Println("GetTxnDetailLenByAccount get to len error:", err)
+		log.Println("GetFlatTxnLenByAccount get to len error:", err)
+
+		return 0, err
 	}
-	return fromLen + toLen, err
+	return fromLen + toLen, nil
 }
 
-func GetAccountTxCount (address string) (int, error) {
+func GetAccountTxCount(address string) (int, error) {
 	ftxCol, err := GetCollection(CollectionFlatTx)
 	if err != nil {
 		return 0, err
