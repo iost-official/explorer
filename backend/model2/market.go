@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"github.com/iost-official/explorer/backend/model2/cache"
+	"github.com/iost-official/explorer/backend/util"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -84,7 +85,7 @@ func GetMarketInfo() (*MarketInfo, error) {
 		int64(marketCap),
 		fmt.Sprintf("%.10f", btcPrice),
 		fmt.Sprintf("%.6f", ethPrice),
-		modifyIntToTimeStr(int64(lastUpdate)),
+		util.ModifyIntToTimeStr(int64(lastUpdate)),
 	}
 
 	// set to cache

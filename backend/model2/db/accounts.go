@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/explorer/backend/util"
 	"log"
 	"time"
 )
@@ -18,7 +19,7 @@ type ApplyTestIOST struct {
 	Amount    float64 `json:"amount"`
 	Email     string  `json:"email"`
 	Mobile    string  `json:"mobile"`
-	ApplyTime int64   `json:"apply_time"`
+	ApplyTime int64   `json:"applyTime"`
 }
 
 type AddressNonce struct {
@@ -218,7 +219,7 @@ func GetAccountTxCount(address string) (int, error) {
 	return num, err
 }
 
-func GetTxnListByAccount(account string, start, limit int) ([]*FlatTx, error) {
+func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error) {
 	txnDC, err := GetCollection(CollectionFlatTx)
 	if err != nil {
 		return nil, err
@@ -234,5 +235,20 @@ func GetTxnListByAccount(account string, start, limit int) ([]*FlatTx, error) {
 	if err != nil {
 		return nil, err
 	}
-	return txnList, nil
+	jsonTx := make([]*JsonFlatTx, len(txnList))
+	for i, v := range txnList {
+		timestamp := v.Time / time.Second.Nanoseconds()
+		jsonTx[i] = &JsonFlatTx{
+			FlatTx: *v,
+			Age: util.ModifyBlockIntToTimeStr(timestamp),
+			UTCTime: util.FormatUTCTime(timestamp),
+		}
+	}
+	return jsonTx, nil
+}
+
+type JsonFlatTx struct {
+	FlatTx
+	Age           string   `json:"age"`
+	UTCTime       string   `json:"utcTime"`
 }

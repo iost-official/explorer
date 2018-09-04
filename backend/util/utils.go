@@ -1,11 +1,11 @@
-package model2
+package util
 
 import (
 	"fmt"
 	"time"
 )
 
-func modifyIntToTimeStr(intTime int64) string {
+func ModifyIntToTimeStr(intTime int64) string {
 	currentUnixSec := time.Now().Unix()
 	secSub := currentUnixSec - intTime
 
@@ -23,7 +23,7 @@ func modifyIntToTimeStr(intTime int64) string {
 	}
 }
 
-func modifyBlockIntToTimeStr(intTime int64) string {
+func ModifyBlockIntToTimeStr(intTime int64) string {
 	currentUnixSec := time.Now().Unix()
 	secSub := currentUnixSec - intTime
 
@@ -58,7 +58,7 @@ func modifyBlockIntToTimeStr(intTime int64) string {
 //	return unixSec
 //}
 
-func formatUTCTime(intTime int64) string {
+func FormatUTCTime(intTime int64) string {
 	t := time.Unix(intTime, 0)
 	return t.String()
 }

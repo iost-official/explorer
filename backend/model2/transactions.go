@@ -3,6 +3,7 @@ package model2
 import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model2/db"
+	"github.com/iost-official/explorer/backend/util"
 	"log"
 )
 
@@ -58,8 +59,8 @@ func ConvertFlatTx2TxnDetail (tx *db.FlatTx) TxnDetail {
 		txnOut.Code = tx.Action.Data
 	}
 
-	txnOut.Age = modifyIntToTimeStr(tx.Time / (1000 * 1000 * 1000))
-	txnOut.UTCTime = formatUTCTime(tx.Time / (1000 * 1000 * 1000))
+	txnOut.Age = util.ModifyIntToTimeStr(tx.Time / (1000 * 1000 * 1000))
+	txnOut.UTCTime = util.FormatUTCTime(tx.Time / (1000 * 1000 * 1000))
 
 	return txnOut
 }

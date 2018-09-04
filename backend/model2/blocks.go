@@ -2,6 +2,7 @@ package model2
 
 import (
 	"github.com/iost-official/explorer/backend/model2/db"
+	"github.com/iost-official/explorer/backend/util"
 	"log"
 )
 
@@ -64,8 +65,8 @@ func GenerateBlockOutput(bInfo *db.Block) *BlockOutput {
 		ParentHash: bInfo.ParentHash,
 		BlockHash:  bInfo.Hash,
 		Witness:    bInfo.Witness,
-		Age:        modifyBlockIntToTimeStr(timestamp),
-		UTCTime:    formatUTCTime(timestamp),
+		Age:        util.ModifyBlockIntToTimeStr(timestamp),
+		UTCTime:    util.FormatUTCTime(timestamp),
 		Timestamp:  timestamp,
 	}
 }

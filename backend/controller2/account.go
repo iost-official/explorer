@@ -24,7 +24,7 @@ type AccountsOutput struct {
 
 type AccountTxs struct {
 	Address  string       `json:"address"`
-	TxnList  []*db.FlatTx `json:"txnList"`
+	TxnList  []*db.JsonFlatTx `json:"txnList"`
 	TxnLen   int64        `json:"txnLen"`
 	PageLast int64        `json:"pageLast"`
 }
