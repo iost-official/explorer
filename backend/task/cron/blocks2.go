@@ -3,7 +3,7 @@ package cron
 import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/explorer/backend/model/blkchain"
+	"github.com/iost-official/explorer/backend/model2/blkchain"
 	"github.com/iost-official/explorer/backend/model2/db"
 	"log"
 	"sync"
