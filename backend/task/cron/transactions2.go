@@ -56,7 +56,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 
 				// flatxn not found
 				if errFind != nil {
-					errInsert := flatxnC.Insert(tx)
+					errInsert := flatxnC.Insert(*tx)
 
 					if errInsert != nil {
 						log.Println("failed to insert to flatxnC")
