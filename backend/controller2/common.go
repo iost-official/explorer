@@ -27,3 +27,21 @@ const (
 	GCAPVerifyUrl   = "https://www.google.com/recaptcha/api/siteverify"
 	GCAPSecretKey   = "6Lc1vF8UAAAAAGv1XihAK4XygBMn3UobipWMqBym"
 )
+
+
+type Response struct {
+	Code int `json:"code"`
+	Data interface{} `json:"data"`
+}
+
+type ErrorResponse struct {
+	Code int `json:"code"`
+	Message string `json:"message"`
+}
+
+func FormatResponse(data interface{}) Response {
+	return Response{
+		Code: 0,
+		Data: data,
+	}
+}

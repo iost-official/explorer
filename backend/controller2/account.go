@@ -339,3 +339,8 @@ func GetAccountDetail(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, &CommOutput{0, hex.EncodeToString(txHash)})
 }*/
+
+
+func TestPage (c echo.Context) error {
+	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world"}))
+}

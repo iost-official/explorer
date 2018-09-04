@@ -9,6 +9,7 @@ import (
 func main() {
 	e := echo.New()
 	e.Debug = true
+	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
 	e.Use(middleware.CorsHeader)
 
 	// index
@@ -27,6 +28,7 @@ func main() {
 	// accounts
 	e.GET("/api/accounts", controller2.GetAccounts)
 	e.GET("/api/account/:id", controller2.GetAccountDetail)
+	e.GET("/api/test", controller2.TestPage)
 	//e.GET("/api/account/:id/txs", controller.GetAccountTxs)
 
 	// search
