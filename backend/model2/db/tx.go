@@ -2,10 +2,10 @@ package db
 
 import (
 	"encoding/json"
+	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
-	"github.com/globalsign/mgo/bson"
 )
 
 type ActionRaw struct {
@@ -20,6 +20,19 @@ type SignatureRaw struct {
 	PubKey    string `bson:"pubKey"`
 }
 
+type ReceiptRaw struct {
+	Type    int32  `bson:type`
+	Content string `bson:content`
+}
+
+type TxReceiptRaw struct {
+	GasUsage      int64        `bson:"gasUsage"`
+	SuccActionNum int32        `bson:"succActionNum"`
+	Receipts      []ReceiptRaw `bson:"receipts"`
+	StatusCode    int32        `bson:"statusCode"`
+	StatusMessage string       `bson:"statusMessage"`
+}
+
 type Tx struct {
 	BlockNumber int64          `bson:"blockNumber"`
 	Time        int64          `bson:"time"`
@@ -31,6 +44,7 @@ type Tx struct {
 	Signers     []string       `bson:"signers"`
 	Signs       []SignatureRaw `bson:"signs"`
 	Publisher   SignatureRaw   `bson:"publisher"`
+	Receipt     TxReceiptRaw   `bson:"receipt"`
 }
 
 // 将 Tx.Actions 打平后的数据结构， 如果actionName == Transfer 则会解析出 from, to, amount
@@ -80,6 +94,24 @@ func RpcGetTxByHash(txHash string) (*Tx, error) {
 			PubKey:    common.Base58Encode(v.PubKey),
 		}
 	}
+	receiptRaw, err := blkchain.GetTxReceiptByTxHash(txHash)
+	if err != nil {
+		return nil, err
+	}
+	receiptContentRaws := make([]ReceiptRaw, len(receiptRaw.TxReceiptRaw.Receipts))
+	for i, v := range receiptRaw.TxReceiptRaw.Receipts{
+		receiptContentRaws[i] = ReceiptRaw{
+			Type: v.Type,
+			Content: v.Content,
+		}
+	}
+	receipt := TxReceiptRaw{
+		GasUsage: receiptRaw.TxReceiptRaw.GasUsage,
+		SuccActionNum: receiptRaw.TxReceiptRaw.SuccActionNum,
+		StatusCode: receiptRaw.TxReceiptRaw.Status.Code,
+		StatusMessage: receiptRaw.TxReceiptRaw.Status.Message,
+		Receipts: receiptContentRaws,
+	}
 	return &Tx{
 		Time:       txRaw.Time,
 		Hash:       txHash,
@@ -90,6 +122,7 @@ func RpcGetTxByHash(txHash string) (*Tx, error) {
 		Signers:    byteSliceArrayToStringArray(txRaw.Signers),
 		Signs:      signs,
 		Publisher:  publisher,
+		Receipt:    receipt,
 	}, nil
 }
 
