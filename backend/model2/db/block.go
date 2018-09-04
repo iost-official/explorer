@@ -108,3 +108,29 @@ func GetBlockInfoByNum(num int64) (*Block, *[]string, error) {
 
 	return &block, nil, nil
 }
+
+func GetBlockByHash(hash string) (*Block, *[]string, error)  {
+	blockCollection, err := GetCollection(CollectionBlocks)
+
+	if nil != err {
+		log.Println("get block by hash can not get collection", err)
+		return nil, nil, err
+	}
+
+	var block Block
+
+	err = blockCollection.Find(bson.M{"hash": hash}).One(&block)
+	if nil != err {
+		log.Println("get block by hash can not find block by hash", err)
+		return nil, nil, err
+	}
+
+	blockTxHashes, err := GetBlockTxnHashes(block.BlockNumber)
+
+	if nil != err {
+		log.Println("get block by hash can not find block tx hashes", err)
+		return &block, nil, nil
+	}
+
+	return &block, blockTxHashes, nil
+}

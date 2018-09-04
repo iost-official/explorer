@@ -31,7 +31,7 @@ func main() {
 	e.GET("/api/account/:id/txs", controller2.GetAccountTxs)
 
 	// search
-	//e.GET("/api/search/:id", controller.GetSearch)
+	e.GET("/api/search/:id", controller2.GetSearch)
 
 	// applyIOST
 	e.POST("/api/sendSMS", controller2.SendSMS)
