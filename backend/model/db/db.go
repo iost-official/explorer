@@ -5,8 +5,6 @@ import (
 	"github.com/iost-official/explorer/backend/util/transport"
 )
 
-const Db = "explorer"
-
 func GetDb() (*mgo.Database, error) {
 	mongoClient, err := transport.GetMongoClient(MongoLink)
 	if err != nil {

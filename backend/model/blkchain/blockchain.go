@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/iost-official/explorer/backend/model2/blkchain/rpc"
+	"github.com/iost-official/explorer/backend/model/blkchain/rpc"
 	"github.com/iost-official/explorer/backend/util/transport"
 )
 

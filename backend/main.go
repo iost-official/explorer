@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/iost-official/explorer/backend/controller2"
+	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
 	"github.com/labstack/echo"
 )
@@ -13,37 +13,37 @@ func main() {
 	e.Use(middleware.CorsHeader)
 
 	// index
-	e.GET("/api/market", controller2.GetMarket)
-	e.GET("/api/indexBlocks", controller2.GetIndexBlocks)
-	e.GET("/api/indexTxns", controller2.GetIndexTxns)
+	e.GET("/api/market", controller.GetMarket)
+	e.GET("/api/indexBlocks", controller.GetIndexBlocks)
+	e.GET("/api/indexTxns", controller.GetIndexTxns)
 
 	// blocks
-	e.GET("/api/blocks", controller2.GetBlocks)
-	e.GET("/api/block/:id", controller2.GetBlockDetail)
+	e.GET("/api/blocks", controller.GetBlocks)
+	e.GET("/api/block/:id", controller.GetBlockDetail)
 
 	// transactions
-	e.GET("/api/txs", controller2.GetTxs)
-	e.GET("/api/tx/:id", controller2.GetTxnDetail)
+	e.GET("/api/txs", controller.GetTxs)
+	e.GET("/api/tx/:id", controller.GetTxnDetail)
 
 	// accounts
-	e.GET("/api/accounts", controller2.GetAccounts)
-	e.GET("/api/account/:id", controller2.GetAccountDetail)
-	e.GET("/api/account/:id/txs", controller2.GetAccountTxs)
+	e.GET("/api/accounts", controller.GetAccounts)
+	e.GET("/api/account/:id", controller.GetAccountDetail)
+	e.GET("/api/account/:id/txs", controller.GetAccountTxs)
 
 	// search
-	e.GET("/api/search/:id", controller2.GetSearch)
+	e.GET("/api/search/:id", controller.GetSearch)
 
 	// applyIOST
-	e.POST("/api/sendSMS", controller2.SendSMS)
-	//e.POST("/api/applyIOST", controller2.ApplyIOST)
+	e.POST("/api/sendSMS", controller.SendSMS)
+	//e.POST("/api/applyIOST", controller.ApplyIOST)
 
 	//e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
 
 	// mail
-	e.POST("/api/feedback", controller2.SendMail)
+	e.POST("/api/feedback", controller.SendMail)
 
 	// Test api
-	e.GET("/api/test", controller2.TestPage)
+	e.GET("/api/test", controller.TestPage)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

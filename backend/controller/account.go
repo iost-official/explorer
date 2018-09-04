@@ -1,67 +1,33 @@
 package controller
 
 import (
-	"bytes"
-	"encoding/hex"
-	"errors"
-	"log"
-	"net/http"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
-
-	"github.com/iost-official/explorer/backend/model"
-	"github.com/iost-official/explorer/backend/model/blockchain"
 	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/explorer/backend/util/session"
-	"github.com/iost-official/prototype/common"
 	"github.com/labstack/echo"
-)
-
-const (
-	AccountEachPage = 25
-	AccountMaxPage  = 20
-	GCAPVerifyUrl   = "https://www.google.com/recaptcha/api/siteverify"
-	GCAPSecretKey   = "6Lc1vF8UAAAAAGv1XihAK4XygBMn3UobipWMqBym"
+	"net/http"
+	"strconv"
 )
 
 type AccountsOutput struct {
-	AccountList []*db.Account `json:"account_list"`
+	AccountList []*db.Account `json:"accountList"`
 	Page        int64         `json:"page"`
-	PagePrev    int64         `json:"page_prev"`
-	PageNext    int64         `json:"page_next"`
-	PageLast    int           `json:"page_last"`
-	TotalLen    int           `json:"total_len"`
+	PagePrev    int64         `json:"pagePrev"`
+	PageNext    int64         `json:"pageNext"`
+	PageLast    int           `json:"pageLast"`
+	TotalLen    int           `json:"totalLen"`
 }
 
-type AccountDetailOutput struct {
+/*type AccountDetailOutput struct {
 	Account *db.Account                `json:"account"`
 	TxnList []*model.TransactionOutput `json:"txn_list"`
 	TxnLen  int64                      `json:"txn_len"`
-}
+}*/
 
 type AccountTxs struct {
-	Address  string                     `json:"address"`
-	TxnList  []*model.TransactionOutput `json:"txn_list"`
-	TxnLen   int64                      `json:"txn_len"`
-	PageLast int64                      `json:"page_last"`
+	Address  string       `json:"address"`
+	TxnList  []*db.JsonFlatTx `json:"txnList"`
+	TxnLen   int64        `json:"txnLen"`
+	PageLast int64        `json:"pageLast"`
 }
-
-type GCAPResponse struct {
-	Success     bool   `json:"success"`
-	ChallengeTs string `json:"challenge_ts"`
-	Hostname    string `json:"hostname"`
-}
-
-var (
-	ErrInvalidInput     = errors.New("invalid input")
-	ErrMobileVerfiy     = errors.New("mobile verify failed")
-	ErrOutOfRetryTime   = errors.New("out of retry time")
-	ErrOutOfCheckTxHash = errors.New("out of check txHash retry time")
-	RegEmail            = regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
-	gcapHttpClient      *http.Client
-)
 
 func init() {
 	gcapHttpClient = &http.Client{
@@ -87,7 +53,7 @@ func GetAccounts(c echo.Context) error {
 
 	accountTotalLen, err := db.GetAccountsTotalLen()
 	if err != nil {
-		log.Println("GetAccounts totalPage error:", err)
+		return err
 	}
 
 	var lastPage int
@@ -110,23 +76,19 @@ func GetAccounts(c echo.Context) error {
 		TotalLen:    accountTotalLen,
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, output)
+	return c.JSON(http.StatusOK, FormatResponse(output))
 }
 
 func GetAccountDetail(c echo.Context) error {
+	// TODO 实时获取数据
 	address := c.Param("id")
-	if address == "" {
-		return nil
-	}
 
 	account, err := db.GetAccountByAddress(address)
 	if err != nil {
 		return err
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, account)
+	return c.JSON(http.StatusOK, FormatResponse(account))
 }
 
 func GetAccountTxs(c echo.Context) error {
@@ -153,13 +115,8 @@ func GetAccountTxs(c echo.Context) error {
 		return err
 	}
 
-	var txnOutputList []*model.TransactionOutput
-	for _, txn := range txnList {
-		txn.Code = ""
-		txnOutputList = append(txnOutputList, model.GenerateTxnOutput(txn))
-	}
 
-	totalLen, _ := db.GetTxnDetailLenByAccount(address)
+	totalLen, _ := db.GetFlatTxnLenByAccount(address)
 
 	txsInt64Len := int64(totalLen)
 
@@ -172,16 +129,15 @@ func GetAccountTxs(c echo.Context) error {
 
 	output := &AccountTxs{
 		address,
-		txnOutputList,
+		txnList,
 		int64(totalLen),
 		pageLast,
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, output)
+	return c.JSON(http.StatusOK, FormatResponse(output))
 }
 
-func ApplyIOST(c echo.Context) error {
+/*func ApplyIOST(c echo.Context) error {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 
 	address := c.FormValue("address")
@@ -290,9 +246,9 @@ func ApplyIOST(c echo.Context) error {
 	db.SaveApplyTestIOST(ai)
 
 	return c.JSON(http.StatusOK, &CommOutput{0, txHashEncoded})
-}
+}*/
 
-func ApplyIOSTBenMark(c echo.Context) error {
+/*func ApplyIOSTBenMark(c echo.Context) error {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 
 	address := c.FormValue("address")
@@ -377,4 +333,8 @@ func ApplyIOSTBenMark(c echo.Context) error {
 	db.SaveApplyTestIOST(ai)
 
 	return c.JSON(http.StatusOK, &CommOutput{0, hex.EncodeToString(txHash)})
+}*/
+
+func TestPage(c echo.Context) error {
+	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world"}))
 }

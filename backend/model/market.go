@@ -3,11 +3,11 @@ package model
 import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
+	"github.com/iost-official/explorer/backend/model/cache"
+	"github.com/iost-official/explorer/backend/util"
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/iost-official/explorer/backend/model/cache"
 )
 
 const (
@@ -18,12 +18,12 @@ const (
 
 type MarketInfo struct {
 	Price            string  `json:"price"`
-	Volume24h        int64   `json:"volume_24h"`
-	PercentChange24h float64 `json:"percent_change_24h"`
-	MarketCap        int64   `json:"market_cap"`
-	BtcPrice         string  `json:"btc_price"`
-	EthPrice         string  `json:"eth_price"`
-	LastUpdate       string  `json:"last_update"`
+	Volume24h        int64   `json:"volume24h"`
+	PercentChange24h float64 `json:"percentChange24h"`
+	MarketCap        int64   `json:"marketCap"`
+	BtcPrice         string  `json:"btcPrice"`
+	EthPrice         string  `json:"ethPrice"`
+	LastUpdate       string  `json:"lastUpdate"`
 }
 
 func GetMarketInfo() (*MarketInfo, error) {
@@ -85,7 +85,7 @@ func GetMarketInfo() (*MarketInfo, error) {
 		int64(marketCap),
 		fmt.Sprintf("%.10f", btcPrice),
 		fmt.Sprintf("%.6f", ethPrice),
-		modifyIntToTimeStr(int64(lastUpdate)),
+		util.ModifyIntToTimeStr(int64(lastUpdate)),
 	}
 
 	// set to cache

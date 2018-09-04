@@ -13,6 +13,5 @@ func GetMarket(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, marketInfo)
+	return c.JSON(http.StatusOK, FormatResponse(marketInfo))
 }

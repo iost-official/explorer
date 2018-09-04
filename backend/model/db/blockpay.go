@@ -11,8 +11,9 @@ type BlockPay struct {
 	TotalGasLimit int64   `json:"total_gas_limit"`
 }
 
+
 func GetBlockPayListByHeight(heightList []int64) (map[int64]*BlockPay, error) {
-	blkPC, err := GetCollection("blockpay")
+	blkPC, err := GetCollection(CollectionBlockPay)
 	if err != nil {
 		log.Println("GetBlockPayByHeight get blockpay collection error:", err)
 		return nil, err
@@ -48,7 +49,7 @@ func GetBlockPayByHeight(height int64) (*BlockPay, error) {
 }
 
 func GetTopBlockPay() (*BlockPay, error) {
-	blkPC, err := GetCollection("blockpay")
+	blkPC, err := GetCollection(CollectionBlockPay)
 	if err != nil {
 		log.Println("GetTopBlockPay get blockpay collection error:", err)
 		return nil, err

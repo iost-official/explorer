@@ -1,15 +1,15 @@
 package controller
 
 import (
-	"net/http"
-	"strconv"
-
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
+	"github.com/pkg/errors"
+	"net/http"
+	"strconv"
 )
 
 type SearchOutput struct {
-	Search string `json:"data"`
+	Search string `json:"search"`
 	Type   string `json:"type"`
 	Text   string `json:"text,omitempty"`
 }
@@ -17,7 +17,7 @@ type SearchOutput struct {
 func GetSearch(c echo.Context) error {
 	search := c.Param("id")
 	if search == "" {
-		return nil
+		return errors.New("Nothing to search")
 	}
 
 	output := &SearchOutput{
@@ -34,10 +34,10 @@ func GetSearch(c echo.Context) error {
 		output.Type = "tx"
 	}
 
-	blkHash, _ := db.GetBlockByHash(search)
+	blkHash, _, _ := db.GetBlockByHash(search)
 	if blkHash != nil {
 		output.Type = "block"
-		output.Text = strconv.FormatInt(blkHash.Head.Number, 10)
+		output.Text = strconv.FormatInt(blkHash.BlockNumber, 10)
 	}
 
 	if searchInt64, _ := strconv.ParseInt(search, 10, 64); searchInt64 > 0 {
@@ -46,7 +46,5 @@ func GetSearch(c echo.Context) error {
 			output.Type = "block"
 		}
 	}
-
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, output)
+	return c.JSON(http.StatusOK, FormatResponse(output))
 }

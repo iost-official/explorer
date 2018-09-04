@@ -25,11 +25,6 @@ const (
 	TwilioSmsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + AccountSid + "/Messages.json"
 )
 
-type CommOutput struct {
-	Ret int    `json:"ret"`
-	Msg string `json:"msg"`
-}
-
 var (
 	httpClient     *http.Client
 	verifySeed     = rand.NewSource(time.Now().UnixNano())
@@ -40,6 +35,12 @@ var (
 	ErrMobileApplyExceed = errors.New("mobile applied earlier today")
 )
 
+type GCAPResponse struct {
+	Success     bool   `json:"success"`
+	ChallengeTs string `json:"challengeTs"`
+	Hostname    string `json:"hostname"`
+}
+
 func init() {
 	httpClient = &http.Client{
 		Transport: &http.Transport{
@@ -49,27 +50,26 @@ func init() {
 }
 
 func SendSMS(c echo.Context) error {
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	mobile := c.FormValue("mobile")
 	gcaptcha := c.FormValue("gcaptcha")
 
 	remoteip := c.Request().Header.Get("Iost_Remote_Addr")
 	if !verifyGCAP(gcaptcha, remoteip) {
 		log.Println(ErrGreCaptcha.Error())
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrGreCaptcha.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{1, ErrGreCaptcha.Error()}))
 	}
 
 	if len(mobile) < 10 || mobile[0] != '+' {
-		return c.JSON(http.StatusOK, &CommOutput{2, ErrInvalidInput.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{2, ErrInvalidInput.Error()}))
 	}
 
 	mobileSendNum, err := db.GetApplyNumTodayByMobile(mobile)
 	if err != nil {
-		return c.JSON(http.StatusOK, &CommOutput{3, err.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{3, err.Error()}))
 	}
 
 	if mobileSendNum >= MobileMaxSendTime {
-		return c.JSON(http.StatusOK, &CommOutput{4, ErrMobileApplyExceed.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{4, ErrMobileApplyExceed.Error()}))
 	}
 
 	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
@@ -85,8 +85,7 @@ func SendSMS(c echo.Context) error {
 
 	mobileSendNum++
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, &CommOutput{0, "ok"})
+	return c.JSON(http.StatusOK, FormatResponse(&CommOutput{0, "ok"}))
 }
 
 func sendSMS(number string) (string, error) {

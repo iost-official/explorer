@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"net/http"
-	"strconv"
-
 	"github.com/iost-official/explorer/backend/model"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
+	"net/http"
+	"strconv"
 )
 
 const (
@@ -15,59 +14,82 @@ const (
 )
 
 type TxsOutput struct {
-	TxList   []*model.TransactionOutput `json:"txs_list"`
-	Page     int64                      `json:"page"`
-	PagePrev int64                      `json:"page_prev"`
-	PageNext int64                      `json:"page_next"`
-	PageLast int64                      `json:"page_last"`
-	TotalLen int                        `json:"total_len"`
+	TxList   []*model.TxnDetail `json:"txsList"`
+	Page     int64              `json:"page"`
+	PagePrev int64              `json:"pagePrev"`
+	PageNext int64              `json:"pageNext"`
+	PageLast int64              `json:"pageLast"`
+	TotalLen int                `json:"totalLen"`
 }
 
-type BetTxsOutput struct {
-	From string `json:"from"`
-	Time int64  `json:"time"`
-	Code string `json:"code"`
-}
+func GetTxnDetail(c echo.Context) error {
+	txHash := c.Param("id")
 
-// e.GET("/txs", getBlock)
-func GetTxs(c echo.Context) error {
-	page := c.QueryParam("p")
-	address := c.QueryParam("a")
-	blk := c.QueryParam("b")
-
-	pageInt64, err := strconv.ParseInt(page, 10, 64)
-	if err != nil {
-		pageInt64 = 1
+	if txHash == "" {
+		return nil
 	}
 
-	if pageInt64 <= 0 {
+	txnOut, err := model.GetDetailTxn(txHash)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, FormatResponse(txnOut))
+}
+
+func GetIndexTxns(c echo.Context) error {
+	topTxs, err := model.GetFlatTxnSlicePage(1, 15, -1, "")
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, FormatResponse(topTxs))
+}
+
+func GetTxs(c echo.Context) error {
+	page := c.QueryParam("page")
+	address := c.QueryParam("account")
+	blk := c.QueryParam("block")
+
+	pageInt64, err := strconv.ParseInt(page, 10, 64)
+
+	if err != nil || pageInt64 <= 0 {
 		pageInt64 = 1
 	}
 
 	blockInt64, err := strconv.ParseInt(blk, 10, 64)
+
 	if err != nil {
 		blockInt64 = -1
 	}
 
-	txList, err := model.GetTransaction(pageInt64, TxEachPageNum, blockInt64, address)
+	txList, err := model.GetFlatTxnSlicePage(pageInt64, TxEachPageNum, blockInt64, address)
+
 	if err != nil {
-		return c.String(http.StatusOK, "error: "+err.Error())
+		return err
 	}
 
 	var (
 		lastPage int64
 		totalLen int
 	)
+
 	if address != "" {
-		lastPage, _ = db.GetTxDetailLastPageWithAddress(TxEachPageNum, address)
-		totalLen, _ = db.GetTotalTxnDetailLen(address, -1)
+		// get total page count for specific account
+		lastPage, _ = db.GetFlatTxPageCntWithAddress(TxEachPageNum, address)
+		totalLen, _ = db.GetTotalFlatTxnLen(address, -1)
 	} else if blk != "" {
-		lastPage, _ = db.GetTxDetailLastPageWithBlk(TxEachPageNum, blockInt64)
-		totalLen, _ = db.GetTotalTxnDetailLen("", blockInt64)
+		// get total page count for specific block
+		lastPage, _ = db.GetFlatTxPageCntWithBlk(TxEachPageNum, blockInt64)
+		totalLen, _ = db.GetTotalFlatTxnLen("", blockInt64)
 	} else {
-		lastPage, _ = db.GetTxDetailLastPage(TxEachPageNum)
-		totalLen, _ = db.GetTotalTxnDetailLen("", -1)
+		// get all page count for all transactions
+		lastPage, _ = db.GetFlatTxTotalPageCnt(TxEachPageNum, "", -1)
+		totalLen, _ = db.GetTotalFlatTxnLen("", -1)
 	}
+
 	if lastPage > TxMaxPage {
 		lastPage = TxMaxPage
 	}
@@ -81,23 +103,5 @@ func GetTxs(c echo.Context) error {
 		TotalLen: totalLen,
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, output)
-}
-
-func GetTxsDetail(c echo.Context) error {
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	txHash := c.Param("id")
-	if txHash == "" {
-		return nil
-	}
-
-	txn, err := db.GetTxnDetailByHash(txHash)
-	if err != nil {
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
-	}
-
-	txnOutput := model.GenerateTxnOutput(txn)
-
-	return c.JSON(http.StatusOK, txnOutput)
+	return c.JSON(http.StatusOK, FormatResponse(output))
 }
