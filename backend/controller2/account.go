@@ -3,7 +3,6 @@ package controller2
 import (
 	"github.com/iost-official/explorer/backend/model2/db"
 	"github.com/labstack/echo"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -21,14 +20,14 @@ type AccountsOutput struct {
 	Account *db.Account                `json:"account"`
 	TxnList []*model.TransactionOutput `json:"txn_list"`
 	TxnLen  int64                      `json:"txn_len"`
-}
+}*/
 
 type AccountTxs struct {
-	Address  string                     `json:"address"`
-	TxnList  []*model.TransactionOutput `json:"txn_list"`
-	TxnLen   int64                      `json:"txn_len"`
-	PageLast int64                      `json:"page_last"`
-}*/
+	Address  string       `json:"address"`
+	TxnList  []*db.FlatTx `json:"txn_list"`
+	TxnLen   int64        `json:"txn_len"`
+	PageLast int64        `json:"page_last"`
+}
 
 func init() {
 	gcapHttpClient = &http.Client{
@@ -54,7 +53,7 @@ func GetAccounts(c echo.Context) error {
 
 	accountTotalLen, err := db.GetAccountsTotalLen()
 	if err != nil {
-		log.Println("GetAccounts totalPage error:", err)
+		return err
 	}
 
 	var lastPage int
@@ -77,7 +76,7 @@ func GetAccounts(c echo.Context) error {
 		TotalLen:    accountTotalLen,
 	}
 
-	return c.JSON(http.StatusOK, output)
+	return c.JSON(http.StatusOK, FormatResponse(output))
 }
 
 func GetAccountDetail(c echo.Context) error {
@@ -88,10 +87,10 @@ func GetAccountDetail(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, account)
+	return c.JSON(http.StatusOK, FormatResponse(account))
 }
 
-/*func GetAccountTxs(c echo.Context) error {
+func GetAccountTxs(c echo.Context) error {
 	address := c.Param("id")
 	if address == "" {
 		return nil
@@ -115,11 +114,6 @@ func GetAccountDetail(c echo.Context) error {
 		return err
 	}
 
-	var txnOutputList []*model.TransactionOutput
-	for _, txn := range txnList {
-		txn.Code = ""
-		txnOutputList = append(txnOutputList, model.GenerateTxnOutput(txn))
-	}
 
 	totalLen, _ := db.GetTxnDetailLenByAccount(address)
 
@@ -134,13 +128,13 @@ func GetAccountDetail(c echo.Context) error {
 
 	output := &AccountTxs{
 		address,
-		txnOutputList,
+		txnList,
 		int64(totalLen),
 		pageLast,
 	}
 
-	return c.JSON(http.StatusOK, output)
-}*/
+	return c.JSON(http.StatusOK, FormatResponse(output))
+}
 
 /*func ApplyIOST(c echo.Context) error {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
@@ -340,7 +334,6 @@ func GetAccountDetail(c echo.Context) error {
 	return c.JSON(http.StatusOK, &CommOutput{0, hex.EncodeToString(txHash)})
 }*/
 
-
-func TestPage (c echo.Context) error {
+func TestPage(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world"}))
 }

@@ -220,3 +220,22 @@ func GetAccountTxCount (address string) (int, error) {
 	}}).Count()
 	return num, err
 }
+
+func GetTxnListByAccount(account string, start, limit int) ([]*FlatTx, error) {
+	txnDC, err := GetCollection(CollectionFlatTx)
+	if err != nil {
+		return nil, err
+	}
+	query := bson.M{
+		"$or": []bson.M{
+			bson.M{"from": account},
+			bson.M{"to": account},
+		},
+	}
+	var txnList []*FlatTx
+	err = txnDC.Find(query).Skip(start).Limit(limit).All(&txnList)
+	if err != nil {
+		return nil, err
+	}
+	return txnList, nil
+}

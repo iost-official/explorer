@@ -28,8 +28,7 @@ func main() {
 	// accounts
 	e.GET("/api/accounts", controller2.GetAccounts)
 	e.GET("/api/account/:id", controller2.GetAccountDetail)
-	e.GET("/api/test", controller2.TestPage)
-	//e.GET("/api/account/:id/txs", controller.GetAccountTxs)
+	e.GET("/api/account/:id/txs", controller2.GetAccountTxs)
 
 	// search
 	//e.GET("/api/search/:id", controller.GetSearch)
@@ -42,6 +41,9 @@ func main() {
 
 	// mail
 	e.POST("/api/feedback", controller2.SendMail)
+
+	// Test api
+	e.GET("/api/test", controller2.TestPage)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
