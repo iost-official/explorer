@@ -22,7 +22,7 @@ type TxsOutput struct {
 	TotalLen int                 `json:"totalLen"`
 }
 
-func GetTxnDetailController(c echo.Context) error {
+func GetTxnDetail(c echo.Context) error {
 	txHash := c.Param("id")
 
 	if txHash == "" {
@@ -36,6 +36,16 @@ func GetTxnDetailController(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, FormatResponse(txnOut))
+}
+
+func GetIndexTxns(c echo.Context) error {
+	topTxs, err := model2.GetFlatTxnSlicePage(1, 15, -1, "")
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, FormatResponse(topTxs))
 }
 
 func GetTxs(c echo.Context) error {

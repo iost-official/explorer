@@ -15,7 +15,7 @@ func main() {
 	// index
 	e.GET("/api/market", controller2.GetMarket)
 	e.GET("/api/indexBlocks", controller2.GetIndexBlocks)
-	//e.GET("/api/indexTxns", controller.GetIndexTxns)
+	e.GET("/api/indexTxns", controller2.GetIndexTxns)
 
 	// blocks
 	e.GET("/api/blocks", controller2.GetBlocks)
@@ -23,7 +23,7 @@ func main() {
 
 	// transactions
 	e.GET("/api/txs", controller2.GetTxs)
-	e.GET("/api/tx/:id", controller2.GetTxnDetailController)
+	e.GET("/api/tx/:id", controller2.GetTxnDetail)
 
 	// accounts
 	e.GET("/api/accounts", controller2.GetAccounts)
