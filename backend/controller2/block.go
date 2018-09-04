@@ -74,5 +74,9 @@ func GetBlockDetail(c echo.Context) error {
 
 	blkInfo, err := db.GetBlockByHeight(int64(blkIdInt))
 
+	if nil != err {
+		return c.String(http.StatusOK, "error: "+err.Error())
+	}
+
 	return c.JSON(http.StatusOK, model2.GenerateBlockOutput(blkInfo))
 }

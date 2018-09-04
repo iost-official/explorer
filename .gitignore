@@ -63,3 +63,4 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 backend/task/explorer-task
+backend/explorer

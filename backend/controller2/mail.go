@@ -3,8 +3,8 @@ package controller2
 import (
 	"github.com/iost-official/explorer/backend/util/mail"
 	"github.com/labstack/echo"
-	"net/http"
 	"log"
+	"net/http"
 )
 
 func SendMail(c echo.Context) error {

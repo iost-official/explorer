@@ -5,7 +5,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
-	"github.com/iost-official/explorer/backend/model/blkchain"
+	"github.com/iost-official/explorer/backend/model2/blkchain"
 )
 
 type ActionRaw struct {

@@ -2,15 +2,15 @@ package cron
 
 import (
 	"fmt"
-	"github.com/iost-official/explorer/backend/model/blkchain"
-	"github.com/iost-official/explorer/backend/model2/db"
 	"github.com/globalsign/mgo/bson"
-	"sync"
+	"github.com/iost-official/explorer/backend/model2/blkchain"
+	"github.com/iost-official/explorer/backend/model2/db"
 	"log"
+	"sync"
 	"time"
 )
 
-func UpdateAccounts (wg *sync.WaitGroup) {
+func UpdateAccounts(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	flatTxCol, err := db.GetCollection(db.CollectionFlatTx)
@@ -42,7 +42,7 @@ func UpdateAccounts (wg *sync.WaitGroup) {
 			if err != nil {
 				fmt.Println("Get txcount error", err)
 			}
-			_, err = accountCol.Upsert(bson.M{"address": ft.From}, bson.M{"$set": bson.M{"balance": fromB, "tx_count": fromCount}})   // TODO: check error update
+			_, err = accountCol.Upsert(bson.M{"address": ft.From}, bson.M{"$set": bson.M{"balance": fromB, "tx_count": fromCount}}) // TODO: check error update
 			if err != nil {
 				fmt.Println("Update failed", err)
 			}
@@ -67,4 +67,3 @@ func UpdateAccounts (wg *sync.WaitGroup) {
 
 	}
 }
-
