@@ -115,7 +115,7 @@ func GetAccountTxs(c echo.Context) error {
 	}
 
 
-	totalLen, _ := db.GetTxnDetailLenByAccount(address)
+	totalLen, _ := db.GetFlatTxnLenByAccount(address)
 
 	txsInt64Len := int64(totalLen)
 

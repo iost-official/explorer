@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+/// this struct is used as json to return
 type TxnDetail struct {
 	Hash        string  `json:"tx_hash"`
 	BlockNumber int64   `json:"block_height"`
@@ -19,12 +20,12 @@ type TxnDetail struct {
 	Code        string  `json:"code"`
 }
 
-func GetDetailTxn(txHash string) TxnDetail {
+func GetDetailTxn(txHash string) (TxnDetail, error) {
 	txnC, err := db.GetCollection(db.CollectionFlatTx)
 
 	if err != nil {
 		log.Println("failed To open collection collectionTxs")
-		return TxnDetail{}
+		return TxnDetail{}, err
 	}
 
 	var tx db.FlatTx
@@ -33,11 +34,18 @@ func GetDetailTxn(txHash string) TxnDetail {
 
 	if err != nil {
 		log.Println("transaction not found")
-		return TxnDetail{}
+		return TxnDetail{}, err
 	}
 
+	txnOut := ConvertFlatTx2TxnDetail(&tx)
+
+	return txnOut, nil
+}
+
+/// convert FlatTx to TxnDetail
+func ConvertFlatTx2TxnDetail (tx *db.FlatTx) TxnDetail {
 	txnOut := TxnDetail{
-		Hash:        txHash,
+		Hash:        tx.Hash,
 		BlockNumber: tx.BlockNumber,
 		From:        tx.From,
 		To:          tx.To,
@@ -54,4 +62,37 @@ func GetDetailTxn(txHash string) TxnDetail {
 	txnOut.UTCTime = formatUTCTime(tx.Time / (1000 * 1000 * 1000))
 
 	return txnOut
+}
+
+/// get a list of transactions for a specific page using account and block
+func GetFlatTxnSlicePage(page, eachPageNum, block int64, address string) ([]*TxnDetail, error) {
+	lastPageNum, err := db.GetFlatTxTotalPageCnt(eachPageNum, address, block)
+
+	if lastPageNum == 0 {
+		return []*TxnDetail{}, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if page > lastPageNum {
+		page = lastPageNum
+	}
+
+	start := int((page - 1) * eachPageNum)
+	txnsFlat, err := db.GetFlatTxnSlice(start, int(eachPageNum), int(block), address)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var txnDetailList []*TxnDetail
+
+	for _, v := range txnsFlat {
+		td := ConvertFlatTx2TxnDetail(v)
+		txnDetailList = append(txnDetailList, &td)
+	}
+
+	return txnDetailList, nil
 }

@@ -22,8 +22,8 @@ func main() {
 	e.GET("/api/block/:id", controller2.GetBlockDetail)
 
 	// transactions
-	//e.GET("/api/txs", controller.GetTxs)
-	e.GET("/api/tx/:id", controller2.GetTxsDetail)
+	e.GET("/api/txs", controller2.GetTxs)
+	e.GET("/api/tx/:id", controller2.GetTxnDetailController)
 
 	// accounts
 	e.GET("/api/accounts", controller2.GetAccounts)
