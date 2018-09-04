@@ -15,12 +15,12 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 
 	flatTxCol, err := db.GetCollection(db.CollectionFlatTx)
 	if err != nil {
-		log.Println("Flat Collection get failed")
+		log.Fatalln("Flat Collection get failed")
 	}
 
 	accountCol, err := db.GetCollection(db.CollectionAccount)
 	if err != nil {
-		log.Println("Account collection get failed")
+		log.Fatalln("Account collection get failed")
 	}
 
 	ticker := time.NewTicker(time.Second * 10)
@@ -34,6 +34,7 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 		var txs []db.FlatTx
 		err = flatTxCol.Find(query).Sort("_id").Limit(50).All(&txs)
 		for _, ft := range txs {
+			// ===== update from account
 			fromB, err := blkchain.GetBalance(ft.From)
 			if err != nil {
 				fmt.Println("Get balance failed", err)
@@ -46,6 +47,7 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 			if err != nil {
 				fmt.Println("Update failed", err)
 			}
+			// ====== update to account
 			toB, err := blkchain.GetBalance(ft.To)
 			if err != nil {
 				fmt.Println("Get balance failed", err)
@@ -62,8 +64,9 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 
 		if len(txs) > 0 {
 			err = db.UpdateAccountTaskCursor(txs[len(txs)-1].Id)
-			fmt.Println("Update cursor error: ", err)
+			if err != nil {
+				fmt.Println("Update cursor error: ", err)
+			}
 		}
-
 	}
 }

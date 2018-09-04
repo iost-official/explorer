@@ -215,6 +215,7 @@ func GetAccountTxCount(address string) (int, error) {
 	num, err := ftxCol.Find(bson.M{"$or": []bson.M{
 		bson.M{"from": address},
 		bson.M{"to": address},
+		bson.M{"publisher": address},
 	}}).Count()
 	return num, err
 }

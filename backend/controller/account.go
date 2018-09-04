@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
 	"net/http"
@@ -16,17 +17,11 @@ type AccountsOutput struct {
 	TotalLen    int           `json:"totalLen"`
 }
 
-/*type AccountDetailOutput struct {
-	Account *db.Account                `json:"account"`
-	TxnList []*model.TransactionOutput `json:"txn_list"`
-	TxnLen  int64                      `json:"txn_len"`
-}*/
-
-type AccountTxs struct {
-	Address  string       `json:"address"`
+type AccountTxsOutput struct {
+	Address  string           `json:"address"`
 	TxnList  []*db.JsonFlatTx `json:"txnList"`
-	TxnLen   int64        `json:"txnLen"`
-	PageLast int64        `json:"pageLast"`
+	TxnLen   int64            `json:"txnLen"`
+	PageLast int64            `json:"pageLast"`
 }
 
 func init() {
@@ -94,7 +89,7 @@ func GetAccountDetail(c echo.Context) error {
 func GetAccountTxs(c echo.Context) error {
 	address := c.Param("id")
 	if address == "" {
-		return nil
+		return errors.New("address requied")
 	}
 
 	page := c.QueryParam("p")
@@ -108,13 +103,11 @@ func GetAccountTxs(c echo.Context) error {
 		pageInt = 1
 	}
 
-	eachPage := 25
-	start := (pageInt - 1) * eachPage
-	txnList, err := db.GetTxnListByAccount(address, start, eachPage)
+	start := (pageInt - 1) * AccountEachPage
+	txnList, err := db.GetTxnListByAccount(address, start, AccountEachPage)
 	if err != nil {
 		return err
 	}
-
 
 	totalLen, _ := db.GetFlatTxnLenByAccount(address)
 
@@ -127,7 +120,7 @@ func GetAccountTxs(c echo.Context) error {
 		pageLast = txsInt64Len / 30
 	}
 
-	output := &AccountTxs{
+	output := &AccountTxsOutput{
 		address,
 		txnList,
 		int64(totalLen),

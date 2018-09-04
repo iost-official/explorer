@@ -19,11 +19,7 @@ func GetAccountTaskCursor () (bson.ObjectId, error) {
 	var taskCursor TaskCursor
 	err = col.Find(bson.M{"name": AccountCursorName}).One(&taskCursor)
 	if err != nil {
-		if err.Error() == "not found" {
-			return bson.NewObjectId(), err
-		} else {
-			return bson.NewObjectId(), err
-		}
+		return bson.NewObjectId(), err
 	}
 	return taskCursor.Cursor, nil
 }
