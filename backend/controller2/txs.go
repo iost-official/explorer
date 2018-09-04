@@ -14,12 +14,12 @@ const (
 )
 
 type TxsOutput struct {
-	TxList   []*model2.TxnDetail `json:"txs_list"`
+	TxList   []*model2.TxnDetail `json:"txsList"`
 	Page     int64               `json:"page"`
-	PagePrev int64               `json:"page_prev"`
-	PageNext int64               `json:"page_next"`
-	PageLast int64               `json:"page_last"`
-	TotalLen int                 `json:"total_len"`
+	PagePrev int64               `json:"pagePrev"`
+	PageNext int64               `json:"pageNext"`
+	PageLast int64               `json:"pageLast"`
+	TotalLen int                 `json:"totalLen"`
 }
 
 func GetTxnDetailController(c echo.Context) error {

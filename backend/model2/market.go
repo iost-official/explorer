@@ -17,12 +17,12 @@ const (
 
 type MarketInfo struct {
 	Price            string  `json:"price"`
-	Volume24h        int64   `json:"volume_24h"`
-	PercentChange24h float64 `json:"percent_change_24h"`
-	MarketCap        int64   `json:"market_cap"`
-	BtcPrice         string  `json:"btc_price"`
-	EthPrice         string  `json:"eth_price"`
-	LastUpdate       string  `json:"last_update"`
+	Volume24h        int64   `json:"volume24h"`
+	PercentChange24h float64 `json:"percentChange24h"`
+	MarketCap        int64   `json:"marketCap"`
+	BtcPrice         string  `json:"btcPrice"`
+	EthPrice         string  `json:"ethPrice"`
+	LastUpdate       string  `json:"lastUpdate"`
 }
 
 func GetMarketInfo() (*MarketInfo, error) {

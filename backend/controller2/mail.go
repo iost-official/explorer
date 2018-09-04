@@ -19,5 +19,5 @@ func SendMail(c echo.Context) error {
 		errMsg = err.Error()
 	}
 
-	return c.JSON(http.StatusOK, &CommOutput{0, errMsg})
+	return c.JSON(http.StatusOK, FormatResponse(&CommOutput{0, errMsg}))
 }

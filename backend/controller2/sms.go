@@ -37,7 +37,7 @@ var (
 
 type GCAPResponse struct {
 	Success     bool   `json:"success"`
-	ChallengeTs string `json:"challenge_ts"`
+	ChallengeTs string `json:"challengeTs"`
 	Hostname    string `json:"hostname"`
 }
 
@@ -56,20 +56,20 @@ func SendSMS(c echo.Context) error {
 	remoteip := c.Request().Header.Get("Iost_Remote_Addr")
 	if !verifyGCAP(gcaptcha, remoteip) {
 		log.Println(ErrGreCaptcha.Error())
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrGreCaptcha.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{1, ErrGreCaptcha.Error()}))
 	}
 
 	if len(mobile) < 10 || mobile[0] != '+' {
-		return c.JSON(http.StatusOK, &CommOutput{2, ErrInvalidInput.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{2, ErrInvalidInput.Error()}))
 	}
 
 	mobileSendNum, err := db.GetApplyNumTodayByMobile(mobile)
 	if err != nil {
-		return c.JSON(http.StatusOK, &CommOutput{3, err.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{3, err.Error()}))
 	}
 
 	if mobileSendNum >= MobileMaxSendTime {
-		return c.JSON(http.StatusOK, &CommOutput{4, ErrMobileApplyExceed.Error()})
+		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{4, ErrMobileApplyExceed.Error()}))
 	}
 
 	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
@@ -85,8 +85,7 @@ func SendSMS(c echo.Context) error {
 
 	mobileSendNum++
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, &CommOutput{0, "ok"})
+	return c.JSON(http.StatusOK, FormatResponse(&CommOutput{0, "ok"}))
 }
 
 func sendSMS(number string) (string, error) {

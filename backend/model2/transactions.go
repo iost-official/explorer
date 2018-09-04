@@ -8,15 +8,15 @@ import (
 
 /// this struct is used as json to return
 type TxnDetail struct {
-	Hash        string  `json:"tx_hash"`
-	BlockNumber int64   `json:"block_height"`
+	Hash        string  `json:"txHash"`
+	BlockNumber int64   `json:"blockHeight"`
 	From        string  `json:"from"`
 	To          string  `json:"to"`
 	Amount      float64 `json:"amount"`
-	GasLimit    int64   `json:"gas_limit"`
+	GasLimit    int64   `json:"gasLimit"`
 	GasPrice    int64   `json:"price"`
 	Age         string  `json:"age"`
-	UTCTime     string  `json:"utc_time"`
+	UTCTime     string  `json:"utcTime"`
 	Code        string  `json:"code"`
 }
 

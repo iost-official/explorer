@@ -13,11 +13,11 @@ const (
 )
 
 type BlockListOutput struct {
-	BlockList []*model2.BlockOutput `json:"block_list"`
+	BlockList []*model2.BlockOutput `json:"blockList"`
 	Page      int64                 `json:"page"`
-	PagePrev  int64                 `json:"page_prev"`
-	PageNext  int64                 `json:"page_next"`
-	PageLast  int64                 `json:"page_last"`
+	PagePrev  int64                 `json:"pagePrev"`
+	PageNext  int64                 `json:"pageNext"`
+	PageLast  int64                 `json:"pageLast"`
 }
 
 func GetIndexBlocks(c echo.Context) error {

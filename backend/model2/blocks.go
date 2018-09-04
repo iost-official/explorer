@@ -7,15 +7,15 @@ import (
 
 type BlockOutput struct {
 	Height        int64    `json:"height"`
-	ParentHash    string   `json:"parent_hash"`
-	BlockHash     string   `json:"block_hash"`
+	ParentHash    string   `json:"parentHash"`
+	BlockHash     string   `json:"blockHash"`
 	Witness       string   `json:"witness"`
 	Age           string   `json:"age"`
-	UTCTime       string   `json:"utc_time"`
+	UTCTime       string   `json:"utcTime"`
 	Timestamp     int64    `json:"timestamp"`
-	TxList        []string `json:"tx_list"`
-	TotalGasLimit int64    `json:"total_gas_limit"`
-	AvgGasPrice   float64  `json:"avg_gas_price"`
+	TxList        []string `json:"txList"`
+	TotalGasLimit int64    `json:"totalGasLimit"`
+	AvgGasPrice   float64  `json:"avgGasPrice"`
 }
 
 func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
