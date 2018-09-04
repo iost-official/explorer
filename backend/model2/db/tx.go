@@ -21,8 +21,8 @@ type SignatureRaw struct {
 }
 
 type ReceiptRaw struct {
-	Type    int32  `bson:type`
-	Content string `bson:content`
+	Type    int32  `bson:"type"`
+	Content string `bson:"content"`
 }
 
 type TxReceiptRaw struct {
