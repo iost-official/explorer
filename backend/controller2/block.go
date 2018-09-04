@@ -30,7 +30,7 @@ func GetIndexBlocks(c echo.Context) error {
 		v.TxList = nil
 	}
 
-	return c.JSON(http.StatusOK, top10Blks)
+	return c.JSON(http.StatusOK, FormatResponse(top10Blks))
 }
 
 func GetBlocks(c echo.Context) error {
@@ -47,7 +47,7 @@ func GetBlocks(c echo.Context) error {
 
 	blkList, err := model2.GetBlock(pageInt64, 30)
 	if err != nil {
-		return c.String(http.StatusOK, "error: "+err.Error())
+		return err
 	}
 
 	for _, v := range blkList {
@@ -62,7 +62,7 @@ func GetBlocks(c echo.Context) error {
 		db.GetBlockLastPage(BlockEachPageNum),
 	}
 
-	return c.JSON(http.StatusOK, output)
+	return c.JSON(http.StatusOK, FormatResponse(output))
 }
 
 func GetBlockDetail(c echo.Context) error {
@@ -75,8 +75,8 @@ func GetBlockDetail(c echo.Context) error {
 	blkInfo, err := db.GetBlockByHeight(int64(blkIdInt))
 
 	if nil != err {
-		return c.String(http.StatusOK, "error: "+err.Error())
+		return err
 	}
 
-	return c.JSON(http.StatusOK, model2.GenerateBlockOutput(blkInfo))
+	return c.JSON(http.StatusOK, FormatResponse(model2.GenerateBlockOutput(blkInfo)))
 }

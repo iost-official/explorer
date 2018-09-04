@@ -13,5 +13,5 @@ func GetMarket(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, marketInfo)
+	return c.JSON(http.StatusOK, FormatResponse(marketInfo))
 }
