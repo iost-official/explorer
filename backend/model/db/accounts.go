@@ -187,33 +187,21 @@ func GetAddressNonce(address string) (int64, error) {
 
 func GetFlatTxnLenByAccount(account string) (int, error) {
 	txnDC, err := GetCollection(CollectionFlatTx)
-	if err != nil {
+
+	if err != nil || account == "" {
 		log.Println("GetFlatTxnLenByAccount CollectionFlatTx collection error:", err)
 		return 0, err
 	}
 
-	fromLen, err := txnDC.Find(bson.M{"from": account}).Count()
-	if err != nil {
-		log.Println("GetFlatTxnLenByAccount get from len error:", err)
-
-		return 0, err
-	}
-	toLen, err := txnDC.Find(bson.M{"to": account}).Count()
-	if err != nil {
-		log.Println("GetFlatTxnLenByAccount get to len error:", err)
-
-		return 0, err
+	query := bson.M{
+		"$or": []bson.M{
+			bson.M{"from": account},
+			bson.M{"to": account},
+			bson.M{"publisher": account},
+		},
 	}
 
-	publisherLen, err := txnDC.Find(bson.M{"publisher": account}).Count()
-
-	if err != nil {
-		log.Println("GetFlatTxnLenByAccount get to len error:", err)
-
-		return 0, err
-	}
-
-	return fromLen + toLen + publisherLen, nil
+	return txnDC.Find(query).Count()
 }
 
 func GetAccountTxCount(address string) (int, error) {
@@ -249,8 +237,8 @@ func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error
 	for i, v := range txnList {
 		timestamp := v.Time / time.Second.Nanoseconds()
 		jsonTx[i] = &JsonFlatTx{
-			FlatTx: *v,
-			Age: util.ModifyBlockIntToTimeStr(timestamp),
+			FlatTx:  *v,
+			Age:     util.ModifyBlockIntToTimeStr(timestamp),
 			UTCTime: util.FormatUTCTime(timestamp),
 		}
 	}
@@ -259,6 +247,6 @@ func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error
 
 type JsonFlatTx struct {
 	FlatTx
-	Age           string   `json:"age"`
-	UTCTime       string   `json:"utcTime"`
+	Age     string `json:"age"`
+	UTCTime string `json:"utcTime"`
 }
