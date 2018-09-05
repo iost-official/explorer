@@ -10,9 +10,9 @@ import (
 
 type AccountsOutput struct {
 	AccountList []*db.Account `json:"accountList"`
-	Page        int64         `json:"page"`
-	PagePrev    int64         `json:"pagePrev"`
-	PageNext    int64         `json:"pageNext"`
+	Page        int         `json:"page"`
+	PagePrev    int         `json:"pagePrev"`
+	PageNext    int         `json:"pageNext"`
 	PageLast    int           `json:"pageLast"`
 	TotalLen    int           `json:"totalLen"`
 }
@@ -20,8 +20,8 @@ type AccountsOutput struct {
 type AccountTxsOutput struct {
 	Address  string           `json:"address"`
 	TxnList  []*db.JsonFlatTx `json:"txnList"`
-	TxnLen   int64            `json:"txnLen"`
-	PageLast int64            `json:"pageLast"`
+	TxnLen   int            `json:"txnLen"`
+	PageLast int            `json:"pageLast"`
 }
 
 func init() {
@@ -32,15 +32,29 @@ func init() {
 	}
 }
 
+func calLastPage (total int) int {
+	var lastPage int
+	if total/AccountEachPage == 0 {
+		lastPage = total / AccountEachPage
+	} else {
+		lastPage = total/AccountEachPage + 1
+	}
+
+	if lastPage > AccountMaxPage {  // ?
+		lastPage = AccountMaxPage
+	}
+	return lastPage
+}
+
 func GetAccounts(c echo.Context) error {
 	page := c.QueryParam("p")
 
-	pageInt64, _ := strconv.ParseInt(page, 10, 64)
-	if pageInt64 <= 0 {
-		pageInt64 = 1
+	pageInt, _ := strconv.Atoi(page)
+	if pageInt <= 0 {
+		pageInt = 1
 	}
 
-	start := int((pageInt64 - 1) * AccountEachPage)
+	start := (pageInt - 1) * AccountEachPage
 	accountList, err := db.GetAccounts(start, AccountEachPage)
 	if err != nil {
 		return err
@@ -50,23 +64,13 @@ func GetAccounts(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
-	var lastPage int
-	if accountTotalLen/AccountEachPage == 0 {
-		lastPage = accountTotalLen / AccountEachPage
-	} else {
-		lastPage = accountTotalLen/AccountEachPage + 1
-	}
-
-	if lastPage > AccountMaxPage {
-		lastPage = AccountMaxPage
-	}
+	lastPage := calLastPage(accountTotalLen)
 
 	output := &AccountsOutput{
 		AccountList: accountList,
-		Page:        pageInt64,
-		PagePrev:    pageInt64 - 1,
-		PageNext:    pageInt64 + 1,
+		Page:        pageInt,
+		PagePrev:    pageInt - 1,
+		PageNext:    pageInt + 1,
 		PageLast:    lastPage,
 		TotalLen:    accountTotalLen,
 	}
@@ -95,11 +99,7 @@ func GetAccountTxs(c echo.Context) error {
 	page := c.QueryParam("p")
 
 	pageInt, err := strconv.Atoi(page)
-	if err != nil {
-		pageInt = 1
-	}
-
-	if pageInt <= 0 {
+	if err != nil || pageInt <= 0 {
 		pageInt = 1
 	}
 
@@ -110,20 +110,12 @@ func GetAccountTxs(c echo.Context) error {
 	}
 
 	totalLen, _ := db.GetFlatTxnLenByAccount(address)
-
-	txsInt64Len := int64(totalLen)
-
-	var pageLast int64
-	if txsInt64Len%30 == 0 {
-		pageLast = txsInt64Len / 30
-	} else {
-		pageLast = txsInt64Len / 30
-	}
+	pageLast := calLastPage(totalLen)
 
 	output := &AccountTxsOutput{
 		address,
 		txnList,
-		int64(totalLen),
+		totalLen,
 		pageLast,
 	}
 

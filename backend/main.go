@@ -4,6 +4,7 @@ import (
 	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
 	"github.com/labstack/echo"
+	echoMiddle "github.com/labstack/echo/middleware"
 )
 
 func main() {
@@ -11,6 +12,8 @@ func main() {
 	e.Debug = true
 	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
 	e.Use(middleware.CorsHeader)
+	e.Use(echoMiddle.Recover())
+	e.Use(echoMiddle.Logger())
 
 	// index
 	e.GET("/api/market", controller.GetMarket)

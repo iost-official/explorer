@@ -6,7 +6,22 @@ import (
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
+	"log"
 )
+
+func init() {
+	col, err := GetCollection(CollectionFlatTx)
+	if err != nil {
+		log.Fatalln("Flat collection create index, get collection error", err)
+	}
+	err = col.EnsureIndexKey("from")
+	err = col.EnsureIndexKey("to")
+	err = col.EnsureIndexKey("publisher")
+	err = col.EnsureIndexKey("hash")
+	if err != nil {
+		log.Fatalln("Flat collection create index error", err)
+	}
+}
 
 type ActionRaw struct {
 	Contract   string `bson:"contract" json:"contract"`
@@ -62,9 +77,9 @@ type FlatTx struct {
 	Publisher   string         `bson:"publisher" json:"publisher"`
 	From        string         `bson:"from" json:"from"`
 	To          string         `bson:"to" json:"to"`
-	Amount      float64        `bson:"amount" json:"amount"`      // 转发数量
+	Amount      float64        `bson:"amount" json:"amount"`           // 转发数量
 	ActionIndex int            `bson:"actionIndex" json:"actionIndex"` // action 索引
-	ActionName  string         `bson:"actionName" json:"actionName"`  // action 类型
+	ActionName  string         `bson:"actionName" json:"actionName"`   // action 类型
 }
 
 func RpcGetTxByHash(txHash string) (*Tx, error) {
@@ -99,18 +114,18 @@ func RpcGetTxByHash(txHash string) (*Tx, error) {
 		return nil, err
 	}
 	receiptContentRaws := make([]ReceiptRaw, len(receiptRaw.TxReceiptRaw.Receipts))
-	for i, v := range receiptRaw.TxReceiptRaw.Receipts{
+	for i, v := range receiptRaw.TxReceiptRaw.Receipts {
 		receiptContentRaws[i] = ReceiptRaw{
-			Type: v.Type,
+			Type:    v.Type,
 			Content: v.Content,
 		}
 	}
 	receipt := TxReceiptRaw{
-		GasUsage: receiptRaw.TxReceiptRaw.GasUsage,
+		GasUsage:      receiptRaw.TxReceiptRaw.GasUsage,
 		SuccActionNum: receiptRaw.TxReceiptRaw.SuccActionNum,
-		StatusCode: receiptRaw.TxReceiptRaw.Status.Code,
+		StatusCode:    receiptRaw.TxReceiptRaw.Status.Code,
 		StatusMessage: receiptRaw.TxReceiptRaw.Status.Message,
-		Receipts: receiptContentRaws,
+		Receipts:      receiptContentRaws,
 	}
 	return &Tx{
 		Time:       txRaw.Time,
