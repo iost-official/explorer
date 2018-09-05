@@ -23,6 +23,7 @@ func GetFlatTxnSlice(start, limit, block int, address string) ([]*FlatTx, error)
 					"$or": []bson.M{
 						bson.M{"from": address},
 						bson.M{"to": address},
+						bson.M{"publisher": address},
 					},
 				},
 			},
@@ -78,6 +79,7 @@ func GetTotalFlatTxnLen(address string, block int64) (int, error) {
 			"$or": []bson.M{
 				bson.M{"from": address},
 				bson.M{"to": address},
+				bson.M{"publisher": address},
 			},
 		}
 	} else if block >= 0 {
