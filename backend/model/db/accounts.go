@@ -11,7 +11,7 @@ type Account struct {
 	Address string  `json:"address"`
 	Balance float64 `json:"balance"`
 	Percent float64 `json:"percent"`
-	TxCount int     `json:"txCount"`
+	TxCount int     `bson:"tx_count" json:"txCount"`
 }
 
 type ApplyTestIOST struct {
