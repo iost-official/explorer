@@ -204,7 +204,16 @@ func GetFlatTxnLenByAccount(account string) (int, error) {
 
 		return 0, err
 	}
-	return fromLen + toLen, nil
+
+	publisherLen, err := txnDC.Find(bson.M{"publisher": account}).Count()
+
+	if err != nil {
+		log.Println("GetFlatTxnLenByAccount get to len error:", err)
+
+		return 0, err
+	}
+
+	return fromLen + toLen + publisherLen, nil
 }
 
 func GetAccountTxCount(address string) (int, error) {
