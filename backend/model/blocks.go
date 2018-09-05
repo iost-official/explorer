@@ -15,6 +15,7 @@ type BlockOutput struct {
 	UTCTime       string   `json:"utcTime"`
 	Timestamp     int64    `json:"timestamp"`
 	TxList        []string `json:"txList"`
+	Txn           int64    `json:"txn"`
 	TotalGasLimit int64    `json:"totalGasLimit"`
 	AvgGasPrice   float64  `json:"avgGasPrice"`
 }
@@ -47,6 +48,7 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 
 		if nil == err {
 			output.TxList = *txList
+			output.Txn = int64(len(output.TxList))
 		} else {
 			log.Println("get block txn list fail", err)
 		}
