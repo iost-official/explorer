@@ -20,8 +20,8 @@
 
     <div class="container">
       <div class="row explorer-brief">
-        <h4 v-if="totalPage * 25 < 500 " class="pull-left">{{totalLen}} accounts found</h4>
-        <h4 v-else class="pull-left">{{totalLen}} accounts found (showing the last 500 records)</h4>
+        <h4 v-if="accountInfo.pageLast * 25 < 500 " class="pull-left">{{accountInfo.totalLen}} accounts found</h4>
+        <h4 v-else class="pull-left">{{accountInfo.totalLen}} accounts found (showing the last 500 records)</h4>
         <nav aria-label="..." class="pull-right">
           <ul class="pagination">
             <li><a href="/#/accounts" aria-label="First"><span aria-hidden="true">«</span></a></li>
@@ -35,9 +35,9 @@
               </a>
             </li>
 
-            <li><a href="#">page <b>{{page}}</b> of <b>{{totalPage}}</b></a></li>
+            <li><a href="#">page <b>{{page}}</b> of <b>{{accountInfo.pageLast}}</b></a></li>
             <li>
-              <a v-if="page == totalPage" href="javascript:void(0)" aria-label="Next">
+              <a v-if="page == accountInfo.pageLast" href="javascript:void(0)" aria-label="Next">
                 <span aria-hidden="true">></span>
               </a>
               <a v-else :href="'/#/accounts?p=' + (page+1)">
@@ -45,7 +45,7 @@
               </a>
             </li>
             
-            <li><a :href="'/#/accounts?p=' + totalPage" aria-label="Last"><span aria-hidden="true">»</span></a></li>
+            <li><a :href="'/#/accounts?p=' + accountInfo.pageLast" aria-label="Last"><span aria-hidden="true">»</span></a></li>
           </ul>
         </nav>
       </div>
@@ -60,11 +60,11 @@
           </tr>
           </thead>
           <tbody>
-            <tr v-for="(account, index) in accountList">
+            <tr v-for="(account, index) in accountInfo.accountList">
               <td>{{index+1}}</td>
               <td><a :href="'/#/account/' + account.address">{{account.address}}</a></td>
               <td>{{account.balance.toFixed(2)}}</td>
-              <td>{{account.tx_count}}</td>
+              <td>{{account.txCount}}</td>
             </tr>
           </tbody>
         </table>
@@ -75,15 +75,17 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
+
 
   export default {
     name: 'Accounts',
     data() {
       return {
-        accountList: [],
+        // accountList: [],
         page: '',
-        totalPage: '',
-        totalLen: '',
+        // totalPage: '',
+        // totalLen: '',
       }
     },
     methods: {
@@ -94,13 +96,21 @@
           this.page = parseInt(r.query.p)
         }
 
-        axios.get('https://explorer.iost.io/api/accounts?p=' + this.page).then((response) => {
-          this.accountList = response.data.account_list
-          this.totalPage = response.data.page_last
-          this.totalLen = response.data.total_len
-        })
+        this.$store.dispatch('getAccountInfo',this.page)
+
+
+        // axios.get('https://explorer.iost.io/api/accounts?p=' + this.page).then((response) => {
+        //   this.accountList = response.data.account_list
+        //   this.totalPage = response.data.page_last
+        //   this.totalLen = response.data.total_len
+        // })
       }
     },
+
+    computed: {
+      ...mapState(['accountInfo'])
+    },
+
     watch: {
       '$route': function (r) {
         this.fetchData(r)

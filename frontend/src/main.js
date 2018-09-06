@@ -4,6 +4,8 @@ import Vue from 'vue'
 import BootstrapVue from "bootstrap-vue"
 import App from './App'
 import router from './router'
+import store from './store'
+
 // import 'bootstrap/dist/css/bootstrap.min.css'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -15,5 +17,6 @@ new Vue({
   el: '#app',
   router,
   template: '<App/>',
-  components: { App }
+  components: { App },
+  store
 })

@@ -33,16 +33,16 @@
               </a>
             </li>
 
-            <li><a href="#">page <b>{{page}}</b> of <b>{{totalPage}}</b></a></li>
+            <li><a href="#">page <b>{{page}}</b> of <b>{{blockInfo.pageLast}}</b></a></li>
             <li>
-              <a v-if="page == totalPage" href="javascript:void(0)" aria-label="Next">
+              <a v-if="page == blockInfo.pageLast" href="javascript:void(0)" aria-label="Next">
                 <span aria-hidden="true">></span>
               </a>
               <a v-else :href="'/#/blocks?p=' + (page+1)">
                 <span aria-hidden="true">></span>
               </a>
             </li>
-            <li><a :href="'/#/blocks?p=' + totalPage" aria-label="Last"><span aria-hidden="true">»</span></a></li>
+            <li><a :href="'/#/blocks?p=' + blockInfo.pageLast" aria-label="Last"><span aria-hidden="true">»</span></a></li>
           </ul>
         </nav>
       </div>
@@ -59,13 +59,13 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="block in blockList">
+          <tr v-for="block in blockInfo.blockList">
             <td><a :href="'#/block/' + block.height">{{block.height}}</a></td>
             <td>{{block.age}}</td>
             <td>{{block.txn}}</td>
             <td><a :href="'#/account/' + block.witness">{{block.witness}}</a></td>
-            <td>{{block.total_gas_limit}}</td>
-            <td>{{block.avg_gas_price}}</td>
+            <td>{{block.totalGasLimit}}</td>
+            <td>{{block.avgGasPrice}}</td>
           </tr>
 
           </tbody>
@@ -77,14 +77,16 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
+
 
   export default {
     name: "Blocks",
     data() {
       return {
-        blockList: [],
+        // blockList: [],
         page: '',
-        totalPage: '',
+        // totalPage: '',
       }
     },
     methods: {
@@ -95,12 +97,21 @@
           this.page = parseInt(r.query.p)
         }
 
-        axios.get('https://explorer.iost.io/api/blocks?p=' + this.page).then((response) => {
-          this.blockList = response.data.block_list
-          this.totalPage = response.data.page_last
-        })
+        this.$store.dispatch('getBlockInfo',this.page)
+
+        // axios.get('https://explorer.iost.io/api/blocks?p=' + this.page).then((response) => {
+        // // axios.get('http://47.75.223.44:8080/api/blocks?p=' + this.page).then((response) => {
+        //
+        //   this.blockList = response.data.block_list
+        //   this.totalPage = response.data.page_last
+        // })
       }
     },
+
+    computed: {
+      ...mapState(['blockInfo'])
+    },
+
     watch: {
       '$route': function (r) {
         this.fetchData(r)

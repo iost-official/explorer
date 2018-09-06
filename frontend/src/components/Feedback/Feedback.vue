@@ -74,7 +74,8 @@ export default {
 			params.append('email', this.email)
 			params.append('content', this.content)
 
-			axios.post('https://explorer.iost.io/api/feedback', params).then((response) => {
+			// axios.post('https://explorer.iost.io/api/feedback', params).then((response) => {
+			axios.post('http://47.75.223.44:8080/api/feedback', params).then((response) => {
 				swal(
 				  'Feedback success!',
 				  '',

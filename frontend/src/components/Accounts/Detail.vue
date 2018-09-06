@@ -30,7 +30,7 @@
           <tbody>
           <tr>
             <td>Balance:</td>
-            <td>{{account.balance}}</td>
+            <td>{{accountDetail.balance}}</td>
           </tr>
           <tr>
             <td>IOST Value:</td>
@@ -72,14 +72,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="tx in txnList">
-              <td><a :href="'/#/tx/' + tx.tx_hash">{{tx.tx_hash}}...</a></td>
-              <td><a :href="'/#/block/' + tx.block_height">{{tx.block_height}}</a></td>
+            <tr v-for="tx in accountTxnInfo.txnList">
+              <td><a :href="'/#/tx/' + tx.hash">{{tx.hash}}...</a></td>
+              <td><a :href="'/#/block/' + tx.blockNumber">{{tx.blockNumber}}</a></td>
               <td>{{tx.age}}</td>
               <td><a :href="'/#/account/' + tx.from">{{tx.from}}</a></td>
               <td><a :href="'/#/account/' + tx.to">{{tx.to}}</a></td>
               <td>{{tx.amount}}</td>
-              <td>{{tx.price}}</td>
+              <td>{{tx.gasPrice}}</td>
             </tr>
             </tbody>
           </table>
@@ -111,30 +111,45 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
 
   export default {
     name: "AccountDetail",
     data() {
       return {
         address: this.$route.params.id,
-        account: {},
+        // account: {},
         txnList: {},
         txnLen: '',
         ContractInfo: {},
       }
     },
+
+    computed: {
+      ...mapState(['accountDetail', 'accountTxnInfo'])
+    },
+
     methods: {
+
       fetchData(r) {
         this.address = r.params.id
-        axios.get('https://explorer.iost.io/api/account/' + this.address).then((response) => {
-          this.account = response.data
-        })
-        axios.get('https://explorer.iost.io/api/account/' + this.address + '/txs').then((response) => {
-          this.txnList = response.data.txn_list
-          this.txnLen = response.data.txn_len
-        })
-        axios.get('https://explorer.iost.io/api/tx/' + this.address).then((response) => {
-          if (response.data.ret == 1) {
+
+        this.$store.dispatch('getAccountDetail', this.address)
+
+        this.$store.dispatch('getAccountTxnInfo', this.address)
+
+
+        // axios.get('https://explorer.iost.io/api/account/' + this.address).then((response) => {
+        //   this.account = response.data
+        // })
+        // axios.get('https://explorer.iost.io/api/account/' + this.address + '/txs').then((response) => {
+        //   this.txnList = response.data.txn_list
+        //   this.txnLen = response.data.txn_len
+        // })
+
+        // axios.get('https://explorer.iost.io/api/tx/' + this.address).then((response) => {
+        axios.get('http://47.75.223.44:8080/api/tx/' + this.address).then((response) => {
+          if (response.data.code == 1) {
             $('#CCodeDisplay').hide()
             return
           }
@@ -164,36 +179,15 @@
         })
       }
     },
+
+
+
     watch: {
       '$route': function (r) {
         this.fetchData(r)
       }
     },
     mounted: function () {
-      // axios.get('https://explorer.iost.io/api/tx/' + this.address).then((response) => {
-      //   let blkDate = new Date(response.data.time / 1000 / 1000)
-      //   let time = ''
-      //   time += blkDate.getFullYear() + '-'
-      //   time += (blkDate.getMonth()+1 < 10 ? '0'+(blkDate.getMonth()+1) : blkDate.getMonth()+1) + '-'
-      //   time += blkDate.getDate() + ' ';
-      //   if (blkDate.getHours() < 10) {
-      //     time += '0' + blkDate.getHours()
-      //   } else {
-      //     time += blkDate.getHours()
-      //   }
-      //   if (blkDate.getMinutes() < 10) {
-      //     time += ':0' + blkDate.getMinutes()
-      //   } else {
-      //     time += ':' + blkDate.getMinutes()
-      //   }
-      //   if (blkDate.getSeconds() < 10) {
-      //     time += ':0' + blkDate.getSeconds()
-      //   } else {
-      //     time += ':' + blkDate.getSeconds()
-      //   }
-      //   response.data.time = time
-      //   this.ContractInfo = response.data
-      // })
       $("#txnDetailList a").click(function (e) {
         e.preventDefault()
         $(this).tab('show')

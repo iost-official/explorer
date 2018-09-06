@@ -39,23 +39,23 @@
           </tr>
           <tr>
             <td>TimeStamp:</td>
-            <td>{{age}} ({{utcAge}})</td>
+            <td>{{blockDetail.age}} ({{blockDetail.utcTime}})</td>
           </tr>
           <tr>
             <td>Transactions:</td>
-            <td><a :href="'/#/txs/?b=' + blockHeight">{{txnLen}}</a></td>
+            <td><a :href="'/#/txs/?b=' + blockHeight">{{blockDetail.txn}}</a></td>
           </tr>
           <tr>
             <td>Hash:</td>
-            <td>{{blockHash}}</td>
+            <td>{{blockDetail.blockHash}}</td>
           </tr>
           <tr>
             <td>Parent Hash:</td>
-            <td>{{parentHash}}</td>
+            <td>{{blockDetail.parentHash}}</td>
           </tr>
           <tr>
             <td>Witness:</td>
-            <td><a :href="'/#/account/' + witness">{{witness}}</a></td>
+            <td><a :href="'/#/account/' + blockDetail.witness">{{blockDetail.witness}}</a></td>
           </tr>
           </tbody>
         </table>
@@ -66,35 +66,43 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
 
   export default {
     name: "Block",
     data() {
       return {
-        blockHeight: this.$route.params.id,
-        age: '',
-        utcAge: '',
-        txnLen: '',
-        txnHash: '',
-        parentHash: '',
-        blockHash: '',
-        witness: '',
+        blockHeight: '',
+        // age: '',
+        // utcAge: '',
+        // txnLen: '',
+        // txnHash: '',
+        // parentHash: '',
+        // blockHash: '',
+        // witness: '',
       }
     },
     methods: {
       fetchData(r) {
-        var blockHeight = r.params.id
-        axios.get('https://explorer.iost.io/api/block/' + blockHeight).then((response) => {
-          this.blockHeight = response.data.height
-          this.age = response.data.age
-          this.utcAge = response.data.utc_time
-          this.txnLen = response.data.txn
-          this.parentHash = response.data.parent_hash
-          this.blockHash = response.data.block_hash
-          this.witness = response.data.witness
-        })
+        this.blockHeight = r.params.id
+        this.$store.dispatch('getBlockDetail', this.blockHeight)
+
+        // axios.get('https://explorer.iost.io/api/block/' + this.blockHeight).then((response) => {
+        //   this.blockHeight = response.data.height
+        //   this.age = response.data.age
+        //   this.utcAge = response.data.utc_time
+        //   this.txnLen = response.data.txn
+        //   this.parentHash = response.data.parent_hash
+        //   this.blockHash = response.data.block_hash
+        //   this.witness = response.data.witness
+        // })
       }
     },
+
+    computed: {
+      ...mapState(['blockDetail'])
+    },
+
     watch: {
       '$route': function (r) {
         this.fetchData(r)

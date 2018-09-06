@@ -1,50 +1,56 @@
 <template>
   <div class="marketInfo">
-    <p>$ {{ price }}</p>
-    <p>{{btcPrice}} BTC / {{ethPrice}} ETH</p>
-    <p><span>24h Change:</span><span :class="{up: isUp, down: isDown}">{{ change }}%</span></p>
-    <p><span>24h Volume:</span><span>$ {{ volume }}</span></p>
-    <p><span>Market Cap:</span><span>$ {{ cap }}</span></p>
-    <p>update {{ update }}</p>
+    <p>$ {{ marketInfo.price }}</p>
+    <p>{{marketInfo.btcPrice}} BTC / {{marketInfo.ethPrice}} ETH</p>
+    <!--<p><span>24h Change:</span><span :class="{up: isUp, down: isDown}">{{ marketInfo.percentChange24h }}%</span></p>-->
+    <p><span>24h Change:</span><span :class="[marketInfo.percentChange24h > 0 ? 'up': 'down']">{{ marketInfo.percentChange24h }}%</span></p>
+    <p><span>24h Volume:</span><span>$ {{ marketInfo.volume24h }}</span></p>
+    <p><span>Market Cap:</span><span>$ {{ marketInfo.marketCap }}</span></p>
+    <p>update {{ marketInfo.lastUpdate }}</p>
   </div>
 </template>
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
+
 
   export default {
     name: "marketInfo",
     data() {
       return {
-        price: '',
-        change: '',
-        volume: '',
-        cap: '',
-        btcPrice: '',
-        ethPrice: '',
-        update: '',
-        isUp: false,
-        isDown: false
+
       }
     },
-    mounted: function () {
-      axios.get('https://explorer.iost.io/api/market').then((response) => {
-        var marketInfo = response.data
-        this.price = marketInfo.price
-        this.change = marketInfo.percent_change_24h
-        this.volume = marketInfo.volume_24h
-        this.cap = marketInfo.market_cap
-        this.btcPrice = marketInfo.btc_price
-        this.ethPrice = marketInfo.eth_price
-        this.update = marketInfo.last_update
-        if (this.change > 0) {
-          this.isUp = true
-        } else {
-          this.isDown = true
-        }
+    // mounted: function () {
+    //   axios.get('https://explorer.iost.io/api/market').then((response) => {
+    //
+    //       var marketInfo = response.data
+    //     console.log(marketInfo)
+    //     this.price = marketInfo.price
+    //     this.change = marketInfo.percent_change_24h
+    //     this.volume = marketInfo.volume_24h
+    //     this.cap = marketInfo.market_cap
+    //     this.btcPrice = marketInfo.btc_price
+    //     this.ethPrice = marketInfo.eth_price
+    //     this.update = marketInfo.last_update
+    //     if (this.change > 0) {
+    //       this.isUp = true
+    //     } else {
+    //       this.isDown = true
+    //     }
+    //
+    //     this.$emit('marketRender', 'done')
+    //   })
+    // }
 
-        this.$emit('marketRender', 'done')
-      })
+
+    computed: {
+      ...mapState(['marketInfo'])
+    },
+
+    mounted () {
+      this.$store.dispatch('getMarketInfo')
     }
   }
 </script>

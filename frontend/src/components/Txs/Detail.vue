@@ -39,35 +39,35 @@
           </tr>
           <tr>
             <td style="min-width: 110px;">Block Height:</td>
-            <td><a :href="'/#/block/' + blockHeight">{{blockHeight}}</a></td>
+            <td><a :href="'/#/block/' + txnDetail.blockHeight">{{txnDetail.blockHeight}}</a></td>
           </tr>
           <tr>
             <td>TimeStamp:</td>
-            <td>{{age}}({{utcTime}})</td>
+            <td>{{txnDetail.age}}({{txnDetail.utcTime}})</td>
           </tr>
           <tr>
             <td>From:</td>
-            <td><a :href="'/#/account/' + from">{{from}}</a></td>
+            <td><a :href="'/#/account/' + txnDetail.from">{{txnDetail.from}}</a></td>
           </tr>
           <tr>
             <td>To:</td>
-            <td><a :href="'/#/account/' + to">{{to}}</a></td>
+            <td><a :href="'/#/account/' + txnDetail.to">{{txnDetail.to}}</a></td>
           </tr>
           <tr>
             <td>Value:</td>
-            <td>{{amount}} IOST</td>
+            <td>{{txnDetail.amount}} IOST</td>
           </tr>
           <tr>
             <td>Gas Limit:</td>
-            <td>{{gasLimit}}</td>
+            <td>{{txnDetail.gasLimit}}</td>
           </tr>
           <tr>
             <td>Gas Price:</td>
-            <td>{{price}}</td>
+            <td>{{txnDetail.price}}</td>
           </tr>
           <tr>
             <td>Code</td>
-            <td><pre>{{code}}</pre></td>
+            <td><pre>{{txnDetail.code}}</pre></td>
           </tr>
           </tbody>
         </table>
@@ -78,39 +78,48 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
 
   export default {
     name: "Tx",
     data() {
       return {
-        txHash: this.$route.params.id,
-        blockHeight: '',
-        from: '',
-        to: '',
-        amount: '',
-        gasLimit: '',
-        price: '',
-        age: '',
-        utcTime: '',
-        code: ''
+        txHash: '',
+        // blockHeight: '',
+        // from: '',
+        // to: '',
+        // amount: '',
+        // gasLimit: '',
+        // price: '',
+        // age: '',
+        // utcTime: '',
+        // code: ''
       }
     },
     methods: {
       fetchData(r) {
         this.txHash = r.params.id
-        axios.get('https://explorer.iost.io/api/tx/' + this.txHash).then((response) => {
-          this.blockHeight = response.data.block_height
-          this.from = response.data.from
-          this.to = response.data.to
-          this.amount = response.data.amount
-          this.gasLimit = response.data.gas_limit
-          this.price = response.data.price
-          this.age = response.data.age
-          this.utcTime = response.data.utc_time
-          this.code = response.data.code
-        })
+
+        this.$store.dispatch('getTxnDetail', this.txHash)
+
+        // axios.get('https://explorer.iost.io/api/tx/' + this.txHash).then((response) => {
+        //   this.blockHeight = response.data.block_height
+        //   this.from = response.data.from
+        //   this.to = response.data.to
+        //   this.amount = response.data.amount
+        //   this.gasLimit = response.data.gas_limit
+        //   this.price = response.data.price
+        //   this.age = response.data.age
+        //   this.utcTime = response.data.utc_time
+        //   this.code = response.data.code
+        // })
       }
     },
+
+    computed: {
+      ...mapState(['txnDetail'])
+    },
+
     watch: {
       '$route': function (r) {
         this.fetchData(r)

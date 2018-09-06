@@ -7,12 +7,12 @@
       <a href="/#/txs" class="pull-right">View All</a>
     </div>
     <ul class="list-body txn-list-body">
-      <li v-for="(txn, index) in txnList" class="transaction-detail" :class="'rainbow-border-' + index">
+      <li v-for="(txn, index) in indexTxnList" class="transaction-detail" :class="'rainbow-border-' + index">
         <table class="table">
           <tr>
             <td><i class="fa fa-tasks"></i></td>
             <td>TX#</td>
-            <td><a :href="'#/tx/' + txn.tx_hash">{{txn.tx_hash}}</a></td>
+            <td><a :href="'#/tx/' + txn.txHash">{{txn.txHash}}</a></td>
           </tr>
           <tr>
             <td></td>
@@ -37,18 +37,29 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
+
 
   export default {
     name: "IndexTxns",
     data() {
       return {
-        txnList: [],
+        // indexTxnList: [],
       }
     },
-    mounted: function () {
-      axios.get('https://explorer.iost.io/api/indexTxns').then((response) => {
-        this.txnList = response.data
-      })
+    // mounted: function () {
+    //   axios.get('https://explorer.iost.io/api/indexTxns').then((response) => {
+    //
+    //     this.indexTxnList = response.data
+    //   })
+    // }
+
+    computed: {
+      ...mapState(['indexTxnList'])
+    },
+
+    mounted () {
+      this.$store.dispatch('getIndexTxnList')
     }
   }
 </script>

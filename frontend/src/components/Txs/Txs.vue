@@ -4,12 +4,14 @@
       <div class="container">
         <div class="row">
           <h1 v-if="address != ''" class="pull-left" style="display: block">
-            Transactions <span style="font-size: 16px; color: #999; font-weight: 400">:: Address {{address}}</span></h1>
+            Transactions <span style="font-size: 16px; color: #999; font-weight: 400">:: Address {{address}}</span>
+          </h1>
           <h1 v-else-if="blk != ''" class="pull-left" style="display: block;">
-            Transactions <span style="font-size: 16px; color: #999; font-weight: 400">:: Block {{blk}}</span></h1>
+            Transactions <span style="font-size: 16px; color: #999; font-weight: 400">:: Block {{blk}}</span>
           </h1>
           <h1 v-else class="pull-left" style="display: block">
-            Transactions <span style="font-size: 16px; color: #999; font-weight: 400"></span></h1>
+            Transactions <span style="font-size: 16px; color: #999; font-weight: 400"></span>
+          </h1>
           <ol class="breadcrumb pull-right">
             <li><a href="/#/">Home</a></li>
             <li class="active">Transactions</li>
@@ -26,7 +28,7 @@
 
     <div class="container">
       <div class="row explorer-brief">
-        <h4 class="pull-left">{{totalLen}} transactions found (showing the last 500 records)</h4>
+        <h4 class="pull-left">{{txnInfo.totalLen}} transactions found (showing the last 500 records)</h4>
         <nav aria-label="..." class="pull-right">
           <ul class="pagination">
             <li><a :href="'/#/txs?a=' + address + '&b=' + blk" aria-label="First"><span aria-hidden="true">«</span></a></li>
@@ -40,16 +42,16 @@
               </a>
             </li>
 
-            <li><a href="#">page <b>{{page}}</b> of <b>{{totalPage}}</b></a></li>
+            <li><a href="#">page <b>{{page}}</b> of <b>{{txnInfo.pageLast}}</b></a></li>
             <li>
-              <a v-if="page == totalPage" href="javascript:void(0)" aria-label="Next">
+              <a v-if="page == txnInfo.pageLast" href="javascript:void(0)" aria-label="Next">
                 <span aria-hidden="true">></span>
               </a>
               <a v-else :href="'/#/txs?p=' + (page+1) + '&a=' + address + '&b=' + blk">
                 <span aria-hidden="true">></span>
               </a>
             </li>
-            <li><a :href="'/#/txs?p=' + totalPage + '&a=' + address + '&b=' + blk" aria-label="Last"><span aria-hidden="true">»</span></a></li>
+            <li><a :href="'/#/txs?p=' + txnInfo.pageLast + '&a=' + address + '&b=' + blk" aria-label="Last"><span aria-hidden="true">»</span></a></li>
           </ul>
         </nav>
       </div>
@@ -67,9 +69,9 @@
           </tr>
           </thead>
           <tbody>
-            <tr v-for="tx in txnList">
-              <td><a :href="'/#/tx/' + tx.tx_hash">{{tx.tx_hash}}</a></td>
-              <td><a :href="'/#/block/' + tx.block_height">{{tx.block_height}}</a> </td>
+            <tr v-for="tx in txnInfo.txsList">
+              <td><a :href="'/#/tx/' + tx.txHash">{{tx.txHash}}</a></td>
+              <td><a :href="'/#/block/' + tx.blockHeight">{{tx.blockHeight}}</a> </td>
               <td>{{tx.age}}</td>
               <td>
                 <span v-if="address == tx.from">{{tx.from}}</span>
@@ -91,17 +93,18 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
 
   export default {
     name: "Txs",
     data() {
       return {
-        txnList: [],
+        // txnList: [],
         page: '',
-        totalPage: '',
+        // totalPage: '',
         address: '',
         blk: '',
-        totalLen: '',
+        // totalLen: '',
       }
     },
     methods: {
@@ -120,13 +123,22 @@
         if (this.$route.query.b) {
           this.blk = this.$route.query.b
         }
-        axios.get('https://explorer.iost.io/api/txs?p=' + this.page + '&a=' + this.address + '&b=' + this.blk).then((response) => {
-          this.txnList = response.data.txs_list
-          this.totalPage = response.data.page_last
-          this.totalLen = response.data.total_len
-        })
+
+
+        this.$store.dispatch('getTxnInfo',this.page, this.address, this.blk)
+
+        // axios.get('https://explorer.iost.io/api/txs?p=' + this.page + '&a=' + this.address + '&b=' + this.blk).then((response) => {
+        //   this.txnList = response.data.txs_list
+        //   this.totalPage = response.data.page_last
+        //   this.totalLen = response.data.total_len
+        // })
       }
     },
+
+    computed: {
+      ...mapState(['txnInfo'])
+    },
+
     watch: {
       '$route': function (r) {
         this.fetchData(r)

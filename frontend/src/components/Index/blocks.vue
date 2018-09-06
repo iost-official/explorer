@@ -7,7 +7,7 @@
       <a href="/#/blocks" class="pull-right">View All</a>
     </div>
     <ul class="list-body">
-      <li v-for="block in blockList">
+      <li v-for="block in indexBlockList">
         <div class="list-body-left pull-left">
           <a :href="'#/block/' + block.height">Block {{block.height}}</a>
           <span>{{block.age}}</span>
@@ -24,18 +24,28 @@
 
 <script>
   import axios from 'axios';
+  import { mapState } from 'vuex'
+
 
   export default {
     name: "IndexBlock",
     data() {
       return {
-        blockList: []
+        // indexBlockList: []
       }
     },
-    mounted: function () {
-      axios.get('https://explorer.iost.io/api/indexBlocks').then((response) => {
-        this.blockList = response.data
-      })
+    // mounted: function () {
+    //   axios.get('https://explorer.iost.io/api/indexBlocks').then((response) => {
+    //     this.indexBlockList = response.data
+    //   })
+    // }
+
+    computed: {
+      ...mapState(['indexBlockList'])
+    },
+
+    mounted () {
+      this.$store.dispatch('getIndexBlockList')
     }
   }
 </script>
