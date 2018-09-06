@@ -13,5 +13,6 @@ const (
 	CollectionAccount = "accounts"
 	CollectionTaskCursor = "taskCursors"
 	CollectionBlockPay = "blockPays"
+	CollectionApplyIost = "applyTestIOST"
 )
 

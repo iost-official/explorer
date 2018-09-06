@@ -27,6 +27,12 @@ type AddressNonce struct {
 	Nonce   int64  `json:"nonce"`
 }
 
+type JsonFlatTx struct {
+	FlatTx
+	Age     string `json:"age"`
+	UTCTime string `json:"utcTime"`
+}
+
 func GetAccounts(start, limit int) ([]*Account, error) {
 	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
@@ -123,7 +129,7 @@ func GetAccountTxnLastPage(address string, eachPage int64) (int64, error) {
 }
 
 func SaveApplyTestIOST(at *ApplyTestIOST) error {
-	applyC, err := GetCollection("applyTestIOST")
+	applyC, err := GetCollection(CollectionApplyIost)
 	if err != nil {
 		log.Println("SaveApplyTestIost get collection error:", err)
 		return err
@@ -133,7 +139,7 @@ func SaveApplyTestIOST(at *ApplyTestIOST) error {
 }
 
 func GetApplyNumTodayByMobile(mobile string) (int, error) {
-	applyC, err := GetCollection("applyTestIOST")
+	applyC, err := GetCollection(CollectionApplyIost)
 	if err != nil {
 		log.Println("SaveApplyTestIost get collection error:", err)
 		return 0, err
@@ -245,8 +251,3 @@ func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error
 	return jsonTx, nil
 }
 
-type JsonFlatTx struct {
-	FlatTx
-	Age     string `json:"age"`
-	UTCTime string `json:"utcTime"`
-}
