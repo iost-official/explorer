@@ -38,7 +38,7 @@ func main() {
 
 	// applyIOST
 	e.POST("/api/sendSMS", controller.SendSMS)
-	//e.POST("/api/applyIOST", controller.ApplyIOST)
+	e.POST("/api/applyIOST", controller.ApplyIOST)
 
 	//e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
 

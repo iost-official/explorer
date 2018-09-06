@@ -146,3 +146,8 @@ func GetBalance(address string) (int64, error) {
 
 	return rs.Balance, nil
 }
+
+func TransferIOSTToAddress(address string, amount float64) ([]byte, error) {
+	// TODO need add
+	return []byte{}, nil
+}

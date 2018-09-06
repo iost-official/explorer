@@ -28,7 +28,7 @@ type AddressNonce struct {
 }
 
 func GetAccounts(start, limit int) ([]*Account, error) {
-	accountC, err := GetCollection("accounts")
+	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func GetAccounts(start, limit int) ([]*Account, error) {
 }
 
 func GetAccountByAddress(address string) (*Account, error) {
-	accountC, err := GetCollection("accounts")
+	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func GetAccountByAddress(address string) (*Account, error) {
 }
 
 func GetAccountsTotalLen() (int, error) {
-	accountC, err := GetCollection("accounts")
+	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
 		return 0, err
 	}

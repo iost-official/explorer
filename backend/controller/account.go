@@ -2,10 +2,17 @@ package controller
 
 import (
 	"errors"
+	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/Go-IOS-Protocol/common"
+	"github.com/iost-official/explorer/backend/model/blkchain"
 	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/util/session"
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type AccountsOutput struct {
@@ -79,10 +86,46 @@ func GetAccounts(c echo.Context) error {
 }
 
 func GetAccountDetail(c echo.Context) error {
-	// TODO 实时获取数据
+	// TODO 检查地址格式
 	address := c.Param("id")
+	if address == "" {
+		return errors.New("Address required")
+	}
+
+	col, err := db.GetCollection(db.CollectionAccount)
+	if err != nil {
+		return err
+	}
 
 	account, err := db.GetAccountByAddress(address)
+	// 如果记录不存在创建记录
+	if err != nil && err.Error() == "not found" {
+		account = &db.Account{
+			address,
+			0,
+			0,
+			0,
+		}
+		err = col.Insert(*account)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	toUpdate := bson.M{}
+	txCount, err := db.GetAccountTxCount(address)
+	if err == nil {
+		account.TxCount = txCount
+		toUpdate["tx_count"] = txCount
+	}
+	balance, err := blkchain.GetBalance(address)
+	if err == nil {
+		account.Balance = float64(balance)
+		toUpdate["balance"] = balance
+	}
+	err = col.Update(bson.M{"address": address}, bson.M{"$set": toUpdate})
+
 	if err != nil {
 		return err
 	}
@@ -122,8 +165,7 @@ func GetAccountTxs(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse(output))
 }
 
-/*func ApplyIOST(c echo.Context) error {
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+func ApplyIOST(c echo.Context) error {
 
 	address := c.FormValue("address")
 	email := c.FormValue("email")
@@ -184,8 +226,8 @@ func GetAccountTxs(c echo.Context) error {
 		err           error
 		transferIndex int
 	)
-	for transferIndex < 3 {
-		txHash, err = blockchain.TransferIOSTToAddress(address, 10.1)
+	for transferIndex < 3 { // 尝试 3 次
+		txHash, err = blkchain.TransferIOSTToAddress(address, 10.1)
 		if err != nil {
 			log.Println("ApplyIOST TransferIOSTToAddress error:", err)
 		}
@@ -206,7 +248,7 @@ func GetAccountTxs(c echo.Context) error {
 	var checkIndex int
 	for checkIndex < 30 {
 		time.Sleep(time.Second * 2)
-		if _, err := blockchain.GetTxnByHash(txHash); err != nil {
+		if _, err := blkchain.GetTxByHash(txHashEncoded); err != nil {
 			log.Printf("ApplyIOST GetTxnByHash error: %v, retry...\n", err)
 		} else {
 			log.Println("ApplyIOST blockChain Hash: ", txHashEncoded)
@@ -231,7 +273,7 @@ func GetAccountTxs(c echo.Context) error {
 	db.SaveApplyTestIOST(ai)
 
 	return c.JSON(http.StatusOK, &CommOutput{0, txHashEncoded})
-}*/
+}
 
 /*func ApplyIOSTBenMark(c echo.Context) error {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
