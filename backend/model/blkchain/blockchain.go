@@ -2,9 +2,13 @@ package blkchain
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/iost-official/Go-IOS-Protocol/account"
+	"github.com/iost-official/Go-IOS-Protocol/common"
+	"github.com/iost-official/Go-IOS-Protocol/core/tx"
 	"github.com/iost-official/explorer/backend/model/blkchain/rpc"
 	"github.com/iost-official/explorer/backend/util/transport"
 )
@@ -150,4 +154,47 @@ func GetBalance(address string) (int64, error) {
 func TransferIOSTToAddress(address string, amount float64) ([]byte, error) {
 	// TODO need add
 	return []byte{}, nil
+}
+/*
+ * run example:
+ *
+ *hash, err := Transfer("IOST6Jymdka3EFLAv8954MJ1nBHytNMwBkZfcXevE2PixZHsSrRkbR",
+ * 		"pwd",
+ *		1233,
+ *		100000,
+ *		1,
+ *		100,
+ *		"2Hoo4NAoFsx9oat6qWawHtzqFYcA3VS7BLxPowvKHFPM")
+ */
+func Transfer(from, to string, amount, gasLimit, gasPrice, expiration int64, privKey string) ([]byte, error) {
+	transferData := fmt.Sprintf(`["%s", "%s", %d]`, from, to, amount)
+	action := tx.NewAction(SystemContract, SystemTransferFunc, transferData)
+	actions := []*tx.Action{&action}
+
+	trx := tx.NewTx(actions, [][]byte{}, gasLimit, gasPrice, time.Now().Add(time.Second*time.Duration(expiration)).UnixNano())
+
+	acc, err := account.NewAccount(common.Base58Decode(privKey))
+	if err != nil {
+		return nil, err
+	}
+	stx, err := tx.SignTx(trx, acc)
+
+	conn, err := transport.GetGRPCClient(RPCAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	client := rpc.NewApisClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	resp, err := client.SendRawTx(ctx, &rpc.RawTxReq{
+		Data: stx.Encode(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return []byte(resp.Hash), nil
 }
