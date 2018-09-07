@@ -1,0 +1,20 @@
+{
+  "port": "8080",
+  "mongodb": {
+    "host": "127.0.0.1",
+    "port": "27017",
+    "user": "explorer",
+    "password": "explorder",
+    "db": "explorer"
+  },
+  "googleCaptcha": {
+    "secret": ""
+  },
+  "twilio": {
+    "sid": ""
+  },
+  "transferAccount": {
+    "address": "IOST6Jymdka3EFLAv8954MJ1nBHytNMwBkZfcXevE2PixZHsSrRkbR",
+    "key": "2Hoo4NAoFsx9oat6qWawHtzqFYcA3VS7BLxPowvKHFPM"
+  }
+}

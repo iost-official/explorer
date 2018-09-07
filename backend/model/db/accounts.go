@@ -4,6 +4,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model/blkchain"
 	"github.com/iost-official/explorer/backend/util"
+	"github.com/spf13/viper"
 	"log"
 	"time"
 )
@@ -254,6 +255,7 @@ func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error
 
 
 func TransferIOSTToAddress(address string, amount float64) ([]byte, error) {
-	return blkchain.Transfer("IOST6Jymdka3EFLAv8954MJ1nBHytNMwBkZfcXevE2PixZHsSrRkbR", address, int64(amount), 10000, 1, 100, "2Hoo4NAoFsx9oat6qWawHtzqFYcA3VS7BLxPowvKHFPM")
+	accountInfo := viper.GetStringMapString("transferAccount")
+	return blkchain.Transfer(accountInfo["address"], address, int64(amount), 10000, 1, 100, accountInfo["key"])
 }
 
