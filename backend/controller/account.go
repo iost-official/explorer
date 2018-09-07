@@ -227,7 +227,7 @@ func ApplyIOST(c echo.Context) error {
 		transferIndex int
 	)
 	for transferIndex < 3 { // 尝试 3 次
-		txHash, err = blkchain.TransferIOSTToAddress(address, 10.1)
+		txHash, err = db.TransferIOSTToAddress(address, 10.1)
 		if err != nil {
 			log.Println("ApplyIOST TransferIOSTToAddress error:", err)
 		}
