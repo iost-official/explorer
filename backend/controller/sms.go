@@ -55,21 +55,20 @@ func SendSMS(c echo.Context) error {
 
 	remoteip := c.Request().Header.Get("Iost_Remote_Addr")
 	if !verifyGCAP(gcaptcha, remoteip) {
-		log.Println(ErrGreCaptcha.Error())
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{1, ErrGreCaptcha.Error()}))
+		return ErrGreCaptcha
 	}
 
 	if len(mobile) < 10 || mobile[0] != '+' {
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{2, ErrInvalidInput.Error()}))
+		return ErrInvalidInput
 	}
 
 	mobileSendNum, err := db.GetApplyNumTodayByMobile(mobile)
 	if err != nil {
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{3, err.Error()}))
+		return err
 	}
 
 	if mobileSendNum >= MobileMaxSendTime {
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{4, ErrMobileApplyExceed.Error()}))
+		return ErrMobileApplyExceed
 	}
 
 	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
@@ -103,14 +102,12 @@ func sendSMS(number string) (string, error) {
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		log.Println("sendSMS error:", err)
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("sendSMS error:", err)
 		return "", err
 	}
 

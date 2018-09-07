@@ -177,37 +177,37 @@ func ApplyIOST(c echo.Context) error {
 
 	if sess.SessionID() == "" {
 		log.Println("ApplyIOST nil session id")
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
+		return ErrInvalidInput
 	}
 
 	if address == "" || email == "" || mobile == "" || vc == "" {
 		log.Println("ApplyIOST nil params")
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
+		return ErrInvalidInput
 	}
 
 	if len(address) != 44 && len(address) != 45 {
 		log.Println("ApplyIOST invalid address")
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
+		return ErrInvalidInput
 	}
 
 	if len(mobile) < 10 || mobile[0] != '+' {
 		log.Println("ApplyIOST invalid mobile")
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
+		return ErrInvalidInput
 	}
 
 	if len(vc) != 6 {
 		log.Println("ApplyIOST invalid vc")
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
+		return ErrInvalidInput
 	}
 
 	if len(common.Base58Decode(address)) != 33 {
 		log.Println("ApplyIOST invalid decode address")
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
+		return ErrInvalidInput
 	}
 
 	if !RegEmail.MatchString(email) {
 		log.Println("ApplyIOST invaild regexp email")
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrInvalidInput.Error()})
+		return ErrInvalidInput
 	}
 
 	vcInterface := sess.Get("verification")
@@ -217,7 +217,7 @@ func ApplyIOST(c echo.Context) error {
 
 	if strings.ToLower(vcInSession) != strings.ToLower(vc) {
 		log.Println("ApplyIOST", ErrMobileVerfiy.Error())
-		return c.JSON(http.StatusOK, &CommOutput{2, ErrMobileVerfiy.Error()})
+		return ErrMobileVerfiy
 	}
 
 	// send to blockChain
@@ -239,7 +239,7 @@ func ApplyIOST(c echo.Context) error {
 	}
 	if transferIndex == 3 {
 		log.Println("ApplyIOST TransferIOSTToAddress error:", ErrOutOfRetryTime)
-		return c.JSON(http.StatusOK, &CommOutput{3, ErrOutOfRetryTime.Error()})
+		return ErrOutOfRetryTime
 	}
 
 	txHashEncoded := common.Base58Encode(txHash)
@@ -259,7 +259,7 @@ func ApplyIOST(c echo.Context) error {
 
 	if checkIndex == 30 {
 		log.Println("ApplyIOST checkTxHash error:", ErrOutOfCheckTxHash)
-		return c.JSON(http.StatusOK, &CommOutput{4, ErrOutOfCheckTxHash.Error()})
+		return ErrOutOfCheckTxHash
 	}
 	log.Println("ApplyIOST checkTxHash success.")
 
@@ -272,7 +272,7 @@ func ApplyIOST(c echo.Context) error {
 	}
 	db.SaveApplyTestIOST(ai)
 
-	return c.JSON(http.StatusOK, &CommOutput{0, txHashEncoded})
+	return c.JSON(http.StatusOK, FormatResponse(txHashEncoded))
 }
 
 /*func ApplyIOSTBenMark(c echo.Context) error {
