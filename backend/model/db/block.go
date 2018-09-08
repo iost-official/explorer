@@ -40,23 +40,6 @@ func GetLastBlockNumber() (int64, error) {
 	return block.BlockNumber, nil
 }
 
-func GetTopBlock2() (*Block, error) {
-	collection, err := GetCollection(CollectionBlocks)
-	if err != nil {
-		return nil, err
-	}
-
-	var emptyQuery interface{}
-	var topBlk *Block
-	err = collection.Find(emptyQuery).Sort("-blockNumber").Limit(1).One(&topBlk)
-	if err != nil {
-		log.Println("getTopBlock error:", err)
-		return nil, err
-	}
-
-	return topBlk, nil
-}
-
 func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
 	txnC, err := GetCollection(CollectionTxs)
 	if nil != err {

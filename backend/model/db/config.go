@@ -39,6 +39,13 @@ func InitConfig() {
 	if err != nil {
 		log.Fatalln("Flat collection create index error", err)
 	}
+
+	colTx, err := GetCollection(CollectionTxs)
+	if err != nil {
+		log.Fatalln("Flat collection create index, get collection error", err)
+	}
+	err = colTx.EnsureIndexKey("hash")
+	err = colTx.EnsureIndexKey("blockNumber")
 }
 
 

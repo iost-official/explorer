@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func UpdateBlocks2(ws *sync.WaitGroup) {
+func UpdateBlocks(ws *sync.WaitGroup) {
 	defer ws.Done()
 
 	collection, err := db.GetCollection(db.CollectionBlocks)
@@ -44,7 +44,7 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 
 		topHeightInChain = topBlcHeight
 
-		topBlkInMongo, err := db.GetTopBlock2()
+		topBlkInMongo, err := db.GetTopBlock()
 
 		if err != nil {
 			log.Println("updateBlock get topBlk in mongo error:", err)
