@@ -104,7 +104,7 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 			}
 
 			insertLen++
-			//log.Println("updateBlock insert mongo height:", topHeightInMongo)
+			log.Println("updateBlock insert mongo height:", topHeightInMongo, time.Since(tStart))
 			totalDura += time.Since(tStart)
 		}
 
