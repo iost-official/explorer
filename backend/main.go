@@ -1,13 +1,24 @@
 package main
 
 import (
+	"fmt"
 	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
+	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
 	echoMiddle "github.com/labstack/echo/middleware"
+	"github.com/spf13/viper"
 )
 
 func main() {
+	viper.SetConfigName("config")
+	viper.AddConfigPath("~/go/src/github.com/iost-official/explorer/backend")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil { // Handle errors reading the config file
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+	db.InitConfig()
 	e := echo.New()
 	e.Debug = true
 	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
@@ -38,7 +49,7 @@ func main() {
 
 	// applyIOST
 	e.POST("/api/sendSMS", controller.SendSMS)
-	//e.POST("/api/applyIOST", controller.ApplyIOST)
+	e.POST("/api/applyIOST", controller.ApplyIOST)
 
 	//e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
 
@@ -48,5 +59,5 @@ func main() {
 	// Test api
 	e.GET("/api/test", controller.TestPage)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + viper.GetString("port")))
 }
