@@ -17,9 +17,9 @@ import (
 
 type AccountsOutput struct {
 	AccountList []*db.Account `json:"accountList"`
-	Page        int         `json:"page"`
-	PagePrev    int         `json:"pagePrev"`
-	PageNext    int         `json:"pageNext"`
+	Page        int           `json:"page"`
+	PagePrev    int           `json:"pagePrev"`
+	PageNext    int           `json:"pageNext"`
 	PageLast    int           `json:"pageLast"`
 	TotalLen    int           `json:"totalLen"`
 }
@@ -27,8 +27,8 @@ type AccountsOutput struct {
 type AccountTxsOutput struct {
 	Address  string           `json:"address"`
 	TxnList  []*db.JsonFlatTx `json:"txnList"`
-	TxnLen   int            `json:"txnLen"`
-	PageLast int            `json:"pageLast"`
+	TxnLen   int              `json:"txnLen"`
+	PageLast int              `json:"pageLast"`
 }
 
 func init() {
@@ -39,15 +39,15 @@ func init() {
 	}
 }
 
-func calLastPage (total int) int {
+func calLastPage(total int) int {
 	var lastPage int
-	if total/AccountEachPage == 0 {
-		lastPage = total / AccountEachPage
+	if total%AccountEachPage == 0 {
+		lastPage = total/AccountEachPage
 	} else {
 		lastPage = total/AccountEachPage + 1
 	}
 
-	if lastPage > AccountMaxPage {  // ?
+	if lastPage > AccountMaxPage { // ?
 		lastPage = AccountMaxPage
 	}
 	return lastPage
