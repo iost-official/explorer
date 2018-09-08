@@ -1,24 +1,25 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Head from '@/components/Head'
-import Foot from '@/components/Foot'
-import Index from '@/components/Index/Index'
-import Blocks from '@/components/Blocks/Blocks'
-import Block from '@/components/Blocks/Detail'
-import Txs from '@/components/Txs/Txs'
-import Tx from '@/components/Txs/Detail'
-import Accounts from '@/components/Accounts/Accounts'
-import AccountDetail from '@/components/Accounts/Detail'
-import Search from '@/components/Search/Search'
-import ApplyIOST from '@/components/ApplyIOST/ApplyIOST'
-import ApplyIOSTSuccess from '@/components/ApplyIOST/ApplyIOSTSuccess'
-import LuckyBet from '@/components/Dapp/LuckyBet/LuckyBet'
-import NotFound404 from '@/components/404'
-import Feedback from '@/components/Feedback/Feedback'
+import Head from '../components/Header'
+import Foot from '../components/Footer'
+import Index from '../pages/Home'
+import Blocks from '../pages/Blocks'
+import Block from '../pages/BlockDetail'
+import Txs from '../pages/Txns'
+import Tx from '../pages/TxnsDetail'
+import Accounts from '../pages/Accounts'
+import AccountDetail from '../pages/AccountDetail'
+import Search from '../pages/Search'
+import ApplyIOST from '../pages/ApplyIOST'
+import ApplyIOSTSuccess from '../pages/ApplyIOSTSuccess'
+import LuckyBet from '../pages/LuckyBet'
+import NotFound404 from '../pages/404'
+import Feedback from '../pages/Feedback'
 
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -66,7 +67,7 @@ export default new Router({
       }
     },
     {
-      path: '/accounts',
+      path: '/Accounts',
       name: 'Accounts',
       components: {
         Head: Head,

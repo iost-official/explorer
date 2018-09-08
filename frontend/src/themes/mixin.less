@@ -1,0 +1,61 @@
+
+.text-overflow {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+.clearfix{
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+.box-sizing(@value: border-box){
+  box-sizing: @value;
+}
+
+.box(@value: border-box){
+  box-sizing: @value;
+}
+
+.icon(@file-path, @width, @height){
+  background-image: url('@{file-path}');
+  background-size: cover;
+  display: inline-block;
+  width: @width;
+  height: @height;
+}
+
+.radius(@value: 0.06rem){
+  border-radius: @value;
+}
+
+.shadow(@arguments: 0px 4px 10px 0px rgba(0, 0, 0, .1)){
+  box-shadow: @arguments;
+}
+
+.btn(){
+  background: linear-gradient(#91CBE9, #0091DC);
+  .radius(0.06rem);
+  border: none;
+  color: @white;
+  cursor: pointer;
+}
+
+
+.font-face(@font-family, @file-path, @weight: normal, @style: normal ) {
+  @font-face {
+    font-family: @font-family;
+    font-weight: @weight;
+    font-style: @style;
+    
+    src: url('/fonts/@{file-path}.ttf');
+  }
+}

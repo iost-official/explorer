@@ -8,7 +8,7 @@ export default {
   async getIndexBlockList ({commit}) {
     const { data } = await axios.get(apis.indexBlocks)
     if(data.code == 0){
-      commit(types.INDEXBLOCKLIST, {indexBlockList: data.data})
+      commit(types.INDEXBLOCKLIST, {indexBlockList: data.data.splice(0,5)})
     }
   },
 
@@ -22,7 +22,7 @@ export default {
   async getIndexTxnList ({commit}) {
     const { data } = await axios.get(apis.indexTxns)
     if(data.code == 0){
-      commit(types.INDEXTXNLIST, {indexTxnList: data.data})
+      commit(types.INDEXTXNLIST, {indexTxnList: data.data.splice(0,5)})
     }
   },
 
