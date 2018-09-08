@@ -67,7 +67,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 						log.Println("failed to insert to flatxnC")
 						//	TODO: save those record to database to try again
 					}
-					log.Println("Insert flatxn on block", tx.BlockNumber)
+					//log.Println("Insert flatxn on block", tx.BlockNumber)
 				}
 			}
 
@@ -87,7 +87,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 				log.Println("failed to update txn")
 				//	TODO: save failed record to database to try again
 			}
-			log.Println("Update Txn on block", newTxn.BlockNumber)
+			//log.Println("Update Txn on block", newTxn.BlockNumber)
 		}
 		UpdatingTx = false
 	}
