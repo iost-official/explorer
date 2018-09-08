@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"fmt"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model/blkchain"
@@ -46,7 +45,6 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 		topHeightInChain = topBlcHeight
 
 		topBlkInMongo, err := db.GetTopBlock()
-		fmt.Println("top block", topBlkInMongo)
 
 		if err != nil {
 			log.Println("updateBlock get topBlk in mongo error:", err)
