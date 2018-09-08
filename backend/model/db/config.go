@@ -26,6 +26,7 @@ func InitConfig() {
 	dbConfig := viper.GetStringMapString("mongodb")
 	Db = dbConfig["db"]
 	MongoLink = fmt.Sprintf("mongodb://%s:%s", dbConfig["host"], dbConfig["port"])
+	fmt.Println("mongolink", Db, MongoLink)
 
 	// create index
 	col, err := GetCollection(CollectionFlatTx)
