@@ -64,3 +64,5 @@ fabric.properties
 .idea/httpRequests
 backend/task/explorer-task
 backend/explorer
+
+config.json

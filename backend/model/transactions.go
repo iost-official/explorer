@@ -9,16 +9,18 @@ import (
 
 /// this struct is used as json to return
 type TxnDetail struct {
-	Hash        string  `json:"txHash"`
-	BlockNumber int64   `json:"blockHeight"`
-	From        string  `json:"from"`
-	To          string  `json:"to"`
-	Amount      float64 `json:"amount"`
-	GasLimit    int64   `json:"gasLimit"`
-	GasPrice    int64   `json:"price"`
-	Age         string  `json:"age"`
-	UTCTime     string  `json:"utcTime"`
-	Code        string  `json:"code"`
+	Hash          string  `json:"txHash"`
+	BlockNumber   int64   `json:"blockHeight"`
+	From          string  `json:"from"`
+	To            string  `json:"to"`
+	Amount        float64 `json:"amount"`
+	GasLimit      int64   `json:"gasLimit"`
+	GasPrice      int64   `json:"price"`
+	Age           string  `json:"age"`
+	UTCTime       string  `json:"utcTime"`
+	Code          string  `json:"code"`
+	StatusCode    int32   `json:"statusCode"`
+	StatusMessage string  `json:"statusMessage"`
 }
 
 func GetDetailTxn(txHash string) (TxnDetail, error) {
@@ -44,7 +46,7 @@ func GetDetailTxn(txHash string) (TxnDetail, error) {
 }
 
 /// convert FlatTx to TxnDetail
-func ConvertFlatTx2TxnDetail (tx *db.FlatTx) TxnDetail {
+func ConvertFlatTx2TxnDetail(tx *db.FlatTx) TxnDetail {
 	txnOut := TxnDetail{
 		Hash:        tx.Hash,
 		BlockNumber: tx.BlockNumber,
@@ -61,6 +63,8 @@ func ConvertFlatTx2TxnDetail (tx *db.FlatTx) TxnDetail {
 
 	txnOut.Age = util.ModifyIntToTimeStr(tx.Time / (1000 * 1000 * 1000))
 	txnOut.UTCTime = util.FormatUTCTime(tx.Time / (1000 * 1000 * 1000))
+	txnOut.StatusCode = tx.Receipt.StatusCode
+	txnOut.StatusMessage = tx.Receipt.StatusMessage
 
 	return txnOut
 }
