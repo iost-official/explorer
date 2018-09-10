@@ -54,10 +54,8 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 		} else {
 			topHeightInMongo = topBlkInMongo.BlockNumber + 1
 		}
-		var totalDura time.Duration
 		var insertLen int
 		for ; topHeightInMongo <= topHeightInChain; topHeightInMongo++ {
-			tStart := time.Now()
 			block, txHashes, err := db.GetBlockInfoByNum(topHeightInMongo)
 
 			if nil != err {
@@ -104,11 +102,10 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 			}
 
 			insertLen++
-			log.Println("updateBlock insert mongo height:", topHeightInMongo, time.Since(tStart))
-			totalDura += time.Since(tStart)
+			log.Println("updateBlock insert mongo height:", topHeightInMongo)
 		}
 
-		log.Println("updateBlock inserted len: ======", insertLen, totalDura)
+		log.Println("updateBlock inserted len: ======", insertLen)
 
 	}
 }

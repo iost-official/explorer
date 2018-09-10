@@ -16,9 +16,9 @@ func CheckRestart(ws *sync.WaitGroup) {
 
 	for range ticker.C {
 		// 如果正在更新tx 直接退出
-		if UpdatingTx {
-			continue
-		}
+		//if UpdatingTx {
+		//	continue
+		//}
 		// 判断block 的高度
 		topHeightInChain, err := blkchain.GetCurrentBlockHeight()
 		if err != nil {

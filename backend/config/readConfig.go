@@ -8,8 +8,8 @@ import (
 
 func ReadConfig () {
 	viper.SetConfigName("config")
-	viper.AddConfigPath("~/go/src/github.com/iost-official/explorer/backend/config")
-	viper.AddConfigPath("./config")
+	viper.AddConfigPath("$GOPATH/src/github.com/iost-official/explorer/backend/config")
+	//viper.AddConfigPath("./config")
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))

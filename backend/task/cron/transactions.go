@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-var UpdatingTx = false  // 是否正在更新tx
 
 func UpdateTxns(wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -30,7 +29,6 @@ func UpdateTxns(wg *sync.WaitGroup) {
 	}
 
 	for range ticker.C {
-		UpdatingTx = true
 		step := 300
 		var txns = make([]*db.Tx, 0)
 
@@ -87,8 +85,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 				log.Println("failed to update txn")
 				//	TODO: save failed record to database to try again
 			}
-			//log.Println("Update Txn on block", newTxn.BlockNumber)
+			log.Println("Update Txn on block", newTxn.BlockNumber)
 		}
-		UpdatingTx = false
 	}
 }
