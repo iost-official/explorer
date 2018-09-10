@@ -1,7 +1,7 @@
 <template>
   <div class="blocks-box">
     <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet">Play Lucky Bet !</a>
+      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
     </div>
 
     <div class="blocks-header">
@@ -141,6 +141,7 @@
           margin-top: 21px;
           font-size: 36px;
           line-height: 44px;
+          font-weight: bold;
         }
         .my-pages {
           margin-top: 31px;

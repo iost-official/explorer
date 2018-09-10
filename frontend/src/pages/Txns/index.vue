@@ -1,7 +1,7 @@
 <template>
   <div class="txns-box">
     <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet">Play Lucky Bet !</a>
+      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
     </div>
 
     <div class="txns-header">
@@ -22,20 +22,20 @@
         </div>
         <ul class="pagination my-pages">
           <li>
-            <a :href="'/txs?a=' + address + '&b=' + blk" aria-label="First">
+            <router-link :to="{path:`/txs?a=${address}&b=${blk}`}" aria-label="First">
               <span aria-hidden="true">
                 <img src="../../assets/arrow-douleft.png" alt="">
               </span>
-            </a>
+            </router-link>
           </li>
 
           <li>
             <a v-if="page == 1" href="javascript:void(0)" aria-label="Previous">
               <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
             </a>
-            <a v-else :href="'/txs?p=' + (page-1) + '&a=' + address + '&b=' + blk" aria-label="Previous">
+            <router-link v-else :to="{path:`/txs?p=${(page-1)}&a=${address}&b=${blk}`}" aria-label="Previous">
               <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
-            </a>
+            </router-link>
           </li>
 
           <li><a href="#">page <b>{{page}}</b> of <b>{{txnInfo.pageLast}}</b></a></li>
@@ -43,11 +43,11 @@
             <a v-if="page == txnInfo.pageLast" href="javascript:void(0)" aria-label="Next">
               <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
             </a>
-            <a v-else :href="'/txs?p=' + (page+1) + '&a=' + address + '&b=' + blk">
+            <router-link v-else :to="{path:`/txs?p=${(page+1)}&a=${address}&b=${blk}`}">
               <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
-            </a>
+            </router-link>
           </li>
-          <li><a :href="'/txs?p=' + txnInfo.pageLast + '&a=' + address + '&b=' + blk" aria-label="Last"><span aria-hidden="true"><img src="../../assets/arrow-douright.png" alt=""></span></a></li>
+          <li><router-link :to="{path:`/txs?p=${txnInfo.pageLast}&a=${address}&b=${blk}`}" aria-label="Last"><span aria-hidden="true"><img src="../../assets/arrow-douright.png" alt=""></span></router-link></li>
         </ul>
       </div>
     </div>
@@ -180,35 +180,42 @@
         justify-content: space-between;
         text-align: left;
         .txns-info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           h1 {
             margin: 21px 0 0;
             font-size: 36px;
-            line-height: 44px;
+            line-height: 20px;
+            font-weight: bold;
+
           }
           h4 {
+            margin: 15px 0 0;
             font-size: 14px;
             line-height: 18px;
-            margin: 0;
             color: #2C2E31;
           }
         }
-      }
-      .my-pages {
-        margin: 60px 0 0;
-        li {
-          a {
-            padding: 5px;
-            height: 32px;
-            span {
-              padding: 0;
-              img {
-                width: 20px;
-                height: 20px;
+        .my-pages {
+          margin: 60px 0 0;
+          width: 240px;
+          li {
+            a {
+              padding: 5px;
+              height: 32px;
+              span {
+                padding: 0;
+                img {
+                  width: 20px;
+                  height: 20px;
+                }
               }
             }
           }
         }
       }
+
     }
 
     .txns-list {

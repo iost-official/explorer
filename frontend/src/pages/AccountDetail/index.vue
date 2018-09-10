@@ -1,7 +1,7 @@
 <template>
   <div class="accountDetail-box">
     <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet">Play Lucky Bet !</a>
+      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
     </div>
 
     <div class="accountDetail-header">
@@ -13,7 +13,7 @@
 
 
     <div class="accountDetail-info">
-      <div class="accountDetail-img">
+      <div class="accountDetail-tips">
         <img src="../../assets/iostWhite.png" alt="">
         <div class="accountDetail-height-value">
           <div class="accountDetail-height">
@@ -26,78 +26,70 @@
           </div>
         </div>
       </div>
-      <div class="accountDetail-view">
-        <table class="table account-overview">
-          <tbody>
-          <tr>
-            <td>Transactions:</td>
-            <td>{{txnLen}}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="accountDetail-listDetail">
-        <ul class="nav nav-tabs" id="txnDetailList">
-          <li role="presentation" class="active"><a href="#txns-nav-txns">Transactions</a></li>
-          <li id="CCodeDisplay" role="presentation"><a href="#txns-contract-code">Contract Code</a></li>
-        </ul>
-      </div>
-      <div class="tab-content my-tab-content">
-        <div class="tab-pane active row address-txns-head my-tab-pane" id="txns-nav-txns">
-          <div style="line-height: 80px">
-            <div class="col-md-8">
-              <i aria-hidden="true" class="c333 fa fa-sort-amount-down"></i> Latest 25 txns from a total Of <a :href="'/txs?a=' + address">{{txnLen}} transactions</a>
-            </div>
-            <div class="col-md-4">
-              <a :href="'/txs?a=' + address">View All</a>
+
+      <ul class="my-tab">
+        <li :class="{active: currentTab}" @click="goTab(1)">Transactions</li>
+        <li :class="{active: !currentTab}" @click="goTab(2)">Contract Code</li>
+      </ul>
+
+      <div class="my-tab-content">
+        <div class="my-tab-pane1" v-if="!currentTab">
+          <div class="pane1-header">
+            <p class="pane1-title">{{accountTxnInfo.txnLen}}</p>
+            <div class="pane1-content">
+              <p>
+                Latest 25 txns from a total Of
+                <router-link :to="{path:`/txs?a=${address}`}">{{accountTxnInfo.txnLen}} transactions</router-link>
+              </p>
+              <p>
+                <router-link :to="{path:`/txs?a=${address}`}">View All</router-link>
+              </p>
             </div>
           </div>
 
-
-
           <div class="accountDetail-list">
             <ul class="my-list-header">
+              <li>Height</li>
               <li>TxHash</li>
-              <li>Block</li>
-              <li>Age</li>
               <li>From</li>
               <li>To</li>
+              <li>Age</li>
               <li>Value</li>
               <li>[TxFee]</li>
             </ul>
             <div class="list-wrap">
               <div class="list-body-wrap" v-for="tx in accountTxnInfo.txnList">
                 <ul class="my-list-body">
-                  <li><a :href="'/tx/' + tx.hash">{{tx.hash}}...</a></li>
-                  <li><a :href="'/block/' + tx.blockNumber">{{tx.blockNumber}}</a></li>
+                  <li><router-link :to="{path:`/block/${tx.blockNumber}`}">{{tx.blockNumber}}</router-link></li>
+                  <li><router-link :to="{path:`/tx/${tx.hash}`}">{{tx.hash}}...</router-link></li>
+                  <li><router-link :to="{path:`/account/${tx.from}`}">{{tx.from}}</router-link></li>
+                  <li><router-link :to="{path:`/account/${tx.to}`}">{{tx.to}}</router-link></li>
                   <li>{{tx.age}}</li>
-                  <li><a :href="'/account/' + tx.from">{{tx.from}}</a></li>
-                  <li><a :href="'/account/' + tx.to">{{tx.to}}</a></li>
                   <li>{{tx.amount}}</li>
                   <li>{{tx.gasPrice}}</li>
                 </ul>
               </div>
             </div>
           </div>
+
         </div>
 
-        <div class="tab-pane" id="txns-contract-code">
-          <table class="table ContractCodeTable">
-            <tbody>
-            <tr>
-              <td>Publisher:</td>
-              <td>{{ContractInfo.from}}</td>
-            </tr>
-            <tr>
-              <td>Time:</td>
-              <td>{{ContractInfo.time}}</td>
-            </tr>
-            <tr>
-              <td>Code:</td>
-              <td><pre>{{ContractInfo.code}}</pre></td>
-            </tr>
-            </tbody>
-          </table>
+
+        <div class="my-tab-pane2" v-else>
+          <div class="pane2-tips1">
+            <h4>Publisher:</h4>
+            <!--<p>{{ContractInfo.from}}</p>-->
+            <p>fsdfsdfdffsdfsfasfasfsdf</p>
+          </div>
+          <div class="pane2-tips2">
+            <h4>Time:</h4>
+            <!--<p>{{ContractInfo.time}}</p>-->
+            <p>2018-4-19</p>
+          </div>
+          <div class="pane2-tips3">
+            <h4>Code:</h4>
+            <!--<pre>{{ContractInfo.code}}</pre>-->
+          </div>
         </div>
       </div>
     </div>
@@ -117,6 +109,8 @@
         txnList: {},
         txnLen: '',
         ContractInfo: {},
+        currentTab: false,
+        isShow: false,   // 当接口code返回1时，切换方法不执行
       }
     },
 
@@ -145,10 +139,9 @@
         // axios.get('https://explorer.iost.io/api/tx/' + this.address).then((response) => {
         axios.get('http://47.75.223.44:8080/api/tx/' + this.address).then((response) => {
           if (response.data.code == 1) {
-            $('#CCodeDisplay').hide()
+            this.isShow = true
             return
           }
-          $('#CCodeDisplay').show()
           let blkDate = new Date(response.data.time / 1000 / 1000)
           let time = ''
           time += blkDate.getFullYear() + '-'
@@ -172,10 +165,19 @@
           response.data.time = time
           this.ContractInfo = response.data
         })
+      },
+
+      goTab (num) {
+        if (this.isShow) {
+          return
+        }
+        if (num == 1) {
+          this.currentTab = false
+        } else {
+          this.currentTab = true
+        }
       }
     },
-
-
 
     watch: {
       '$route': function (r) {
@@ -183,10 +185,6 @@
       }
     },
     mounted: function () {
-      $("#txnDetailList a").click(function (e) {
-        e.preventDefault()
-        $(this).tab('show')
-      })
       this.fetchData(this.$route)
     }
   }
@@ -195,6 +193,7 @@
 <style lang="less" rel="stylesheet/less">
   .accountDetail-box {
     padding-top: 90px;
+    padding-bottom: 160px;
     margin: 0 auto;
     background: #F6F7F8;
     .luckyBet-box {
@@ -229,6 +228,8 @@
           color: #273238;
           font-size: 36px;
           line-height: 44px;
+          font-weight: bold;
+
         }
         > p {
           margin: 0;
@@ -237,165 +238,178 @@
         }
       }
     }
+
+
     .accountDetail-info {
       width: 1000px;
       margin: 24px auto 0;
       background: #FFFFFF;
-      height: 805px;
       text-align: left;
-      .accountDetail-img {
+      .accountDetail-tips {
         > img {
           height: 50px;
         }
-        padding: 15px 100px 0 50px;
-        box-shadow: 0 5px 5px 0 rgba(0, 0, 0, .1);
-      }
-      h4 {
-        font-size: 14px;
-        line-height: 18px;
-        color: #2C2E31;
-        padding-bottom: 12px;
-        padding-top: 20px;
-        border-bottom: 1px solid #F1F1F1;
-      }
-      .accountDetail-height-value {
-        display: flex;
-        .accountDetail-height, .accountDetail-value {
-          width: 50%;
+        padding: 15px 100px 60px 50px;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
+        .accountDetail-height-value {
+          display: flex;
+          .accountDetail-height, .accountDetail-value {
+            width: 50%;
+          }
         }
-      }
-      p {
-        font-size: 18px;
-        line-height: 22px;
-        color: #2C2E31;
-        a {
+        h4 {
+          font-size: 14px;
+          line-height: 18px;
+          font-weight: bold;
+          color: #2C2E31;
+          padding-bottom: 12px;
+          padding-top: 20px;
+          border-bottom: 1px solid #F1F1F1;
+        }
+
+        p {
           font-size: 18px;
           line-height: 22px;
           color: #2C2E31;
+          margin: 0;
+          a {
+            font-size: 18px;
+            line-height: 22px;
+            color: #2C2E31;
+          }
+        }
+      }
+
+
+      .my-tab {
+        display: flex;
+        margin: 0;
+        padding: 0;
+        height: 60px;
+        font-size: 14px;
+        color: #2C2E31;
+        font-weight: bold;
+        line-height: 60px;
+        > li {
+          padding-left: 50px;
+          list-style: none;
+          width: 50%;
+          cursor: pointer;
+          &.active {
+            background: #F6F7F8;
+          }
         }
       }
 
       .my-tab-content {
-        .my-tab-pane {
-          margin: 0;
+        .my-tab-pane1 {
+          .pane1-header {
+            padding: 0 50px;
+            .pane1-title {
+              font-size: 18px;
+              line-height: 22px;
+              color: #2C2E31;
+              padding-top: 20px;
+            }
+            .pane1-content {
+              display: flex;
+              justify-content: space-between;
+              height: 50px;
+              font-size: 18px;
+              line-height: 22px;
+              color: #2C2E31;
+              margin-top: 60px;
+            }
+            p {
+              margin-bottom: 0;
+            }
+          }
+
           .accountDetail-list {
-            padding: 0 20px;
             .my-list-header {
               font-size: 16px;
               font-weight: 500;
-              /*> li {*/
-                /*list-style: none;*/
-                /*text-align: left;*/
-                /*color: #333333;*/
-                /*a {*/
-                  /*color: #333333;*/
-                  /*text-decoration: none;*/
-                /*}*/
-                /*&:first-child {*/
-                  /*width: 400px;*/
-                  /*text-overflow: ellipsis;*/
-                  /*overflow: hidden;*/
-                /*}*/
-                /*&:nth-child(2) {*/
-                  /*width: 100px;*/
-
-                /*}*/
-                /*&:nth-child(3) {*/
-                  /*width: 200px;*/
-                /*}*/
-                /*&:nth-child(4) {*/
-                  /*width: 130px;*/
-                /*}*/
-              /*}*/
             }
             .list-wrap {
-              max-height: 400px;
-              overflow: auto;
-              &::-webkit-scrollbar {
-                width: 0;
-              }
               .list-body-wrap {
                 width: 100%;
                 &:hover {
                   box-shadow: 0 8px 30px 0 rgba(0, 0, 0, .15);
                 }
-                .my-list-body {
-                  /*> li {*/
-                    /*list-style: none;*/
-                    /*text-align: left;*/
-                    /*color: #333333;*/
-                    /*a {*/
-                      /*color: #333333;*/
-                      /*text-decoration: none;*/
-                    /*}*/
-                    /*&:first-child {*/
-                      /*width: 400px;*/
-                      /*text-overflow: ellipsis;*/
-                      /*overflow: hidden;*/
-                    /*}*/
-                    /*&:nth-child(2) {*/
-                      /*width: 100px;*/
-
-                    /*}*/
-                    /*&:nth-child(3) {*/
-                      /*width: 200px;*/
-                    /*}*/
-                    /*&:nth-child(4) {*/
-                      /*width: 130px;*/
-                    /*}*/
-                  /*}*/
-                }
-
               }
             }
 
             ul {
               display: flex;
-              padding: 15px 0;
+              padding: 15px 0 15px 20px;
               width: 1000px;
               margin: 0 auto;
               li {
                 list-style: none;
                 text-align: left;
                 color: #333333;
-                a {
-                  color: #333333;
-                  text-decoration: none;
-                }
                 &:first-child {
+                  width: 100px;
+                }
+                &:nth-child(2) {
                   width: 200px;
+                  padding-right: 40px;
                   text-overflow: ellipsis;
                   overflow: hidden;
                 }
-                &:nth-child(2) {
-                  width: 100px;
 
-                }
                 &:nth-child(3) {
-                  width: 100px;
+                  width: 200px;
+                  padding-right: 40px;
+                  text-overflow: ellipsis;
+                  overflow: hidden;
                 }
                 &:nth-child(4) {
-                  width: 150px;
+                  width: 200px;
+                  padding-right: 40px;
                   text-overflow: ellipsis;
                   overflow: hidden;
                 }
                 &:nth-child(5) {
-                  width: 150px;
-                  text-overflow: ellipsis;
-                  overflow: hidden;
+                  width: 100px;
                 }
                 &:nth-child(6) {
-                  width: 130px;
+                  width: 100px;
                 }
                 &:nth-child(7) {
-                  width: 130px;
+                  width: 80px;
                 }
               }
             }
           }
         }
-      }
 
+        .my-tab-pane2 {
+          padding: 0 50px;
+          > div {
+            margin-top: 60px;
+            h4 {
+              font-size: 14px;
+              line-height: 18px;
+              font-weight: bold;
+              color: #2C2E31;
+              padding-bottom: 12px;
+              border-bottom: 1px solid #F1F1F1;
+              margin: 0;
+              &:last-child {
+                padding-bottom: 60px;
+              }
+            }
+
+            p {
+              font-size: 18px;
+              line-height: 22px;
+              color: #2C2E31;
+              margin: 20px 0 0;
+            }
+          }
+        }
+      }
     }
   }
 </style>

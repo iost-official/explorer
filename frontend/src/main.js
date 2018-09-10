@@ -5,6 +5,26 @@ import BootstrapVue from "bootstrap-vue"
 import App from './App'
 import router from './router'
 import store from './store'
+
+//引入nprogress
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css' //这个样式必须引入
+
+// 简单配置
+NProgress.inc(0.2)
+NProgress.configure({ easing: 'ease', speed: 1000, showSpinner: false, minimum:0.1 })
+
+
+router.beforeEach((to,from,next) => {
+  NProgress.start()
+  next()
+})
+
+router.afterEach(() => {
+  NProgress.done()
+})
+
+
 // import './style.less'
 
 // import 'bootstrap/dist/css/bootstrap.min.css'

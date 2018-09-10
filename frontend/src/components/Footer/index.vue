@@ -83,6 +83,9 @@
           > li {
             list-style: none;
             margin-left: 20px;
+            a {
+              color: #FFFFFF;
+            }
             &:first-child {
               margin-left: 0;
             }

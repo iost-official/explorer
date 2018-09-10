@@ -1,7 +1,7 @@
 <template>
   <div class="applyIost-box">
 		<div class="luckyBet-box">
-			<img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet">Play Lucky Bet !</a>
+			<img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
 		</div>
   	<div class="applyIost-header">
       <div class="my-header-container">
@@ -10,92 +10,63 @@
     </div>
 
 
- 	<div class="my-tips-container">
-      <div class="row" id="luckyBetIntro">
-        <div class="alert alert-danger" role="alert">
-          <p>Lucky Bet is operating on the v0.5 Everest testnet of the IOST Blockchain. It provides a way for users to participate and try out the IOST testnet. Everest is still in its early testing phase. In order to launch a stable Mainnet, IOST engineers will be constantly pressure testing, adjusting, fixing and upgrading the testnet. This may result in instability, periods where the testnet is offline, and other abnormalities.</p>
-
-          <p>If you encounter any issues or bugs, please email team@iost.io or report your issue via the following link: <a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a></p>
-          <p>&nbsp;</p>
-          <p>Lucky Bet是基于IOST测试网络开发，目的是为了让大家体验IOST阶段性进展。IOST目前正在早期测试阶段，为了保证将来的主网功能能够如期稳定上线，IOST开发团队随时可能对测试网络进行升级、调整、修复问题和压力测试，可能在某些时刻会造成网络下线、不稳定和其他异常情况发生。</p>
-		  <p>如果你发现了测试网络的任何Bug，欢迎发邮件给team@iost.io，或在以下网址提交给我们改进：<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a></p>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="container" style="margin-top: 30px; text-align: left;">
-      <div class="row">
-      	<div class="col-md-1"></div>
-      	<div class="col-md-8">
-      	  <div class="" role="alert" id="errAlert">{{errMsg}}</div>
-      	  <form class="form-horizontal">
-			<div class="form-group">
-			  <label class="col-sm-3 control-label">Address</label>
-			  <div class="col-sm-9">
-			    <input class="form-control" placeholder="Address" id="applyAddress" v-model.trim()="address">
-			  </div>
+		<div class="my-tips-container">
+			<div class="" id="luckyBetIntro">
+				<p>Lucky Bet is operating on the v0.5 Everest testnet of the IOST Blockchain. It provides a way for users to participate and try out the IOST testnet. Everest is still in its early testing phase. In order to launch a stable Mainnet, IOST engineers will be constantly pressure testing, adjusting, fixing and upgrading the testnet. This may result in instability, periods where the testnet is offline, and other abnormalities.</p>
+				<p></p>
+				<p>If you encounter any issues or bugs, please email team@iost.io or report your issue via the following link:</p>
+				<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>
+				<p></p>
+				<p>Lucky Bet是基于IOST测试网络开发，目的是为了让大家体验IOST阶段性进展。IOST目前正在早期测试阶段，为了保证将来的主网功能能够如期稳定上线，IOST开发团队随时可能对测试网络进行升级、调整、修复问题和压力测试，可能在某些时刻会造成网络下线、不稳定和其他异常情况发生。</p>
+				<p></p>
+				<p>如果你发现了测试网络的任何Bug，欢迎发邮件给team@iost.io，或在以下网址提交给我们改进：</p>
+				<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>
 			</div>
-			<div class="form-group" style="margin-top: -15px;">
-			  <label class="col-sm-3 control-label"></label>
-			  <div class="col-sm-9">
-			    <div class="checkbox">
-				  <label>
-				    <input type="checkbox" id="generateAddressCheck" v-model="checked">
-				    Generate Address
-				  </label>
+		</div>
+
+		<div class="my-container">
+			<div class="" role="alert" id="errAlert">{{errMsg}}</div>
+			<div class="my-group">
+				<p class="">Address</p>
+				<input class="my-input" placeholder="Address" id="applyAddress" v-model.trim()="address">
+			</div>
+			
+			<div class="my-group my-check">
+				<input type="checkbox" id="generateAddressCheck" v-model="checked">
+				<p>Generate Address</p>
+			</div>
+			
+			<div class="my-group">
+				<p class="">Amount</p>
+				<input class="my-input" placeholder="10.1 Test IOST" readonly>
+			</div>
+
+			<div class="my-group">
+				<p>Email</p>
+				<input type="email" class="my-input" placeholder="email" v-model.trim()="email">
+			</div>
+
+			<div class="my-group my-mobile">
+				<p class="">Mobile</p>
+				<input type="tel" id="phone" class="my-input" v-model.trim()="mobile">
+			</div>
+
+			<div class="my-group my-recaptcha">
+				<div class="g-recaptcha" data-sitekey="6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"></div>
+			</div>
+
+			<div class="my-group my-verify">
+				<p class="">Verification Code</p>
+				<div class="input-btn">
+					<input class="my-input" placeholder="Verification code" v-model.trim()="verify">
+					<button type="button" id="sendSmS" class="btn btn-default" @click="sendSmS">{{mobileButtonMsg}}</button>
 				</div>
-			  </div>
 			</div>
-			<div class="form-group">
-			  <label class="col-sm-3 control-label">Amount</label>
-			  <div class="col-sm-9">
-			    <span style="display: block; padding-top: 7px">10.1 Test IOST</span>
-			  </div>
-			</div>
-			<div class="form-group">
-			  <label class="col-sm-3 control-label">Email</label>
-			  <div class="col-sm-9">
-			    <input type="email" class="form-control" placeholder="email" v-model.trim()="email">
-			  </div>
-			</div>
-			<!-- <div class="form-group">
-			  <label class="col-sm-3 control-label">Mobile</label>
-			  <div class="col-sm-9">
-			    <input type="mobile" class="form-control" placeholder="+86" v-model.trim()="mobilexx">
-			  </div>
-			</div> -->
-			<div class="form-group">
-			  <label class="col-sm-3 control-label">Mobile</label>
-			  <div class="col-sm-9">
-			    <input type="tel" id="phone" class="form-control" v-model.trim()="mobile">
-			  </div>
-			</div>
-			<div class="form-group">
-			  <div class="col-sm-offset-3 col-sm-9">
-			    <div class="g-recaptcha" data-sitekey="6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"></div>
-			  </div>
-			</div>
-			<div class="form-group">
-			  <label class="col-sm-3 control-label">Verification Code</label>
-			  <div class="col-sm-7">
-			    <input type="mobile" class="form-control" placeholder="Verification code" v-model.trim()="verify">
-			  </div>
-			  <div class="col-sm-2">
-			  	<button type="button" id="sendSmS" class="btn btn-default" style="width:100%" @click="sendSmS">{{mobileButtonMsg}}</button>
-			  </div>
-			</div>
-			<div class="form-group">
-			  <div class="col-sm-offset-3 col-sm-9">
-			    <button type="button" class="btn btn-primary" id="RequestBuuton" @click="apply">Request</button>
-			  </div>
-			</div>
-	      </form>
-      	</div>
-      	<div class="col-md-3"></div>
-      </div>
-    </div>
-    <div class="modal fade bs-example-modal-sm" id="applyIOSTModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+
+			<button type="button" :class="{active: isOK}" id="RequestBuuton" @click="apply">Request</button>
+		</div>
+
+		<div class="modal fade bs-example-modal-sm" id="applyIOSTModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 	  <div class="modal-dialog modal-sm" role="document">
 	    <div class="modal-content">
 	      <div class="modal-body">
@@ -135,6 +106,17 @@ export default {
 			dott: '',
 		}
 	},
+
+  computed: {
+    isOK () {
+      if (this.address != '' && this.email != '' && this.verify != '' && this.mobile != '') {
+        return true
+      } else {
+        return false
+      }
+    }
+  },
+
 	methods: {
 		randomBytes: function(size) {
 			let rawBytes = new Uint8Array(size)
@@ -167,8 +149,11 @@ export default {
 			params.append('mobile', '+' + code + this.mobile)
 			params.append('gcaptcha', grecap)
 
-			axios.post('https://explorer.iost.io/api/sendSMS', params).then((response) => {
-				var retCode = response.data.ret
+			console.log(params)
+			// axios.post('https://explorer.iost.io/api/sendSMS', params).then((response) => {
+			axios.post('http://47.75.223.44:8080/api/sendSMS', params).then((response) => {
+				// var retCode = response.data.ret
+				var retCode = response.data.code
 				if (retCode != 0) {
 					$('#errAlert').addClass('alert alert-danger')
 					this.errMsg = response.data.msg
@@ -234,10 +219,6 @@ export default {
 				return false
 			}
 
-			// $('#applyIOSTModal').modal({
-			// 	backdrop: 'static',
-			// 	keyboard: false
-			// })
 			swal({
 			  html: '',
 			  title: 'Sending IOST to Your Address...',
@@ -268,16 +249,16 @@ export default {
 				dotNum++
 			}, 1000)
 
-			axios.post('https://explorer.iost.io/api/applyIOST', this.getApplyParam(grecap)).then((response) => {
-				let retCode = response.data.ret
+			axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam(grecap)).then((response) => {
+				let retCode = response.data.code
 				let txHash = response.data.msg
 				if (retCode != 0) {
-					axios.post('https://explorer.iost.io/api/applyIOST', this.getApplyParam()).then((response) => {
-						let retCode = response.data.ret
+					axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
+						let retCode = response.data.code
 						let txHash = response.data.msg
 						if (retCode != 0) {
-							axios.post('https://explorer.iost.io/api/applyIOST', this.getApplyParam()).then((response) => {
-								let retCode = response.data.ret
+							axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
+								let retCode = response.data.code
 								let txHash = response.data.msg
 								if (retCode != 0) {
 									swal.close()
@@ -357,7 +338,7 @@ export default {
 				const pubKey = secp256k1.publicKeyCreate(bytes)
 
 				this.privKey = base58.encode(bytes)
-				this.addressx = base58.encode(pubKey)
+				this.address = base58.encode(pubKey)
 				this.auto = 1
 			}
 		}
@@ -392,7 +373,9 @@ export default {
 <style lang="less" rel="stylesheet/less">
 	.applyIost-box {
 		padding-top: 90px;
+		padding-bottom: 160px;
 		margin: 0 auto;
+		background: #F6F7F8;
 		.luckyBet-box {
 			background: #2C2E31;
 			height: 50px;
@@ -413,6 +396,7 @@ export default {
 		}
 		.applyIost-header {
 			background: #F6F7F8;
+			box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
 			.my-header-container {
 				width: 1000px;
 				height: 85px;
@@ -420,13 +404,164 @@ export default {
 				text-align: left;
 				overflow: hidden;
 				> h1 {
-					margin: 10px 0;
+					margin-top: 21px;
+					font-size: 36px;
+					line-height: 44px;
+					font-weight: bold;
 				}
 			}
 		}
 		.my-tips-container {
 			width: 1000px;
-			margin: 0 auto;
+			margin: 24px auto 0;
+			padding: 30px 50px 38px 50px;
+			background: #F2DEDE;
+			border: 1px solid #EBCCD1;
+			box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
+			p {
+				font-size: 14px;
+				line-height: 22px;
+				color: #A94442;
+			}
+			a {
+				font-size: 14px;
+				line-height: 18px;
+				color: #5EBFD9;
+			}
 		}
+
+		.my-container {
+			width: 1000px;
+			margin: 24px auto 0;
+			text-align: left;
+			background: #FFFFFF;
+			padding: 56px 120px 70px 80px;
+			position: relative;
+			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+			.errMsg {
+				color: #a94442;
+				background-color: #f2dede;
+				border-color: #ebccd1;
+				padding: 15px;
+				margin-bottom: 20px;
+				border-radius: 4px;
+			}
+			.my-group{
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 60px;
+				&:nth-child(2) {
+					margin-bottom: 0;
+				}
+				&.my-check {
+					margin-bottom: 24px;
+					margin-left: 112px;
+					justify-content: normal;
+					> p {
+						margin: 12px 0 0 8px;
+						width: auto;
+						font-size: 13px;
+						line-height: 24px;
+					}
+					> input {
+						margin: 14px 0 0;
+						height: auto;
+					}
+				}
+				&.my-mobile {
+					/*这是脚本添加的类名*/
+					margin-bottom: 12px;
+					.intl-tel-input {
+						display: flex;
+						justify-content: space-between;
+						width: 700px;
+						input {
+							padding-left: 60px;
+						}
+					}
+				}
+				&.my-recaptcha {
+					margin-bottom: 30px;
+					margin-left: 100px;
+				}
+				&.my-verify {
+					.input-btn {
+						display: flex;
+						justify-content: space-between;
+						width: 700px;
+						> input {
+							width: 500px;
+						}
+						> button {
+							width: 196px;
+							border-width: 0;
+							background-color: #F6F7F8;
+							&:hover {
+								border-width: 1px;
+							}
+						}
+					}
+
+				}
+				.my-input {
+					width: 700px;
+					background-color: #F6F7F8;
+					box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+					outline: none;
+					border: 0;
+					padding: 6px 12px;
+					color: #555;
+				}
+				p {
+					margin-bottom: 0;
+					width: 100px;
+					text-align: right;
+					margin-left: -20px;
+					font-size: 14px;
+					line-height: 18px;
+					font-weight: bold;
+				}
+				input {
+					height: 54px;
+				}
+			}
+
+			> button {
+				width: 700px;
+				height: 54px;
+				margin-left: 100px;
+				background-color: rgba(44,46,49,0.5);
+				border: none;
+				color: #FFFFFF;
+				font-weight: bold;
+				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+				&.active {
+					background-color: rgba(44,46,49,1);
+				}
+			}
+
+
+		}
+
+		.d {
+			display: block;
+			width: 100%;
+			height: 34px;
+			padding: 6px 12px;
+			font-size: 14px;
+			line-height: 1.42857143;
+			color: #555;
+			background-color: #fff;
+			background-image: none;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+			box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+			-webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+			-o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+			transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+		}
+
 	}
 </style>

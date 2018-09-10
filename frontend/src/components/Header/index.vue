@@ -1,5 +1,5 @@
 <template>
-  <div class="header-box" :class="{active: currentColor2}">
+  <div class="header-box" :class="{active: currentTheme}">
     <div class="my-container">
       <div class="logo-box">
         <router-link class="logo-link" to="/">
@@ -34,49 +34,41 @@
     data() {
       return {
         currentColor: 0,
-        currentColor2: false
+        currentTheme: false
       }
     },
     watch: {
       '$route' (to) {
         const arr = ['/block','/tx','/account','/applyIOST']
         let arr2 = arr.filter((a, index) => {
-          // console.log(to.path.search(a))
           return to.path.search(a)+1
         })
         let result = arr2.join('')
         if (result == '/block') {
           this.currentColor = 1
+          this.currentTheme = false
         } else if (result == '/tx') {
           this.currentColor = 2
+          this.currentTheme = false
         } else if (result == '/account') {
           this.currentColor = 3
+          this.currentTheme = false
         } else if (result == '/applyIOST') {
           this.currentColor = 4
+          this.currentTheme = false
         } else {
           this.currentColor = 0
+          this.currentTheme = true
         }
       }
     },
     
     created () {
-      if (window.location.pathname.indexOf('block')) {
-        this.currentColor = 1
-      }else if (window.location.pathname.indexOf('tx')) {
-        this.currentColor = 2
-      }else if (window.location.pathname.indexOf('account')) {
-        this.currentColor = 3
-      }else if (window.location.pathname.indexOf('applyIOST?r')) {
-        this.currentColor = 4
-      } else if (window.location.pathname == '/') {
-        this.currentColor2 = true
-        this.currentColor = 0
-      }
-
-      if (window.location.pathname.indexOf('applyIOST?r')) {
+      if (location.pathname.indexOf('applyIOST')+1) {
+        this.currentTheme = false
         this.currentColor = 4
       }
-    }
+    },
   }
 </script>
 
@@ -104,6 +96,7 @@
         position: relative;
         display: flex;
         align-items: center;
+        margin-left: -19px;
         .logo-link{
           > img {
             width: 130px;
@@ -142,8 +135,6 @@
           }
         }
       }
-
-
     }
   }
 </style>

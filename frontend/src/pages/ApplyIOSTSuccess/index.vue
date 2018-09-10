@@ -1,64 +1,44 @@
 <template>
-  <div>
-  	<div class="explorer-header">
-      <div class="container">
-        <div class="row">
-          <h1 class="pull-left" style="display: block">Request</h1>
-          <ol class="breadcrumb pull-right">
-            <li><a href="/#/">Home</a></li>
-            <li class="active">Request</li>
-          </ol>
-        </div>
-      </div>
-    </div>
+  <div class="success-box">
+		<div class="luckyBet-box">
+			<img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
+		</div>
+  	<div class="success-header">
+			<div class="my-header-container">
+				<h1>Request successfully processed</h1>
+			</div>
+		</div>
 
-    <div class="container">
-      <div class="row" id="banner-luckybet">
-        <i class="far fa-calendar-alt"></i> Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-      </div>
-    </div>
+		<div class="success-container1" v-if="privKey != ''">
+			<p class="success-title">Save your Account Info</p>
+			<p class="success-address"><span>Address:</span> {{address}}</p>
+			<p class="success-private"><span>Private Key:</span> {{privKey}}</p>
+			<p class="success-tips">**Do not lose it!** It cannot be recovered if you lose it.</p>
+			<p class="success-tips">**Do not share it!** Your funds will be stolen if you use this private key on a malicious/phishing site.</p>
+		</div>
 
-    <div class="container" style="margin-top: 30px; text-align: left;">
-      <div class="row">
-      	<table class="table apply-iost">
-      	  <thead>
-      	  	<tr>
-		  	  <th colspan="2">Request successfully processed</th>
-      	  	</tr>
-      	  </thead>
-		  <tbody>
-		  	<tr>
-		  		<td>TxHash:</td>
-		  		<td><a :href="'/#/tx/' + txHash" target="_blank">{{txHash}}</a></td>
-		  	</tr>
-		  	<tr>
-		  	  <td>Address:</td>
-		  	  <td>{{address}}</td>
-		  	</tr>
-		  	<tr>
-		  	  <td>Amount:</td>
-		  	  <td>10.1 IOST</td>
-		  	</tr>
-		  	<tr>
-		  	  <td>Email:</td>
-		  	  <td>{{email}}</td>
-		  	</tr>
-		  	<tr>
-		  	  <td>Mobile:</td>
-		  	  <td>{{mobile}}</td>
-		  	</tr>
-		  </tbody>
-		</table>
-      </div>
+    <div class="success-container2">
+			<div class="container2-hash">
+				<h4>TxHash:</h4>
+				<p><router-link :to="{path:`/tx/${txHash}`}" target="_blank">{{txHash}}</router-link></p>
+			</div>
+			<div class="container2-address">
+				<h4>Address:</h4>
+				<p>{{address}}</p>
+			</div>
+			<div class="container2-amount">
+				<h4>Amount:</h4>
+				<p>10.1 IOST</p>
+			</div>
+			<div class="container2-email">
+				<h4>Email:</h4>
+				<p>{{email}}</p>
+			</div>
+			<div class="container2-mobile">
+				<h4>Mobile:</h4>
+				<p>{{mobile}}</p>
+			</div>
 
-      <div class="row applyAddressPrivateKey" v-if="privKey != ''">
-      	<p>Save your Account Info</p>
-      	<div><p class="bg-success center-block"><span>Address:</span> {{address}}</p></div>
-      	<div><p class="bg-primary center-block margin-top:-10px;"><span>Private Key:</span> {{privKey}}</p></div>
-      	<p>**Do not lose it!** It cannot be recovered if you lose it.</p>
-      	<p>**Do not share it!** Your funds will be stolen if you use this private key on a malicious/phishing site.</p>
-      	<p></p>
-      </div>
     </div>
   </div>
 </template>
@@ -84,3 +64,124 @@ export default {
 	}
 }
 </script>
+
+<style lang="less" rel="stylesheet/less">
+	.success-box {
+		padding-top: 90px;
+		padding-bottom: 160px;
+		margin: 0 auto;
+		background: #F6F7F8;
+		.luckyBet-box {
+			background: #2C2E31;
+			height: 50px;
+			line-height: 50px;
+			color: #F6F7F8;
+			font-size: 14px;
+			> img {
+				width: 24px;
+				height: 24px;
+				margin-right: 12px;
+			}
+			a {
+				color: #F6F7F8;
+				font-size: 14px;
+				line-height: 18px;
+				text-decoration: none;
+			}
+		}
+		.success-header {
+			background: #F6F7F8;
+			box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
+			.my-header-container {
+				display: flex;
+				height: 85px;
+				width: 1000px;
+				margin: 0 auto;
+				> h1 {
+					margin-top: 21px;
+					font-size: 36px;
+					line-height: 44px;
+					font-weight: bold;
+				}
+			}
+		}
+
+		.success-container1 {
+			width: 1000px;
+			margin: 24px auto 0;
+			text-align: left;
+			background: #FFFFFF;
+			padding: 50px 100px;
+			position: relative;
+			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+			p {
+				font-size: 18px;
+				line-height: 22px;
+				margin-bottom: 0;
+				font-weight: 300;
+				text-align: center;
+			}
+			.success-title {
+				font-size: 24px;
+				line-height: 29px;
+				color: #2C2E31;
+				margin-bottom: 50px;
+			}
+			.success-address, .success-private {
+				height: 54px;
+				margin-bottom: 40px;
+				color: #000000;
+				font-weight: bold;
+				line-height: 54px;
+				> span {
+					font-weight: normal;
+				}
+			}
+			.success-address {
+				background-color: #98D5BD;
+			}
+			.success-private {
+				background-color: #5EBFD9;
+			}
+			.success-tips {
+				font-size: 14px;
+				color: #A94442;
+			}
+		}
+
+		.success-container2 {
+			width: 1000px;
+			margin: 24px auto 0;
+			text-align: left;
+			background: #FFFFFF;
+			padding: 15px 50px 0 50px;
+			position: relative;
+			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+			> div {
+				margin-bottom: 60px;
+				&:last-child {
+					margin-bottom: 0;
+				}
+				h4 {
+					font-size: 14px;
+					line-height: 18px;
+					font-weight: bold;
+					padding-bottom: 12px;
+					margin: 0;
+					color: #2c2e31;
+					border-bottom: 1px solid #f6f7f8;
+					&:last-child {
+						padding-bottom: 60px;
+					}
+				}
+				p {
+					font-size: 18px;
+					line-height: 22px;
+					margin-top: 20px;
+					margin-bottom: 0;
+					font-weight: 300;
+				}
+			}
+		}
+	}
+</style>

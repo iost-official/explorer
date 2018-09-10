@@ -41,6 +41,7 @@
   .homeBlocks-box {
     width: 485px;
     border: 1px solid #F1F1F1;
+    background-color: #FFFFFF;
     box-shadow: 0 10px 40px 0 rgba(0, 0, 0, .1);
     .my-list-banner {
       background: #F6F7F8;
@@ -93,7 +94,6 @@
         font-size: 0;
         > a {
           display: inline-block;
-          text-decoration: none;
           color: #4C6889;
           &:first-of-type {
             font-size: 14px;

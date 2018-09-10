@@ -1,7 +1,7 @@
 <template>
   <div class="txnsDetail-box">
     <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet">Play Lucky Bet !</a>
+      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
     </div>
 
     <div class="txnsDetail-header">
@@ -20,7 +20,7 @@
       <div class="txnsDetail-block-time">
         <div class="txnsDetail-block">
           <h4>Block Height:</h4>
-          <p><router-link :to="{path:`/block/${tx.blockHeight}`}">{{txnDetail.blockHeight}}</router-link></p>
+          <p><router-link :to="{path:`/block/${txnDetail.blockHeight}`}">{{txnDetail.blockHeight}}</router-link></p>
         </div>
         <div class="txnsDetail-time">
           <h4>TimeStamp:</h4>

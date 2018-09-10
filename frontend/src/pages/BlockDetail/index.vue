@@ -1,7 +1,7 @@
 <template>
   <div class="blockDetail-box">
     <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet">Play Lucky Bet !</a>
+      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
     </div>
 
     <div class="blockDetail-header">
@@ -40,7 +40,7 @@
       </div>
       <div class="blockDetail-witness">
         <h4>Witness:</h4>
-        <p><a :href="'/#/account/' + blockDetail.witness">{{blockDetail.witness}}</a></p>
+        <p><router-link :to="{path:`/account/${blockDetail.witness}`}">{{blockDetail.witness}}</router-link></p>
       </div>
     </div>
   </div>
@@ -133,6 +133,7 @@
           font-size: 36px;
           line-height: 44px;
           margin: 21px 0 15px;
+          font-weight: bold;
         }
         > p {
           font-size: 14px;

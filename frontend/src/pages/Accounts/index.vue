@@ -1,7 +1,7 @@
 <template>
   <div class="accounts-box">
     <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet">Play Lucky Bet !</a>
+      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
     </div>
 
     <div class="accounts-header">
@@ -51,7 +51,7 @@
         <div class="list-body-wrap" v-for="(account, index) in accountInfo.accountList">
           <ul class="my-list-body">
             <li>{{index+1}}</li>
-            <li><a :href="'/account/' + account.address">{{account.address}}</a></li>
+            <li><router-link :to="{path:`/account/${account.address}`}">{{account.address}}</router-link></li>
             <li>{{account.balance.toFixed(2)}}</li>
             <li>{{account.txCount}}</li>
           </ul>
@@ -161,6 +161,8 @@
           > h1 {
             font-size: 36px;
             line-height: 44px;
+            font-weight: bold;
+
           }
           .accounts-info {
             > h4 {
