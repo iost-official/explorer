@@ -20,8 +20,8 @@ const (
 	VerifyCodeLen     = 6
 	MobileMaxSendTime = 1
 
-	AccountSid   = "AC47b8c0b922a3eb016f263869ac0d2951"
-	AuthToken    = "0daee011527a806c76792d46cd71dd13"
+	AccountSid   = "ACbb9c8973309348ffca81bb71291b3a4c"
+	AuthToken    = "1e224c4c3166d94b0578a967ff1dd0ac"
 	TwilioSmsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + AccountSid + "/Messages.json"
 )
 
@@ -92,7 +92,7 @@ func sendSMS(number string) (string, error) {
 
 	postData := url.Values{}
 	postData.Set("To", number)
-	postData.Set("From", "+13192642988")
+	postData.Set("From", "+12568183697")
 	postData.Set("Body", "[IOST] verification code: "+vc)
 
 	req, _ := http.NewRequest("POST", TwilioSmsUrl, strings.NewReader(postData.Encode()))
