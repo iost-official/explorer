@@ -1,24 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/config"
 	"github.com/labstack/echo"
 	echoMiddle "github.com/labstack/echo/middleware"
 	"github.com/spf13/viper"
 )
 
 func main() {
-	viper.SetConfigName("config")
-	viper.AddConfigPath("~/go/src/github.com/iost-official/explorer/backend")
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
-	}
-	db.InitConfig()
+	config.ReadConfig()
 	e := echo.New()
 	e.Debug = true
 	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
