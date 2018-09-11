@@ -17,16 +17,29 @@
   import IndexTxns from "../../components/HomeTxns";
   import Search from '../../components/Search'
 
+  import axios from 'axios';
+
+
   export default {
     name: "Home",
 
-    components: {Search, IndexTxns, IndexBlock, MarketInfo}
+    components: {Search, IndexTxns, IndexBlock, MarketInfo},
+
+    created () {
+      axios.get('http://47.75.223.44:8080/api/test').then((response) => {
+        console.log(response)
+        if (true) {
+          axios.get('http://47.75.223.44:8080/api/test2')
+        }
+      })
+    }
+
   }
 </script>
 
 <style lang="less" rel="stylesheet/less">
   .bg {
-    background-image: url("../../assets/bg.png");
+    background-image: url("../../assets/bg1.png");
     background-size: 100%;
     background-repeat: no-repeat;
     .home-box {
@@ -34,12 +47,11 @@
       margin: 0 auto;
       overflow: hidden;
       .blockTxns-container {
-        padding: 0 20px 50px;
+        padding: 0 20px 100px;
         display: flex;
         justify-content: space-between;
         margin-top: 75px;
       }
-
     }
   }
 

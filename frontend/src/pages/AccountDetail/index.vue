@@ -322,6 +322,9 @@
             }
             p {
               margin-bottom: 0;
+              a {
+                color: #4b78aa;
+              }
             }
           }
 
@@ -347,7 +350,10 @@
               li {
                 list-style: none;
                 text-align: left;
-                color: #333333;
+                color: #2c2e31;
+                a {
+                  color: #4b78aa;
+                }
                 &:first-child {
                   width: 100px;
                 }

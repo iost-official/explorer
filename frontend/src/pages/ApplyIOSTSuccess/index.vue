@@ -120,6 +120,9 @@ export default {
 				margin-bottom: 0;
 				font-weight: 300;
 				text-align: center;
+				a {
+					color: #4678aa;
+				}
 			}
 			.success-title {
 				font-size: 24px;

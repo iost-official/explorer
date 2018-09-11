@@ -19,7 +19,7 @@
             </router-link>
           </li>
 
-          <li><a href="#">page <b>{{page}}</b> of <b>{{blockInfo.pageLast}}</b></a></li>
+          <li><a class="page-auto" href="#"><b>{{page}}</b> / <b>{{blockInfo.pageLast}}</b></a></li>
           <li>
             <a v-if="page == blockInfo.pageLast" href="javascript:void(0)" aria-label="Next">
               <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
@@ -109,6 +109,7 @@
 <style lang="less" rel="stylesheet/less">
   .blocks-box {
     padding-top: 90px;
+    padding-bottom: 100px;
     margin: 0 auto;
     .luckyBet-box {
       background: #2C2E31;
@@ -144,11 +145,15 @@
           font-weight: bold;
         }
         .my-pages {
-          margin-top: 31px;
+          margin-top: 29px;
           li {
             a {
               padding: 5px;
               height: 32px;
+              color: #2c2e31;
+              &.page-auto {
+                width: 112px;
+              }
               span {
                 padding: 0;
                 img {
@@ -172,12 +177,7 @@
           color: #2C2E31;
         }
       }
-      &::-webkit-scrollbar {
-        width: 0;
-      }
       .list-wrap {
-        max-height: 1000px;
-        overflow: auto;
         .list-body-wrap {
           width: 100%;
           &:hover {
@@ -196,18 +196,20 @@
         li {
           list-style: none;
           text-align: left;
-          color: #4C6889;
+          color: #2c2e31;
           a {
             font-size: 14px;
             line-height: 18px;
-            color: #4C6889;
-            text-decoration: none;
+            color: #4b78aa;
           }
           &:first-child {
             width: 100px;
           }
           &:nth-child(2) {
             width: 500px;
+            padding-right: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
           &:nth-child(3) {
             width: 100px;

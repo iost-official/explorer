@@ -7,15 +7,15 @@
       <router-link to="/blocks">View All</router-link>
     </div>
     <ul class="my-list-body">
-      <li v-for="block in indexBlockList">
-        <img src="../../assets/block.png" alt="">
-        <div class="my-list-wrap">
+      <li my-list-wrap v-for="block in indexBlockList">
+        <p>
+          <img src="../../assets/block.png" alt="">
           <router-link :to="{path:`/block/${block.height}`}">Block {{block.height}}</router-link>
-          <p>Minted By</p>
-          <router-link :to="{path:`/block/${block.height}`}">{{block.witness}}</router-link>
-          <router-link :to="{path:`/txs/?b=${block.height}`}" style="text-align: left;">{{block.txn}} txns</router-link>
-          <p>{{block.age}}</p>
-        </div>
+        </p>
+        <p>Minted By</p>
+        <router-link :to="{path:`/block/${block.height}`}">{{block.witness}}</router-link>
+        <router-link :to="{path:`/txs/?b=${block.height}`}" style="text-align: left;">{{block.txn}} txns</router-link>
+        <p>{{block.age}}</p>
       </li>
     </ul>
   </div>
@@ -60,8 +60,7 @@
       > a{
         font-size: 14px;
         line-height: 18px;
-        color: #4C6889;
-        text-decoration: none;
+        color: #4b78aa;
       }
     }
     .my-list-body {
@@ -70,40 +69,50 @@
       li {
         list-style: none;
         text-align: left;
-        padding: 16px 0 16px 30px;
-        display: flex;
-        /*margin-bottom: 4px;*/
-        height: 160px;
-        /*height: 200px;*/
-
-        > img {
-          width: 24px;
-          height: 24px;
-        }
-        &:nth-child(2n) {
-          background: #F6F7F8;
-        }
-        &:nth-child(2n+1) {
-          background: #FFFFFF;
-        }
-      }
-      .my-list-wrap {
-        margin-left: 26px;
-        margin-top: 2px;
+        padding: 16px 0 22px 30px;
         line-height: 1;
-        font-size: 0;
-        > a {
-          display: inline-block;
-          color: #4C6889;
-          &:first-of-type {
+        > p{
+          font-size: 12px;
+          line-height: 15px;
+          color: #2C2E31;
+          margin-bottom: 0;
+          padding-left: 50px;
+          > img {
+            width: 24px;
+            height: 24px;
+          }
+          > a{
+            padding-left: 26px;
             font-size: 14px;
             line-height: 18px;
             font-weight: bold;
+            color: #4b78aa;
           }
-          &:nth-of-type(2), &:nth-of-type(3) {
-            font-size: 12px;
-            line-height: 16px;
-            margin-top: 8px;
+          &:nth-of-type(1) {
+            display: flex;
+            padding-left: 0;
+            align-items: center;
+            padding-bottom: 6px;
+          }
+          &:nth-of-type(2) {
+            margin-top: 9px;
+          }
+          &:nth-of-type(3) {
+            margin-top: 16px;
+          }
+        }
+        > a {
+          display: inline-block;
+          color: #4b78aa;
+          padding-left: 50px;
+          padding-top: 14px;
+          font-size: 12px;
+          line-height: 12px;
+
+          &:first-of-type {
+            width: 380px;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
           &:nth-of-type(2) {
             width: 380px;
@@ -111,19 +120,24 @@
             overflow: hidden;
           }
         }
-        > p{
-          font-size: 12px;
-          line-height: 15px;
-          color: #2C2E31;
-          margin-bottom: 0;
-          &:nth-of-type(1) {
-            margin-top: 20px;
+        &:nth-child(2n) {
+          background: #F6F7F8;
+          > p {
+            &:nth-of-type(1) {
+              border-bottom: 1px solid #FFFFFF;
+            }
           }
-          &:nth-of-type(2) {
-            margin-top: 8px;
+        }
+        &:nth-child(2n+1) {
+          background: #FFFFFF;
+          > p {
+            &:nth-of-type(1) {
+              border-bottom: 1px solid #f6f7f8;
+            }
           }
         }
       }
+
     }
   }
 

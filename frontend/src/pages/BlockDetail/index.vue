@@ -155,7 +155,7 @@
       h4 {
         font-size: 14px;
         line-height: 18px;
-        font-weight: bold;
+        font-weight: bolder;
         padding-bottom: 12px;
         margin: 0;
         color: #2c2e31;
@@ -177,7 +177,7 @@
       .blockDetail-witness {
         padding-bottom: 60px;
         a {
-          color: #4C6889;
+          color: #4b78aa;
         }
       }
 

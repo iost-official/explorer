@@ -9,13 +9,13 @@
         <div class="txns-info">
           <div>
             <h1 v-if="address != ''">
-              Transactions <span style="font-size: 16px; color: #999; font-weight: 400">:: Address {{address}}</span>
+              Transactions <span style="font-size: 14px;color: #999; font-weight: 400">:: Address {{address}}</span>
             </h1>
             <h1 v-else-if="blk != ''">
-              Transactions <span style="font-size: 16px; color: #999; font-weight: 400">:: Block {{blk}}</span>
+              Transactions <span style="font-size: 14px; color: #999; font-weight: 400">:: Block {{blk}}</span>
             </h1>
             <h1 v-else>
-              Transactions <span style="font-size: 16px; color: #999; font-weight: 400"></span>
+              Transactions <span style="font-size: 14px; color: #999; font-weight: 400"></span>
             </h1>
           </div>
           <h4>{{txnInfo.totalLen}} transactions found (showing the last 500 records)</h4>
@@ -38,7 +38,7 @@
             </router-link>
           </li>
 
-          <li><a href="#">page <b>{{page}}</b> of <b>{{txnInfo.pageLast}}</b></a></li>
+          <li><a class="page-auto" href="#"><b>{{page}}</b> / <b>{{txnInfo.pageLast}}</b></a></li>
           <li>
             <a v-if="page == txnInfo.pageLast" href="javascript:void(0)" aria-label="Next">
               <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
@@ -121,8 +121,8 @@
           this.blk = this.$route.query.b
         }
 
-
-        this.$store.dispatch('getTxnInfo',this.page, this.address, this.blk)
+        console.log(this.page)
+        this.$store.dispatch('getTxnInfo',{page:this.page, address: this.address, blk:this.blk})
 
         // axios.get('https://explorer.iost.io/api/txs?p=' + this.page + '&a=' + this.address + '&b=' + this.blk).then((response) => {
         //   this.txnList = response.data.txs_list
@@ -150,6 +150,7 @@
 <style lang="less" rel="stylesheet/less">
   .txns-box {
     padding-top: 90px;
+    padding-bottom: 100px;
     margin: 0 auto;
     .luckyBet-box {
       background: #2C2E31;
@@ -183,11 +184,15 @@
           display: flex;
           flex-direction: column;
           justify-content: center;
+          padding: 20px 0 22px;
+          font-size: 0;
           h1 {
-            margin: 21px 0 0;
+            margin: 0;
+            padding: 0;
             font-size: 36px;
-            line-height: 20px;
+            line-height: 44px;
             font-weight: bold;
+            height: 44px;
 
           }
           h4 {
@@ -198,12 +203,17 @@
           }
         }
         .my-pages {
-          margin: 60px 0 0;
+          margin: 64px 0 0;
           width: 240px;
           li {
             a {
               padding: 5px;
               height: 32px;
+              color: #2c2e31;
+              text-align: center;
+              &.page-auto {
+                width: 112px;
+              }
               span {
                 padding: 0;
                 img {
@@ -258,10 +268,9 @@
         li {
           list-style: none;
           text-align: left;
-          color: #4C6889;
+          color: #2c2e31;
           a {
-            color: #4C6889;
-            text-decoration: none;
+            color: #4b78aa;
             font-size: 12px;
             line-height: 15px;
           }
@@ -275,8 +284,6 @@
             text-overflow: ellipsis;
           }
           &:nth-child(3) {
-            /*width: 220px;*/
-            /*padding-right: 50px;*/
             width: 180px;
             padding-right: 0;
             overflow: hidden;

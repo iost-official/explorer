@@ -91,7 +91,7 @@
             margin-top: 29px;
             font-size: 18px;
             line-height: 22px;
-            color: #4C6889;
+            color: #2c2e31;
           }
         }
       }

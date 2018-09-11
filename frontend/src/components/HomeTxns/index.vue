@@ -9,20 +9,40 @@
     <ul class="my-list-body">
       <li v-for="(txn, index) in indexTxnList" :key="index">
         <div class="my-list-wrap">
-          <div class="my-list1">
-            <p><img src="../../assets/txns.png" alt=""></p>
-            <p>TX#</p>
-            <p>From</p>
-            <p>To</p>
-            <p>Amount</p>
-          </div>
-          <div class="my-list2">
+          <div class="list-block">
+            <img src="../../assets/txns.png" alt="">
             <p>Block {{txn.blockHeight}}</p>
+          </div>
+          <div class="list-tx">
+            <p>TX#</p>
             <router-link :to="{path:`/tx/${txn.txHash}`}">{{txn.txHash}}</router-link>
+          </div>
+          <div class="list-from">
+            <p>From</p>
             <router-link :to="{path:`/account/${txn.from}`}">{{txn.from}}</router-link>
+          </div>
+          <div class="list-to">
+            <p>To</p>
             <router-link :to="{path:`/account/${txn.to}`}">{{txn.to}}</router-link>
+          </div>
+          <div class="list-amount">
+            <p>Amount</p>
             <p>{{txn.amount}} IOST</p>
           </div>
+          <!--<div class="my-list1">-->
+            <!--<p><img src="../../assets/txns.png" alt=""></p>-->
+            <!--<p>TX#</p>-->
+            <!--<p>From</p>-->
+            <!--<p>To</p>-->
+            <!--<p>Amount</p>-->
+          <!--</div>-->
+          <!--<div class="my-list2">-->
+            <!--<p>Block {{txn.blockHeight}}</p>-->
+            <!--<router-link :to="{path:`/tx/${txn.txHash}`}">{{txn.txHash}}</router-link>-->
+            <!--<router-link :to="{path:`/account/${txn.from}`}">{{txn.from}}</router-link>-->
+            <!--<router-link :to="{path:`/account/${txn.to}`}">{{txn.to}}</router-link>-->
+            <!--<p>{{txn.amount}} IOST</p>-->
+          <!--</div>-->
         </div>
       </li>
     </ul>
@@ -81,77 +101,88 @@
       > a{
         font-size: 14px;
         line-height: 18px;
-        color: #4C6889;
-        text-decoration: none;
+        color: #4b78aa;
       }
     }
     .my-list-body {
       padding-left: 0;
       margin-top: 8px;
+      margin-bottom: 0;
+      padding-bottom: 10px;
+      background: #FFFFFF;
+
       li {
         list-style: none;
-        padding: 16px 0 16px 30px;
-        height: 160px;
+        padding: 16px 0 22px 30px;
         &:nth-child(2n) {
           background: #F6F7F8;
+          .my-list-wrap {
+            .list-block {
+              border-bottom: 1px solid #FFFFFF;
+            }
+          }
+        }
+        &:nth-child(2n+1) {
+          background: #FFFFFF;
+          .my-list-wrap {
+            .list-block {
+              border-bottom: 1px solid #f6f7f8;
+            }
+          }
         }
         .my-list-wrap {
-          display: flex;
           text-align: left;
-          .my-list1 {
-            > p {
-              font-size: 12px;
-              line-height: 15px;
-              color: #2C2E31;
-              margin-top: 8px;
-              margin-bottom: 0;
+          > div {
+            display: flex;
+            align-items: center;
+            &.list-block {
+              padding-bottom: 6px;
               > img {
                 width: 24px;
                 height: 24px;
               }
-              &:first-child {
-                margin-top: 0;
-              }
-              &:nth-child(2) {
-                margin-top: 18px;
-              }
-              &:nth-child(3) {
-                margin-top: 8px;
-              }
-              &:nth-of-type(4) {
-                margin-top: 8px;
+              > p {
+                font-size: 14px;
+                line-height: 18px;
+                font-weight: bold;
+                color: #4b78aa;
+                margin-top: 4px;
+                margin-bottom: 0;
+                padding-left: 26px;
               }
             }
-          }
-          .my-list2 {
-            margin-left: 10px;
-            font-size: 0;
-            > p {
-              font-size: 14px;
-              line-height: 18px;
-              font-weight: bold;
-              color: #4C6889;
-              margin-top: 4px;
-              margin-bottom: 0;
-              &:nth-of-type(2) {
-                margin-top: 7px;
+            &.list-tx {
+              padding-top: 9px;
+            }
+            &.list-tx, &.list-from, &.list-to {
+              justify-content: space-between;
+              padding-bottom: 14px;
+              padding-right: 41px;
+              > a {
                 font-size: 12px;
-                font-weight: 400;
+                line-height: 15px;
+                color: #4b78aa;
+                display: inline-block;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                width: 360px;
+              }
+              > p {
+                font-size: 12px;
+                line-height: 15px;
+                color: #2C2E31;
+                margin-bottom: 0;
               }
             }
-            > a {
-              font-size: 12px;
-              line-height: 15px;
-              color: #4C6889;
-              display: inline-block;
-              text-overflow: ellipsis;
-              overflow: hidden;
-              max-width: 340px;
-              &:nth-of-type(1) {
-                margin-top: 20px;
-              }
-              &:nth-of-type(2),&:nth-of-type(3) {
-                margin-top: 8px;
+            &.list-amount {
+              > p {
+                font-size: 12px;
+                line-height: 15px;
+                color: #2C2E31;
+                margin-bottom: 0;
+                &:nth-child(2) {
+                  margin-left: 4px;
+                }
               }
             }
           }

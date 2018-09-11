@@ -187,6 +187,9 @@
         margin-top: 20px;
         margin-bottom: 0;
         font-weight: 300;
+        a {
+          color: #4b78aa;
+        }
       }
 
       > div {

@@ -34,16 +34,17 @@
     data() {
       return {
         currentColor: 0,
-        currentTheme: false
+        currentTheme: true
       }
     },
     watch: {
       '$route' (to) {
-        const arr = ['/block','/tx','/account','/applyIOST']
+        const arr = ['/block','/tx','/account','/applyIOST','/feedback']
         let arr2 = arr.filter((a, index) => {
           return to.path.search(a)+1
         })
         let result = arr2.join('')
+        console.log(result)
         if (result == '/block') {
           this.currentColor = 1
           this.currentTheme = false
@@ -56,19 +57,69 @@
         } else if (result == '/applyIOST') {
           this.currentColor = 4
           this.currentTheme = false
+        }else if (result == '/feedback') {
+          this.currentColor = 5
+          this.currentTheme = false
         } else {
           this.currentColor = 0
           this.currentTheme = true
         }
       }
     },
-    
-    created () {
-      if (location.pathname.indexOf('applyIOST')+1) {
-        this.currentTheme = false
-        this.currentColor = 4
+
+    methods: {
+      onScroll () {
+        if (location.pathname != '/') {
+          return
+        }
+        const heightTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (heightTop >= 60) {
+          this.currentTheme = false
+
+        } else {
+          this.currentTheme = true
+
+        }
       }
     },
+    
+    created () {
+      const arr = ['/block','/tx','/account','/applyIOST','/feedback']
+      let arr2 = arr.filter((a, index) => {
+        return location.pathname.search(a)+1
+      })
+      let result = arr2.join('')
+      console.log(result)
+      if (result == '/block') {
+        this.currentColor = 1
+        this.currentTheme = false
+      } else if (result == '/tx') {
+        this.currentColor = 2
+        this.currentTheme = false
+      } else if (result == '/account') {
+        this.currentColor = 3
+        this.currentTheme = false
+      } else if (result == '/applyIOST') {
+        this.currentColor = 4
+        this.currentTheme = false
+      }else if (result == '/feedback') {
+        this.currentColor = 5
+        this.currentTheme = false
+      } else {
+        this.currentColor = 0
+        this.currentTheme = true
+      }
+      // if (location.pathname.indexOf('applyIOST')+1) {
+      //   this.currentTheme = false
+      //   this.currentColor = 4
+      // }
+    },
+
+    mounted () {
+      window.addEventListener('scroll', this.onScroll);
+
+    }
+
   }
 </script>
 
@@ -83,7 +134,7 @@
     box-shadow: 0 2px 3px rgba(0,0,0, 0.1);
     border: 1px solid #2c2e31;
     &.active {
-      background-color: rgba(44,46,49, 0.75);
+      background-color: rgba(44,46,49, 0.5);
     }
     .my-container{
       width: 1000px;

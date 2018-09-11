@@ -15,12 +15,14 @@
 				<p>Lucky Bet is operating on the v0.5 Everest testnet of the IOST Blockchain. It provides a way for users to participate and try out the IOST testnet. Everest is still in its early testing phase. In order to launch a stable Mainnet, IOST engineers will be constantly pressure testing, adjusting, fixing and upgrading the testnet. This may result in instability, periods where the testnet is offline, and other abnormalities.</p>
 				<p></p>
 				<p>If you encounter any issues or bugs, please email team@iost.io or report your issue via the following link:</p>
-				<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>
+				<!--<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>-->
+				<router-link to="/feedback">https://explorer.iost.io/#/feedback</router-link>
 				<p></p>
 				<p>Lucky Bet是基于IOST测试网络开发，目的是为了让大家体验IOST阶段性进展。IOST目前正在早期测试阶段，为了保证将来的主网功能能够如期稳定上线，IOST开发团队随时可能对测试网络进行升级、调整、修复问题和压力测试，可能在某些时刻会造成网络下线、不稳定和其他异常情况发生。</p>
 				<p></p>
 				<p>如果你发现了测试网络的任何Bug，欢迎发邮件给team@iost.io，或在以下网址提交给我们改进：</p>
-				<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>
+				<!--<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>-->
+				<router-link to="/feedback">https://explorer.iost.io/#/feedback</router-link>
 			</div>
 		</div>
 
@@ -176,7 +178,8 @@ export default {
 		getApplyParam(grecap) {
 			var params = new URLSearchParams();
 			if (this.auto == 1) {
-				params.append('address', this.addressx)
+				// params.append('address', this.addressx)
+				params.append('address', this.address)
 			} else {
 				params.append('address', this.address)
 			}
@@ -292,7 +295,8 @@ export default {
 							if (this.address.length > 0) {
 								pushParams.address = this.address
 							} else {
-								pushParams.address = this.addressx
+								// pushParams.address = this.addressx
+								pushParams.address = this.address
 							}
 							pushParams.email = this.email
 							pushParams.mobile = this.mobile
@@ -311,7 +315,8 @@ export default {
 					if (this.address.length > 0) {
 						pushParams.address = this.address
 					} else {
-						pushParams.address = this.addressx
+						// pushParams.address = this.addressx
+						pushParams.address = this.address
 					}
 					pushParams.email = this.email
 					pushParams.mobile = this.mobile
@@ -338,6 +343,7 @@ export default {
 				const pubKey = secp256k1.publicKeyCreate(bytes)
 
 				this.privKey = base58.encode(bytes)
+				// this.addressx = base58.encode(pubKey)
 				this.address = base58.encode(pubKey)
 				this.auto = 1
 			}
@@ -507,7 +513,6 @@ export default {
 				.my-input {
 					width: 700px;
 					background-color: #F6F7F8;
-					box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
 					outline: none;
 					border: 0;
 					padding: 6px 12px;

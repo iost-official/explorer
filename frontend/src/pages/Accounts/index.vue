@@ -25,7 +25,7 @@
             </a>
           </li>
 
-          <li><a href="#">page <b>{{page}}</b> of <b>{{accountInfo.pageLast}}</b></a></li>
+          <li><a href="#" class="page-auto"><b>{{page}}</b> / <b>{{accountInfo.pageLast}}</b></a></li>
           <li>
             <a v-if="page == accountInfo.pageLast" href="javascript:void(0)" aria-label="Next">
               <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
@@ -142,11 +142,16 @@
         width: 1000px;
         margin: 0 auto;
         .my-pages {
-          margin-top: 60px;
+          margin-top: 64px;
           li {
             a {
               padding: 5px;
               height: 32px;
+              color: #2c2e31;
+              text-align: center;
+              &.page-auto {
+                width: 112px;
+              }
               span {
                 padding: 0;
                 img {
@@ -214,11 +219,11 @@
           line-height: 18px;
           list-style: none;
           text-align: left;
-          color: #4C6889;
+          color: #2c2e31;
           a {
             font-size: 14px;
             line-height: 18px;
-            color: #4C6889;
+            color: #4b78aa;
             text-decoration: none;
           }
           &:first-child {
