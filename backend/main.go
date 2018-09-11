@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/iost-official/explorer/backend/config"
 	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
-	"github.com/iost-official/explorer/backend/config"
 	"github.com/labstack/echo"
 	echoMiddle "github.com/labstack/echo/middleware"
 	"github.com/spf13/viper"
