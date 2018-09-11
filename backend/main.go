@@ -50,6 +50,7 @@ func main() {
 
 	// Test api
 	e.GET("/api/test", controller.TestPage)
+	e.GET("/api/test2", controller.TestPage2)
 
 	e.Logger.Fatal(e.Start(":" + viper.GetString("port")))
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
@@ -363,5 +364,20 @@ func ApplyIOST(c echo.Context) error {
 }*/
 
 func TestPage(c echo.Context) error {
+	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
+	defer sess.SessionRelease(c.Response())
+
+
+	sess.Set("test-session", "hello 123 456")
 	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world"}))
+}
+
+func TestPage2(c echo.Context) error {
+	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
+	defer sess.SessionRelease(c.Response())
+
+
+	info := sess.Get("test-session")
+	fmt.Println(info)
+	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world2"}))
 }
