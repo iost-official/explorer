@@ -17,6 +17,8 @@ const config = {
     accounts: `${APIV1}accounts`,
     account: `${APIV1}account/`,
 
+    search: `${APIV1}search/`,
+
     sendSMS: `${APIV1}sendSMS`,
 
     feedback: `${APIV1}feedback`,

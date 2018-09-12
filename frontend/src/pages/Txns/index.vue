@@ -123,7 +123,6 @@
           this.blk = this.$route.query.b
         }
 
-        console.log(this.page)
         this.$store.dispatch('getTxnInfo',{page:this.page, address: this.address, blk:this.blk})
 
         // axios.get('https://explorer.iost.io/api/txs?p=' + this.page + '&a=' + this.address + '&b=' + this.blk).then((response) => {

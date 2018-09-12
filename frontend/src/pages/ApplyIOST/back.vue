@@ -267,7 +267,6 @@ export default {
 									pushParams.mobile = this.mobile
 									pushParams.privKey = this.privKey
 									pushParams.txHash = txHash
-									console.log(pushParams)
 									this.$router.push({
 										name: 'ApplyIOSTSuccess',
 										params: pushParams

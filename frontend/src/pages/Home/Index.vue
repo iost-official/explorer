@@ -30,7 +30,6 @@
 
     created () {
       axios.get(`${apis.test}`).then((response) => {
-        console.log(response)
         if (true) {
           axios.get(`${apis.test2}`)
         }

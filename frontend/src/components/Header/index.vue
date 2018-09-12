@@ -6,34 +6,31 @@
           <img src="../../assets/logo.png" alt="">
         </router-link>
       </div>
-      <!--<div class="my-search">-->
-        <!--<input type="text" class="form-control my-input" placeholder="Search...">-->
-      <!--</div>-->
       <ul class="my-nav-box">
-        <li class="my-nav-item" :class="{active: currentColor == 0}">
+        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 0}">
           <router-link to="/">HOME</router-link>
         </li>
-        <li class="my-nav-item" :class="{active: currentColor == 1}">
+        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 1}">
           <router-link to="/blocks">BLOCK</router-link>
         </li>
-        <li class="my-nav-item" :class="{active: currentColor == 2}">
+        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 2}">
           <router-link to="/txs">TRANSACTION</router-link>
         </li>
 
-        <li class="my-nav-item" :class="{active: currentColor == 3}">
+        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 3}">
           <router-link to="/accounts">ACCOUNTS</router-link>
         </li>
-        <li class="my-nav-item" :class="{active: currentColor == 4}">
+        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 4}">
           <router-link to="/applyIOST">REQUEST TEST IOST</router-link>
         </li>
 
-        <!--<li class="my-nav-item" :class="{active: currentColor == 4}">-->
-          <!--<input type="text" class="form-control my-input" placeholder="Search...">-->
-
-        <!--</li>-->
-        <!--<li class="my-nav-item" :class="{active: currentColor == 4}">-->
-          <!--<img src="../../assets/search.png" alt=""/>-->
-        <!--</li>-->
+        <li class="my-nav-item searchActive" v-show="isShow">
+          <input type="text" placeholder="Search..."
+                 @click.stop="" v-model.trim="searchInput" @keydown.enter="searchData">
+        </li>
+        <li class="my-nav-item" v-show="!currentTheme">
+          <img src="../../assets/search.png" alt="" @click="openSearch"/>
+        </li>
       </ul>
 
     </div>
@@ -41,12 +38,17 @@
 </template>
 
 <script>
+  import axios from 'axios';
+
   export default {
     name: "Head",
     data() {
       return {
         currentColor: 0,
-        currentTheme: true
+        currentTheme: true,
+        isShow: false,
+        searchInput: ''
+
       }
     },
     watch: {
@@ -97,7 +99,58 @@
           this.currentTheme = true
 
         }
+      },
+
+      openSearch (e) {
+        if(e.stopPropagation){
+          e.stopPropagation();
+        }
+        this.isShow = !this.isShow
+        if (this.isShow) {
+          console.log(132131)
+          setTimeout(() => {
+            document.querySelector('input').focus()
+          })
+        }
+      },
+
+      onSearch () {
+        this.isShow = false
+      },
+
+      searchData () {
+        if (!this.searchInput) return
+        axios.get('http://47.75.223.44:8080/api/search/' + this.searchInput).then((response) => {
+          var type = response.data.data.type
+          if (type == "block") {
+            if (response.data.text) {
+              this.$router.push({
+                path: '/block/' + response.data.text
+              })
+            } else {
+              this.$router.push({
+                path: '/block/' + this.searchInput
+              })
+            }
+          } else if (type == "account") {
+            this.$router.push({
+              path: '/account/' + this.searchInput
+            })
+          } else if (type == "tx") {
+            this.$router.push({
+              path: '/tx/' + this.searchInput
+            })
+          } else {
+            this.$router.push({
+              path: '/Search/' + this.searchInput
+            })
+          }
+          this.searchInput = ''
+          this.isShow = false
+        })
+        return false
       }
+
     },
     
     created () {
@@ -106,7 +159,6 @@
         return location.pathname.search(a)+1
       })
       let result = arr2.join('')
-      console.log(result)
       if (result == '/block') {
         this.currentColor = 1
         this.currentTheme = false
@@ -132,17 +184,13 @@
         this.currentColor = 0
         this.currentTheme = true
       }
-      // if (location.pathname.indexOf('applyIOST')+1) {
-      //   this.currentTheme = false
-      //   this.currentColor = 4
-      // }
+
     },
 
     mounted () {
       window.addEventListener('scroll', this.onScroll);
-
+      window.addEventListener('click', this.onSearch);
     }
-
   }
 </script>
 
@@ -200,23 +248,30 @@
               color: #FFFFFF;
             }
           }
+          &.searchActive {
+            margin-right: -25px;
+          }
           a {
             color: #8F9A9C;
             text-decoration: none;
             font-size: 14px;
             line-height: 18px;
           }
-          &:nth-child(2) {
-            position: relative;
-            &:hover {
-              .my-dropdown {
-                display: block;
-              }
-            }
-          }
           > img {
-            width: 22px;
+            width: 18px;
             cursor: pointer;
+          }
+
+          > input {
+            width: 450px;
+            border: none;
+            border-bottom: 1px solid rgba(143,145,156,0.5);
+            background-color: #2c2e31;
+            color: #FFFFFF;
+            padding-left: 5px;
+            &:focus {
+              outline: none;
+            }
           }
         }
       }

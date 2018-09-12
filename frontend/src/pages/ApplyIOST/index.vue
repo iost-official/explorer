@@ -37,12 +37,12 @@
 			
 			<div class="my-group">
 				<p class="">Amount</p>
-				<input class="my-input" placeholder="10.1 Test IOST" readonly>
+				<input class="my-input" readonly value="10.1 Test IOST">
 			</div>
 
 			<div class="my-group">
 				<p>Email</p>
-				<input type="email" class="my-input" placeholder="email" v-model.trim()="email">
+				<input type="email" class="my-input" placeholder="Email" v-model.trim()="email">
 			</div>
 
 			<div class="my-group my-mobile">
@@ -101,7 +101,7 @@ export default {
 			email: '',
 			mobile: '',
 			verify: '',
-			mobileButtonMsg: 'send',
+			mobileButtonMsg: 'Send',
 			ltime: 0,
 			errMsg: '',
 			checked: false,
@@ -167,7 +167,7 @@ export default {
 			$("#sendSmS").attr('disabled', true)
 			let interval = window.setInterval(() => {
 				if (--this.ltime <=0) {
-					this.mobileButtonMsg = 'send'
+					this.mobileButtonMsg = 'Send'
 					window.clearInterval(interval)
 					$("#sendSmS").attr('disabled', false)
 				} else {
@@ -285,7 +285,6 @@ export default {
 									pushParams.mobile = this.mobile
 									pushParams.privKey = this.privKey
 									pushParams.txHash = txHash
-									console.log(pushParams)
 									this.$router.push({
 										name: 'ApplyIOSTSuccess',
 										params: pushParams
@@ -481,6 +480,7 @@ export default {
 						height: auto;
 					}
 				}
+
 				&.my-mobile {
 					/*这是脚本添加的类名*/
 					margin-bottom: 12px;
@@ -522,7 +522,7 @@ export default {
 					outline: none;
 					border: 0;
 					padding: 6px 12px;
-					color: #555;
+					color: #2c3e50;
 				}
 				p {
 					margin-bottom: 0;
