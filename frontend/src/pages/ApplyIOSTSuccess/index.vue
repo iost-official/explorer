@@ -157,7 +157,7 @@ export default {
 			margin: 24px auto 0;
 			text-align: left;
 			background: #FFFFFF;
-			padding: 15px 50px 0 50px;
+			padding: 15px 50px 60px 50px;
 			position: relative;
 			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 			> div {

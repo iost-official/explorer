@@ -332,10 +332,18 @@
             .my-list-header {
               font-size: 16px;
               font-weight: 500;
+              border-bottom: 1px solid #f6f7f8;
+              border-top: 1px solid #f6f7f8;
             }
             .list-wrap {
+              padding-bottom: 60px;
               .list-body-wrap {
                 width: 100%;
+                &:last-child {
+                  .my-list-body {
+                    border: 0;
+                  }
+                }
                 &:hover {
                   box-shadow: 0 8px 30px 0 rgba(0, 0, 0, .15);
                 }
@@ -344,9 +352,10 @@
 
             ul {
               display: flex;
-              padding: 15px 0 15px 20px;
+              padding: 17px 0 17px 20px;
               width: 1000px;
               margin: 0 auto;
+              border-bottom: 1px solid #f6f7f8;
               li {
                 list-style: none;
                 text-align: left;

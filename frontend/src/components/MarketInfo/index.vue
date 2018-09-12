@@ -104,6 +104,7 @@
         text-align: left;
         font-size: 14px;
         line-height: 18px;
+        font-weight: bold;
         color: #2C2E31;
         .time-name, .time-value {
           > p {
@@ -118,10 +119,10 @@
         }
         .time-value {
           .up {
-            color: #0f0;
+            color: #49C5B6;
           }
           .down {
-            color: #f00;
+            color: #FF4D4D;
           }
         }
       }

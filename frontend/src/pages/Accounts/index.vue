@@ -163,18 +163,22 @@
           }
         }
         .accounts-header-info {
+          padding: 20px 0 22px;
           > h1 {
             font-size: 36px;
             line-height: 44px;
             font-weight: bold;
+            margin: 0;
 
           }
           .accounts-info {
+            margin-top: 15px;
             > h4 {
               text-align: left;
               color: #2C2E31;
               font-size: 14px;
               line-height: 18px;
+              margin: 0;
             }
           }
         }
@@ -183,7 +187,7 @@
 
 
     .accounts-list {
-      min-height: 500px;
+      min-height: 650px;
       margin-top: 2px;
       &::-webkit-scrollbar {
         width: 0;
@@ -200,7 +204,7 @@
       .list-body-wrap {
         width: 100%;
         &:hover {
-          box-shadow: 0 8px 30px 0 rgba(0, 0, 0, .15);
+          box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .08);
         }
         .list-wrap {
           max-height: 1000px;
@@ -227,10 +231,10 @@
             text-decoration: none;
           }
           &:first-child {
-            width: 100px;
+            width: 90px;
           }
           &:nth-child(2) {
-            width: 550px;
+            width: 560px;
 
           }
           &:nth-child(3) {

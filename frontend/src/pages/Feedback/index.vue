@@ -9,7 +9,7 @@
       </div>
     </div>
   	<div class="my-container">
-			<div class="err-msg" role="alert" id="errFeedbackAlert" style="text-align: left;">{{errMsg}}</div>
+			<div class="err-msg" role="alert" id="errFeedbackAlert" style="text-align: center;">{{errMsg}}</div>
 			<div class="my-group">
 				<p>Email：</p>
 				<input type="email" class="my-input" placeholder="Email" v-model.trim="email">
@@ -130,6 +130,7 @@ export default {
 			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 			.err-msg {
 				margin-bottom: 60px;
+				margin-left: 100px;
 			}
 			> div {
 				&:nth-child(2) {

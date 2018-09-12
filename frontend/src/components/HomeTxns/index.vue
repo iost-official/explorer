@@ -11,7 +11,7 @@
         <div class="my-list-wrap">
           <div class="list-block">
             <img src="../../assets/txns.png" alt="">
-            <p>Block {{txn.blockHeight}}</p>
+            <p>Tx</p>
           </div>
           <div class="list-tx">
             <p>TX#</p>
@@ -29,20 +29,6 @@
             <p>Amount</p>
             <p>{{txn.amount}} IOST</p>
           </div>
-          <!--<div class="my-list1">-->
-            <!--<p><img src="../../assets/txns.png" alt=""></p>-->
-            <!--<p>TX#</p>-->
-            <!--<p>From</p>-->
-            <!--<p>To</p>-->
-            <!--<p>Amount</p>-->
-          <!--</div>-->
-          <!--<div class="my-list2">-->
-            <!--<p>Block {{txn.blockHeight}}</p>-->
-            <!--<router-link :to="{path:`/tx/${txn.txHash}`}">{{txn.txHash}}</router-link>-->
-            <!--<router-link :to="{path:`/account/${txn.from}`}">{{txn.from}}</router-link>-->
-            <!--<router-link :to="{path:`/account/${txn.to}`}">{{txn.to}}</router-link>-->
-            <!--<p>{{txn.amount}} IOST</p>-->
-          <!--</div>-->
         </div>
       </li>
     </ul>
@@ -61,12 +47,6 @@
         // indexTxnList: [],
       }
     },
-    // mounted: function () {
-    //   axios.get('https://explorer.iost.io/api/indexTxns').then((response) => {
-    //
-    //     this.indexTxnList = response.data
-    //   })
-    // }
 
     computed: {
       ...mapState(['indexTxnList'])
@@ -83,6 +63,7 @@
   .hometxns-box {
     width: 485px;
     border: 1px solid #F1F1F1;
+    background-color: #FFFFFF;
     box-shadow: 0 10px 40px 0 rgba(0, 0, 0, .1);
     .my-list-banner {
       background: #F6F7F8;
@@ -106,10 +87,9 @@
     }
     .my-list-body {
       padding-left: 0;
-      margin-top: 8px;
+      padding-top: 8px;
       margin-bottom: 0;
       padding-bottom: 10px;
-      background: #FFFFFF;
 
       li {
         list-style: none;
@@ -145,7 +125,7 @@
                 font-size: 14px;
                 line-height: 18px;
                 font-weight: bold;
-                color: #4b78aa;
+                color: #2C2E31;
                 margin-top: 4px;
                 margin-bottom: 0;
                 padding-left: 26px;

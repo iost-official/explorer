@@ -27,7 +27,7 @@ export default {
   },
 
   async getBlockInfo ({commit}, pages) {
-    const { data } = await axios.get(`${apis.blocks}?p=${pages}`)
+    const { data } = await axios.get(`${apis.blocks}?page=${pages}`)
     if(data.code == 0){
       commit(types.BLOCKINFO, {blockInfo: data.data})
     }

@@ -6,6 +6,9 @@
           <img src="../../assets/logo.png" alt="">
         </router-link>
       </div>
+      <!--<div class="my-search">-->
+        <!--<input type="text" class="form-control my-input" placeholder="Search...">-->
+      <!--</div>-->
       <ul class="my-nav-box">
         <li class="my-nav-item" :class="{active: currentColor == 0}">
           <router-link to="/">HOME</router-link>
@@ -23,7 +26,16 @@
         <li class="my-nav-item" :class="{active: currentColor == 4}">
           <router-link to="/applyIOST">REQUEST TEST IOST</router-link>
         </li>
+
+        <!--<li class="my-nav-item" :class="{active: currentColor == 4}">-->
+          <!--<input type="text" class="form-control my-input" placeholder="Search...">-->
+
+        <!--</li>-->
+        <!--<li class="my-nav-item" :class="{active: currentColor == 4}">-->
+          <!--<img src="../../assets/search.png" alt=""/>-->
+        <!--</li>-->
       </ul>
+
     </div>
   </div>
 </template>
@@ -39,12 +51,11 @@
     },
     watch: {
       '$route' (to) {
-        const arr = ['/block','/tx','/account','/applyIOST','/feedback']
+        const arr = ['/block','/tx','/account','/applyIOST','/feedback','/Search','/luckyBet']
         let arr2 = arr.filter((a, index) => {
           return to.path.search(a)+1
         })
         let result = arr2.join('')
-        console.log(result)
         if (result == '/block') {
           this.currentColor = 1
           this.currentTheme = false
@@ -60,7 +71,13 @@
         }else if (result == '/feedback') {
           this.currentColor = 5
           this.currentTheme = false
-        } else {
+        }else if (result == '/Search') {
+          this.currentColor = 6
+          this.currentTheme = false
+        } else if (result == '/luckyBet') {
+          this.currentColor = 7
+          this.currentTheme = false
+        }else {
           this.currentColor = 0
           this.currentTheme = true
         }
@@ -84,7 +101,7 @@
     },
     
     created () {
-      const arr = ['/block','/tx','/account','/applyIOST','/feedback']
+      const arr = ['/block','/tx','/account','/applyIOST','/feedback','/Search','/luckyBet']
       let arr2 = arr.filter((a, index) => {
         return location.pathname.search(a)+1
       })
@@ -105,7 +122,13 @@
       }else if (result == '/feedback') {
         this.currentColor = 5
         this.currentTheme = false
-      } else {
+      }else if (result == '/Search') {
+        this.currentColor = 6
+        this.currentTheme = false
+      }else if (result == '/luckyBet') {
+        this.currentColor = 7
+        this.currentTheme = false
+      }  else {
         this.currentColor = 0
         this.currentTheme = true
       }
@@ -154,11 +177,18 @@
           }
         }
       }
+      .my-search {
+        padding-left: 30px;
+        margin-right: -20px;
+        .my-input {
+
+        }
+      }
       .my-nav-box {
         display: flex;
         margin-bottom: 0;
         height: 100%;
-        
+
         .my-nav-item {
           display: flex;
           align-items: center;
@@ -183,6 +213,10 @@
                 display: block;
               }
             }
+          }
+          > img {
+            width: 22px;
+            cursor: pointer;
           }
         }
       }

@@ -18,9 +18,9 @@
       searchData: function () {
         if (!this.searchInput) return
         // axios.get('https://explorer.iost.io/api/search/' + this.searchInput).then((response) => {
-        axios.get('http://47.75.223.44:8080/api/Search/' + this.searchInput).then((response) => {
+        axios.get('http://47.75.223.44:8080/api/search/' + this.searchInput).then((response) => {
           console.log(response.data)
-          var type = response.data.type
+          var type = response.data.data.type
           console.log(type)
           if (type == "block") {
             if (response.data.text) {

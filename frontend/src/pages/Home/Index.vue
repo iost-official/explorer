@@ -18,6 +18,9 @@
   import Search from '../../components/Search'
 
   import axios from 'axios';
+  import { config } from '../../utils/config'
+
+  const { apis } = config
 
 
   export default {
@@ -26,10 +29,10 @@
     components: {Search, IndexTxns, IndexBlock, MarketInfo},
 
     created () {
-      axios.get('http://47.75.223.44:8080/api/test').then((response) => {
+      axios.get(`${apis.test}`).then((response) => {
         console.log(response)
         if (true) {
-          axios.get('http://47.75.223.44:8080/api/test2')
+          axios.get(`${apis.test2}`)
         }
       })
     }
@@ -39,7 +42,7 @@
 
 <style lang="less" rel="stylesheet/less">
   .bg {
-    background-image: url("../../assets/bg1.png");
+    background-image: url("../../assets/bg.png");
     background-size: 100%;
     background-repeat: no-repeat;
     .home-box {

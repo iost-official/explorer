@@ -13,13 +13,10 @@
 		<div class="my-tips-container">
 			<div class="" id="luckyBetIntro">
 				<p>Lucky Bet is operating on the v0.5 Everest testnet of the IOST Blockchain. It provides a way for users to participate and try out the IOST testnet. Everest is still in its early testing phase. In order to launch a stable Mainnet, IOST engineers will be constantly pressure testing, adjusting, fixing and upgrading the testnet. This may result in instability, periods where the testnet is offline, and other abnormalities.</p>
-				<p></p>
 				<p>If you encounter any issues or bugs, please email team@iost.io or report your issue via the following link:</p>
 				<!--<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>-->
 				<router-link to="/feedback">https://explorer.iost.io/#/feedback</router-link>
-				<p></p>
-				<p>Lucky Bet是基于IOST测试网络开发，目的是为了让大家体验IOST阶段性进展。IOST目前正在早期测试阶段，为了保证将来的主网功能能够如期稳定上线，IOST开发团队随时可能对测试网络进行升级、调整、修复问题和压力测试，可能在某些时刻会造成网络下线、不稳定和其他异常情况发生。</p>
-				<p></p>
+				<p class="cn">Lucky Bet是基于IOST测试网络开发，目的是为了让大家体验IOST阶段性进展。IOST目前正在早期测试阶段，为了保证将来的主网功能能够如期稳定上线，IOST开发团队随时可能对测试网络进行升级、调整、修复问题和压力测试，可能在某些时刻会造成网络下线、不稳定和其他异常情况发生。</p>
 				<p>如果你发现了测试网络的任何Bug，欢迎发邮件给team@iost.io，或在以下网址提交给我们改进：</p>
 				<!--<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>-->
 				<router-link to="/feedback">https://explorer.iost.io/#/feedback</router-link>
@@ -27,7 +24,7 @@
 		</div>
 
 		<div class="my-container">
-			<div class="" role="alert" id="errAlert">{{errMsg}}</div>
+			<div class="my-err-msg" role="alert" id="errAlert">{{errMsg}}</div>
 			<div class="my-group">
 				<p class="">Address</p>
 				<input class="my-input" placeholder="Address" id="applyAddress" v-model.trim()="address">
@@ -54,7 +51,7 @@
 			</div>
 
 			<div class="my-group my-recaptcha">
-				<div class="g-recaptcha" data-sitekey="6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"></div>
+				<div class="g-recaptcha" id="recap" data-sitekey="6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"></div>
 			</div>
 
 			<div class="my-group my-verify">
@@ -87,6 +84,9 @@ import axios from 'axios';
 import secp256k1 from 'secp256k1'
 import base58 from 'bs58'
 import swal from 'sweetalert2'
+import { config } from '../../utils/config'
+
+const { apis } = config
 
 export default {
 	name: 'ApplyIOST',
@@ -134,6 +134,7 @@ export default {
 		bytesToHex: function(bytes) {
 			return bytes.toString('hex')
 		},
+
 		sendSmS: function() {
 			if (this.ltime > 0) {
 				return false
@@ -151,14 +152,13 @@ export default {
 			params.append('mobile', '+' + code + this.mobile)
 			params.append('gcaptcha', grecap)
 
-			console.log(params)
 			// axios.post('https://explorer.iost.io/api/sendSMS', params).then((response) => {
-			axios.post('http://47.75.223.44:8080/api/sendSMS', params).then((response) => {
-				// var retCode = response.data.ret
+			// axios.post('http://47.75.223.44:8080/api/sendSMS', params).then((response) => {
+			axios.post(`${apis.sendSMS}`, params).then((response) => {
 				var retCode = response.data.code
 				if (retCode != 0) {
 					$('#errAlert').addClass('alert alert-danger')
-					this.errMsg = response.data.msg
+					this.errMsg = response.data.message
 				}
 			})
 
@@ -252,17 +252,20 @@ export default {
 				dotNum++
 			}, 1000)
 
-			axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam(grecap)).then((response) => {
+			// axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam(grecap)).then((response) => {
+			axios.post(`${apis.applyIOST}`, this.getApplyParam(grecap)).then((response) => {
 				let retCode = response.data.code
-				let txHash = response.data.msg
+				let txHash = response.data.data
 				if (retCode != 0) {
-					axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
+					// axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
+					axios.post(`${apis.applyIOST}`, this.getApplyParam()).then((response) => {
 						let retCode = response.data.code
-						let txHash = response.data.msg
+						let txHash = response.data.data
 						if (retCode != 0) {
-							axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
+							// axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
+							axios.post(`${apis.applyIOST}`, this.getApplyParam()).then((response) => {
 								let retCode = response.data.code
-								let txHash = response.data.msg
+								let txHash = response.data.data
 								if (retCode != 0) {
 									swal.close()
 									$('#applyIOSTModal').modal('hide')
@@ -275,7 +278,8 @@ export default {
 									if (this.address.length > 0) {
 										pushParams.address = this.address
 									} else {
-										pushParams.address = this.addressx
+										// pushParams.address = this.addressx
+										pushParams.address = this.address
 									}
 									pushParams.email = this.email
 									pushParams.mobile = this.mobile
@@ -354,24 +358,24 @@ export default {
 		
 		window.setTimeout(function() {
 			if ($('.g-recaptcha').html().length == 0) {
-				swal({
-				  title: 'Failed to load google reCaptcha !',
-				  text: '',
-				  confirmButtonText: 'try again'
-				}).then((result) => {
-					location.reload()
-				})
-
+				// swal({
+				//   title: 'Failed to load google reCaptcha !',
+				//   text: '',
+				//   confirmButtonText: 'try again'
+				// }).then((result) => {
+				// 	location.reload()
+				// })
+        grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
 			}
 		}, 3000)
 	},
-	created: function() {
-		if (window.location.href.substr(-2) !== '?r') {
-    		window.location = window.location.href + '?r';
-    		// console.log(window.location)
-    		// location.reload()
-		}
-	}
+	// created: function() {
+	// 	if (window.location.href.substr(-2) !== '?r') {
+   //  		window.location = window.location.href + '?r';
+   //  		// console.log(window.location)
+   //  		// location.reload()
+	// 	}
+	// }
 }
 </script>
 
@@ -428,6 +432,9 @@ export default {
 				font-size: 14px;
 				line-height: 22px;
 				color: #A94442;
+				&.cn {
+					margin-top: 20px;
+				}
 			}
 			a {
 				font-size: 14px;
@@ -444,13 +451,12 @@ export default {
 			padding: 56px 120px 70px 80px;
 			position: relative;
 			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-			.errMsg {
-				color: #a94442;
-				background-color: #f2dede;
-				border-color: #ebccd1;
+			.my-err-msg {
 				padding: 15px;
 				margin-bottom: 20px;
 				border-radius: 4px;
+				margin-left: 100px;
+				text-align: center;
 			}
 			.my-group{
 				display: flex;
@@ -545,28 +551,6 @@ export default {
 					background-color: rgba(44,46,49,1);
 				}
 			}
-
-
 		}
-
-		.d {
-			display: block;
-			width: 100%;
-			height: 34px;
-			padding: 6px 12px;
-			font-size: 14px;
-			line-height: 1.42857143;
-			color: #555;
-			background-color: #fff;
-			background-image: none;
-			border: 1px solid #ccc;
-			border-radius: 4px;
-			-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-			box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-			-webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
-			-o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-			transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-		}
-
 	}
 </style>

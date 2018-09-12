@@ -9,13 +9,15 @@
         <div class="txns-info">
           <div>
             <h1 v-if="address != ''">
-              Transactions <span style="font-size: 14px;color: #999; font-weight: 400">:: Address {{address}}</span>
+              Transactions
+              <p>Address：{{address}}</p>
             </h1>
             <h1 v-else-if="blk != ''">
-              Transactions <span style="font-size: 14px; color: #999; font-weight: 400">:: Block {{blk}}</span>
+              Transactions
+              <p>Block：{{blk}}</p>
             </h1>
             <h1 v-else>
-              Transactions <span style="font-size: 14px; color: #999; font-weight: 400"></span>
+              Transactions
             </h1>
           </div>
           <h4>{{txnInfo.totalLen}} transactions found (showing the last 500 records)</h4>
@@ -193,6 +195,13 @@
             line-height: 44px;
             font-weight: bold;
             height: 44px;
+            > p {
+              font-size: 12px;
+              color: #999;
+              font-weight: 400;
+              line-height: 1;
+              height: 14px;
+            }
 
           }
           h4 {
@@ -246,7 +255,7 @@
       .list-body-wrap {
         width: 100%;
         &:hover {
-          box-shadow: 0 8px 30px 0 rgba(0, 0, 0, .15);
+          box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .08);
         }
         .list-wrap {
           max-height: 1000px;

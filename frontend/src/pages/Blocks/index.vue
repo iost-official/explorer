@@ -6,7 +6,10 @@
 
     <div class="blocks-header">
       <div class="my-header-container">
-        <h1>Blocks</h1>
+        <div class="blocks-info">
+          <h1>Blocks</h1>
+          <h4>showing the last 30 records</h4>
+        </div>
         <ul class="pagination my-pages">
           <li><router-link to="/blocks" aria-label="First"><span aria-hidden="true"><img src="../../assets/arrow-douleft.png" alt=""></span></router-link></li>
 
@@ -133,24 +136,50 @@
       background: #F6F7F8;
       box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
       .my-header-container {
-        display: flex;
-        justify-content: space-between;
-        height: 85px;
+        height: 120px;
         width: 1000px;
         margin: 0 auto;
-        > h1 {
-          margin-top: 21px;
-          font-size: 36px;
-          line-height: 44px;
-          font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        text-align: left;
+        .blocks-info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 20px 0 22px;
+          font-size: 0;
+          h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 36px;
+            line-height: 44px;
+            font-weight: bold;
+            height: 44px;
+            > p {
+              font-size: 12px;
+              color: #999;
+              font-weight: 400;
+              line-height: 1;
+              height: 14px;
+            }
+
+          }
+          h4 {
+            margin: 15px 0 0;
+            font-size: 14px;
+            line-height: 18px;
+            color: #2C2E31;
+          }
         }
         .my-pages {
-          margin-top: 29px;
+          margin: 64px 0 0;
+          width: 240px;
           li {
             a {
               padding: 5px;
               height: 32px;
               color: #2c2e31;
+              text-align: center;
               &.page-auto {
                 width: 112px;
               }
@@ -165,6 +194,40 @@
           }
         }
       }
+
+      /*.my-header-container {*/
+        /*display: flex;*/
+        /*justify-content: space-between;*/
+        /*height: 85px;*/
+        /*width: 1000px;*/
+        /*margin: 0 auto;*/
+        /*> h1 {*/
+          /*margin-top: 21px;*/
+          /*font-size: 36px;*/
+          /*line-height: 44px;*/
+          /*font-weight: bold;*/
+        /*}*/
+        /*.my-pages {*/
+          /*margin-top: 29px;*/
+          /*li {*/
+            /*a {*/
+              /*padding: 5px;*/
+              /*height: 32px;*/
+              /*color: #2c2e31;*/
+              /*&.page-auto {*/
+                /*width: 112px;*/
+              /*}*/
+              /*span {*/
+                /*padding: 0;*/
+                /*img {*/
+                  /*width: 20px;*/
+                  /*height: 20px;*/
+                /*}*/
+              /*}*/
+            /*}*/
+          /*}*/
+        /*}*/
+      /*}*/
     }
     .blocks-list {
       min-height: 366px;
@@ -181,7 +244,7 @@
         .list-body-wrap {
           width: 100%;
           &:hover {
-            box-shadow: 0 8px 30px 0 rgba(0, 0, 0, .15);
+            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .08);
           }
         }
       }
@@ -206,8 +269,8 @@
             width: 100px;
           }
           &:nth-child(2) {
-            width: 500px;
-            padding-right: 100px;
+            width: 480px;
+            padding-right: 80px;
             overflow: hidden;
             text-overflow: ellipsis;
           }

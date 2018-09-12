@@ -1,5 +1,6 @@
 
-const APIV1 = 'http://47.75.223.44:8080/api/'
+// const APIV1 = 'http://47.75.223.44:8080/api/'
+const APIV1 = '/api/'
 
 const config = {
   apis: {
@@ -21,6 +22,9 @@ const config = {
     feedback: `${APIV1}feedback`,
 
     test: `${APIV1}test`,
+    test2: `${APIV1}test2`,
+
+    applyIOST: `${APIV1}applyIOST`
   },
 }
 
