@@ -9,6 +9,7 @@ import (
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/Go-IOS-Protocol/core/tx"
+	"github.com/iost-official/Go-IOS-Protocol/crypto"
 	"github.com/iost-official/explorer/backend/model/blkchain/rpc"
 	"github.com/iost-official/explorer/backend/util/transport"
 )
@@ -169,7 +170,7 @@ func Transfer(from, to string, amount, gasLimit, gasPrice, expiration int64, pri
 
 	trx := tx.NewTx(actions, [][]byte{}, gasLimit, gasPrice, time.Now().Add(time.Second*time.Duration(expiration)).UnixNano())
 
-	acc, err := account.NewAccount(common.Base58Decode(privKey))
+	acc, err := account.NewAccount(common.Base58Decode(privKey), crypto.Ed25519)
 	if err != nil {
 		return nil, err
 	}

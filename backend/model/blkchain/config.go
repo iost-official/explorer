@@ -1,7 +1,7 @@
 package blkchain
 
 const (
-	RPCAddress         = "47.75.223.44:30302"
+	RPCAddress         = "13.237.151.211:30002"
 	SystemContract     = "iost.system"
 	SystemTransferFunc = "Transfer"
 )
