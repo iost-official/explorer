@@ -48,9 +48,8 @@ func main() {
 	// mail
 	e.POST("/api/feedback", controller.SendMail)
 
-	// Test api
-	e.GET("/api/test", controller.TestPage)
-	e.GET("/api/test2", controller.TestPage2)
+	e.GET("/api/dropDatabase", controller.DropDatabase)
+
 
 	e.Logger.Fatal(e.Start(":" + viper.GetString("port")))
 }

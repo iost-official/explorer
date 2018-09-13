@@ -368,7 +368,7 @@ func TestPage(c echo.Context) error {
 	defer sess.SessionRelease(c.Response())
 
 
-	sess.Set("test-session", "hello 123 456")
+	sess.Set("test-session", "hello-123-456")
 	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world"}))
 }
 
@@ -378,6 +378,7 @@ func TestPage2(c echo.Context) error {
 
 
 	info := sess.Get("test-session")
-	fmt.Println(info)
+	vcInSession, _ := info.(string)
+	fmt.Println(vcInSession)
 	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world2"}))
 }
