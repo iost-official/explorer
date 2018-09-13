@@ -1,8 +1,6 @@
 <template>
   <div class="txns-box">
-    <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-    </div>
+    <LuckyBet/>
 
     <div class="txns-header">
       <div class="my-header-container">
@@ -22,34 +20,36 @@
           </div>
           <h4>{{txnInfo.totalLen}} transactions found (showing the last 500 records)</h4>
         </div>
-        <ul class="pagination my-pages">
+        <ul class="my-pages">
           <li>
-            <router-link :to="{path:`/txs?a=${address}&b=${blk}`}" aria-label="First">
-              <span aria-hidden="true">
-                <img src="../../assets/arrow-douleft.png" alt="">
-              </span>
+            <router-link :to="{path:`/txs?a=${address}&b=${blk}`}">
+              <span><img src="../../assets/arrow-douleft.png" alt=""></span>
             </router-link>
           </li>
 
           <li>
-            <a v-if="page == 1" href="javascript:void(0)" aria-label="Previous">
-              <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
+            <a v-if="page == 1" href="javascript:void(0)">
+              <span><img src="../../assets/arrow-left.png" alt=""></span>
             </a>
-            <router-link v-else :to="{path:`/txs?p=${(page-1)}&a=${address}&b=${blk}`}" aria-label="Previous">
-              <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
+            <router-link v-else :to="{path:`/txs?p=${(page-1)}&a=${address}&b=${blk}`}">
+              <span><img src="../../assets/arrow-left.png" alt=""></span>
             </router-link>
           </li>
 
           <li><a class="page-auto" href="#"><b>{{page}}</b> / <b>{{txnInfo.pageLast}}</b></a></li>
           <li>
-            <a v-if="page == txnInfo.pageLast" href="javascript:void(0)" aria-label="Next">
-              <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
+            <a v-if="page == txnInfo.pageLast" href="javascript:void(0)">
+              <span><img src="../../assets/arrow-right.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/txs?p=${(page+1)}&a=${address}&b=${blk}`}">
-              <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="../../assets/arrow-right.png" alt=""></span>
             </router-link>
           </li>
-          <li><router-link :to="{path:`/txs?p=${txnInfo.pageLast}&a=${address}&b=${blk}`}" aria-label="Last"><span aria-hidden="true"><img src="../../assets/arrow-douright.png" alt=""></span></router-link></li>
+          <li>
+            <router-link :to="{path:`/txs?p=${txnInfo.pageLast}&a=${address}&b=${blk}`}">
+              <span><img src="../../assets/arrow-douright.png" alt=""></span>
+            </router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -67,8 +67,12 @@
       <div class="list-wrap">
         <div class="list-body-wrap" v-for="tx in txnInfo.txsList">
           <ul class="my-list-body">
-            <li><router-link :to="{path:`/block/${tx.blockHeight}`}">{{tx.blockHeight}}</router-link> </li>
-            <li><router-link :to="{path:`/tx/${tx.txHash}`}">{{tx.txHash}}</router-link></li>
+            <li>
+              <router-link :to="{path:`/block/${tx.blockHeight}`}">{{tx.blockHeight}}</router-link>
+            </li>
+            <li>
+              <router-link :to="{path:`/tx/${tx.txHash}`}">{{tx.txHash}}</router-link>
+            </li>
             <li>
               <span v-if="address == tx.from">{{tx.from}}</span>
               <router-link v-else :to="{path:`/account/${tx.from}`}">{{tx.from}}</router-link>
@@ -76,10 +80,10 @@
             <li>
               <img v-if="tx.state == 0" src="../../assets/failure.png" alt="">
               <img v-else src="../../assets/success.png" alt="">
-              <!--<span v-if="address != ''" class="label label-success rounded">&nbsp; IN &nbsp;</span>-->
-              <!--<i v-else class="fas fa-arrow-right" style="color:#0f0"></i>-->
             </li>
-            <li><router-link :to="{path:`/account/${tx.to}`}">{{tx.to}}...</router-link></li>
+            <li>
+              <router-link :to="{path:`/account/${tx.to}`}">{{tx.to}}...</router-link>
+            </li>
             <li>{{tx.age}}</li>
             <li>{{tx.amount}} IOST</li>
           </ul>
@@ -91,19 +95,16 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
 
   export default {
     name: "Txns",
     data() {
       return {
-        // txnList: [],
         page: '',
-        // totalPage: '',
         address: '',
         blk: '',
-        // totalLen: '',
       }
     },
     methods: {
@@ -124,12 +125,6 @@
         }
 
         this.$store.dispatch('getTxnInfo',{page:this.page, address: this.address, blk:this.blk})
-
-        // axios.get('https://explorer.iost.io/api/txs?p=' + this.page + '&a=' + this.address + '&b=' + this.blk).then((response) => {
-        //   this.txnList = response.data.txs_list
-        //   this.totalPage = response.data.page_last
-        //   this.totalLen = response.data.total_len
-        // })
       }
     },
 
@@ -144,33 +139,17 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
+    },
+
+    components: {
+      LuckyBet
     }
   }
 </script>
 
 <style lang="less" rel="stylesheet/less">
   .txns-box {
-    padding-top: 90px;
     padding-bottom: 100px;
-    margin: 0 auto;
-    .luckyBet-box {
-      background: #2C2E31;
-      height: 50px;
-      line-height: 50px;
-      color: #F6F7F8;
-      font-size: 14px;
-      > img {
-        width: 24px;
-        height: 24px;
-        margin-right: 12px;
-      }
-      a {
-        color: #F6F7F8;
-        font-size: 14px;
-        line-height: 18px;
-        text-decoration: none;
-      }
-    }
     .txns-header {
       background: #F6F7F8;
       box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
@@ -210,15 +189,32 @@
             color: #2C2E31;
           }
         }
+
         .my-pages {
+          display: inline-block;
           margin: 64px 0 0;
-          width: 240px;
+          padding: 0;
           li {
+            list-style: none;
+            display: inline;
             a {
               padding: 5px;
               height: 32px;
               color: #2c2e31;
               text-align: center;
+              position: relative;
+              float: left;
+              margin-left: -1px;
+              line-height: 1.42857143;
+              text-decoration: none;
+              background-color: #fff;
+              border: 1px solid #ddd;
+              &:hover, &:focus {
+                z-index: 2;
+                color: #23527c;
+                background-color: #eee;
+                border-color: #ddd;
+              }
               &.page-auto {
                 width: 112px;
               }
@@ -232,6 +228,7 @@
             }
           }
         }
+
       }
 
     }

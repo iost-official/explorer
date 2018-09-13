@@ -1,8 +1,7 @@
 <template>
   <div class="search-box">
-    <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-    </div>
+    <LuckyBet/>
+
     <div class="search-header">
       <div class="my-header-container">
         <h1>Search</h1>
@@ -21,8 +20,10 @@
 </template>
 
 <script>
+  import LuckyBet from '../../components/LuckyBet'
+
   export default {
-    name: 'Search',
+    name: 'SearchPages',
     data() {
       return {
         searchInput: this.$route.params.id,
@@ -32,33 +33,16 @@
       '$route': function (r) {
         this.searchInput = r.params.id
       }
+    },
+
+    components: {
+      LuckyBet
     }
   }
 </script>
 
 <style lang="less" rel="stylesheet/less">
   .search-box {
-    padding-top: 90px;
-    margin: 0 auto;
-    .luckyBet-box {
-      background: #2C2E31;
-      height: 50px;
-      line-height: 50px;
-      color: #F6F7F8;
-      font-size: 14px;
-      > img {
-        width: 24px;
-        height: 24px;
-        margin-right: 12px;
-      }
-      a {
-        color: #F6F7F8;
-        font-size: 14px;
-        line-height: 18px;
-        text-decoration: none;
-      }
-    }
-
     .search-header {
       background: #F6F7F8;
       box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);

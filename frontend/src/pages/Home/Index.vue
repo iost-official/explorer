@@ -17,25 +17,10 @@
   import IndexTxns from "../../components/HomeTxns";
   import Search from '../../components/Search'
 
-  import axios from 'axios';
-  import { config } from '../../utils/config'
-
-  const { apis } = config
-
-
   export default {
     name: "Home",
 
     components: {Search, IndexTxns, IndexBlock, MarketInfo},
-
-    created () {
-      axios.get(`${apis.test}`).then((response) => {
-        if (true) {
-          axios.get(`${apis.test2}`)
-        }
-      })
-    }
-
   }
 </script>
 
@@ -44,6 +29,8 @@
     background-image: url("../../assets/bg.png");
     background-size: 100%;
     background-repeat: no-repeat;
+    margin-top: -90px;
+    /*距离底部的高度，添加到blockTxns-container类上，因为要显示阴影*/
     .home-box {
       width: 1040px;
       margin: 0 auto;

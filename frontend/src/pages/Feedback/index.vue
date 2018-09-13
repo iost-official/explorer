@@ -1,8 +1,7 @@
 <template>
   <div class="feedBack-box">
-		<div class="luckyBet-box">
-			<img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-		</div>
+		<LuckyBet/>
+
   	<div class="feedBack-header">
       <div class="my-header-container">
 				<h1>Feedback</h1>
@@ -26,6 +25,7 @@
 <script>
 import swal from 'sweetalert2'
 import axios from 'axios';
+import LuckyBet from '../../components/LuckyBet'
 
 export default {
 	name: "Feedback",
@@ -76,34 +76,18 @@ export default {
 				})
 			})
 		}
-	}
+	},
+
+  components: {
+    LuckyBet
+  }
 }
 </script>
 
 <style lang="less" rel="stylesheet/less">
 	.feedBack-box {
-		padding-top: 90px;
-		margin: 0 auto;
 		padding-bottom: 160px;
 		background: #F6F7F8;
-		.luckyBet-box {
-			background: #2C2E31;
-			height: 50px;
-			line-height: 50px;
-			color: #F6F7F8;
-			font-size: 14px;
-			> img {
-				width: 24px;
-				height: 24px;
-				margin-right: 12px;
-			}
-			a {
-				color: #F6F7F8;
-				font-size: 14px;
-				line-height: 18px;
-				text-decoration: none;
-			}
-		}
 		.feedBack-header {
 			background: #F6F7F8;
 			box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);

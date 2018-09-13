@@ -23,9 +23,6 @@ const config = {
 
     feedback: `${APIV1}feedback`,
 
-    test: `${APIV1}test`,
-    test2: `${APIV1}test2`,
-
     applyIOST: `${APIV1}applyIOST`
   },
 }

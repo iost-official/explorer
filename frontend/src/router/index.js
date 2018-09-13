@@ -67,7 +67,7 @@ export default new Router({
       }
     },
     {
-      path: '/Accounts',
+      path: '/accounts',
       name: 'Accounts',
       components: {
         Head: Head,

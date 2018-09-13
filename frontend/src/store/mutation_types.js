@@ -16,6 +16,7 @@ const types = {
   ACCOUNTINFO: 'accountInfo',
   ACCOUNTDETAIL: 'accountDetail',
   ACCOUNTTXNINFO: 'accountTxnInfo',
+
 }
 
 export default types

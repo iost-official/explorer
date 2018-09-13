@@ -1,8 +1,6 @@
 <template>
   <div class="blockDetail-box">
-    <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-    </div>
+    <LuckyBet/>
 
     <div class="blockDetail-header">
       <div class="my-header-container">
@@ -10,8 +8,6 @@
         <p>#{{blockHeight}}</p>
       </div>
     </div>
-
-
 
     <div class="blockDetail-information">
       <img src="../../assets/iostWhite.png" alt="">
@@ -47,7 +43,7 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
 
   export default {
@@ -55,29 +51,12 @@
     data() {
       return {
         blockHeight: '',
-        // age: '',
-        // utcAge: '',
-        // txnLen: '',
-        // txnHash: '',
-        // parentHash: '',
-        // blockHash: '',
-        // witness: '',
       }
     },
     methods: {
       fetchData(r) {
         this.blockHeight = r.params.id
         this.$store.dispatch('getBlockDetail', this.blockHeight)
-
-        // axios.get('https://explorer.iost.io/api/block/' + this.blockHeight).then((response) => {
-        //   this.blockHeight = response.data.height
-        //   this.age = response.data.age
-        //   this.utcAge = response.data.utc_time
-        //   this.txnLen = response.data.txn
-        //   this.parentHash = response.data.parent_hash
-        //   this.blockHash = response.data.block_hash
-        //   this.witness = response.data.witness
-        // })
       }
     },
 
@@ -92,34 +71,18 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
+    },
+
+    components: {
+      LuckyBet
     }
   }
 </script>
 
 <style lang="less" rel="stylesheet/less">
   .blockDetail-box {
-    padding-top: 90px;
-    margin: 0 auto;
-    background: #F6F7F8;
     padding-bottom: 160px;
-    .luckyBet-box {
-      background: #2C2E31;
-      height: 50px;
-      line-height: 50px;
-      color: #F6F7F8;
-      font-size: 14px;
-      > img {
-        width: 24px;
-        height: 24px;
-        margin-right: 12px;
-      }
-      a {
-        color: #F6F7F8;
-        font-size: 14px;
-        line-height: 18px;
-        text-decoration: none;
-      }
-    }
+    background: #F6F7F8;
     .blockDetail-header {
       background: #F6F7F8;
       box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);

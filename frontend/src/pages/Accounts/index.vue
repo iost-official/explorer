@@ -1,8 +1,6 @@
 <template>
   <div class="accounts-box">
-    <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-    </div>
+    <LuckyBet/>
 
     <div class="accounts-header">
       <div class="my-header-container">
@@ -13,29 +11,37 @@
             <h4 v-else>{{accountInfo.totalLen}} accounts found (showing the last 500 records)</h4>
           </div>
         </div>
-        <ul class="pagination my-pages">
-          <li><a href="/accounts" aria-label="First"><span aria-hidden="true"><img src="../../assets/arrow-douleft.png" alt=""></span></a></li>
+        <ul class="my-pages">
+          <li>
+            <router-link to="/accounts">
+              <span><img src="../../assets/arrow-douleft.png" alt=""></span>
+            </router-link>
+          </li>
 
           <li>
-            <a v-if="page == 1" href="javascript:void(0)" aria-label="Previous">
-              <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
+            <a v-if="page == 1" href="javascript:void(0)">
+              <span><img src="../../assets/arrow-left.png" alt=""></span>
             </a>
-            <a v-else :href="'/accounts?p=' + (page-1)" aria-label="Previous">
-              <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
-            </a>
+            <router-link v-else :to="{path:`/accounts?p=${(page-1)}`}">
+              <span><img src="../../assets/arrow-left.png" alt=""></span>
+            </router-link>
           </li>
 
           <li><a href="#" class="page-auto"><b>{{page}}</b> / <b>{{accountInfo.pageLast}}</b></a></li>
           <li>
-            <a v-if="page == accountInfo.pageLast" href="javascript:void(0)" aria-label="Next">
-              <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
+            <a v-if="page == accountInfo.pageLast" href="javascript:void(0)">
+              <span><img src="../../assets/arrow-right.png" alt=""></span>
             </a>
-            <a v-else :href="'/accounts?p=' + (page+1)">
-              <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
-            </a>
+            <router-link v-else :to="{path:`/accounts?p=${(page+1)}`}">
+              <span><img src="../../assets/arrow-right.png" alt=""></span>
+            </router-link>
           </li>
 
-          <li><a :href="'/accounts?p=' + accountInfo.pageLast" aria-label="Last"><span aria-hidden="true"><img src="../../assets/arrow-douright.png" alt=""></span></a></li>
+          <li>
+            <router-link :to="{path:`/accounts?p=${accountInfo.pageLast}`}">
+              <span><img src="../../assets/arrow-douright.png" alt=""></span>
+            </router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -62,18 +68,14 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
-
 
   export default {
     name: 'accounts',
     data() {
       return {
-        // accountList: [],
         page: '',
-        // totalPage: '',
-        // totalLen: '',
       }
     },
     methods: {
@@ -85,13 +87,6 @@
         }
 
         this.$store.dispatch('getAccountInfo',this.page)
-
-
-        // axios.get('https://explorer.iost.io/api/accounts?p=' + this.page).then((response) => {
-        //   this.accountList = response.data.account_list
-        //   this.totalPage = response.data.page_last
-        //   this.totalLen = response.data.total_len
-        // })
       }
     },
 
@@ -106,32 +101,17 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
+    },
+
+    components: {
+      LuckyBet
     }
   }
 </script>
 
 <style lang="less" rel="stylesheet/less">
   .accounts-box {
-    padding-top: 90px;
-    margin: 0 auto;
-    .luckyBet-box {
-      background: #2C2E31;
-      height: 50px;
-      line-height: 50px;
-      color: #F6F7F8;
-      font-size: 14px;
-      > img {
-        width: 24px;
-        height: 24px;
-        margin-right: 12px;
-      }
-      a {
-        color: #F6F7F8;
-        font-size: 14px;
-        line-height: 18px;
-        text-decoration: none;
-      }
-    }
+    padding-bottom: 100px;
     .accounts-header {
       background: #F6F7F8;
       box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
@@ -142,13 +122,30 @@
         width: 1000px;
         margin: 0 auto;
         .my-pages {
-          margin-top: 64px;
+          display: inline-block;
+          margin: 64px 0 0;
+          padding: 0;
           li {
+            list-style: none;
+            display: inline;
             a {
               padding: 5px;
               height: 32px;
               color: #2c2e31;
               text-align: center;
+              position: relative;
+              float: left;
+              margin-left: -1px;
+              line-height: 1.42857143;
+              text-decoration: none;
+              background-color: #fff;
+              border: 1px solid #ddd;
+              &:hover, &:focus {
+                z-index: 2;
+                color: #23527c;
+                background-color: #eee;
+                border-color: #ddd;
+              }
               &.page-auto {
                 width: 112px;
               }
@@ -187,7 +184,6 @@
 
 
     .accounts-list {
-      min-height: 650px;
       margin-top: 2px;
       &::-webkit-scrollbar {
         width: 0;

@@ -53,7 +53,7 @@
     },
     watch: {
       '$route' (to) {
-        const arr = ['/block','/tx','/account','/applyIOST','/feedback','/Search','/luckyBet']
+        const arr = ['/block','/tx','/account','/applyIOST','/feedback','/search','/luckyBet']
         let arr2 = arr.filter((a, index) => {
           return to.path.search(a)+1
         })
@@ -73,7 +73,7 @@
         }else if (result == '/feedback') {
           this.currentColor = 5
           this.currentTheme = false
-        }else if (result == '/Search') {
+        }else if (result == '/search') {
           this.currentColor = 6
           this.currentTheme = false
         } else if (result == '/luckyBet') {
@@ -97,7 +97,6 @@
 
         } else {
           this.currentTheme = true
-
         }
       },
 
@@ -107,7 +106,6 @@
         }
         this.isShow = !this.isShow
         if (this.isShow) {
-          console.log(132131)
           setTimeout(() => {
             document.querySelector('input').focus()
           })
@@ -122,12 +120,14 @@
         if (!this.searchInput) return
         axios.get('http://47.75.223.44:8080/api/search/' + this.searchInput).then((response) => {
           var type = response.data.data.type
+          console.log(response.data)
           if (type == "block") {
             if (response.data.text) {
               this.$router.push({
                 path: '/block/' + response.data.text
               })
             } else {
+              alert(1)
               this.$router.push({
                 path: '/block/' + this.searchInput
               })
@@ -142,7 +142,7 @@
             })
           } else {
             this.$router.push({
-              path: '/Search/' + this.searchInput
+              path: '/search/' + this.searchInput
             })
           }
           this.searchInput = ''
@@ -154,7 +154,7 @@
     },
     
     created () {
-      const arr = ['/block','/tx','/account','/applyIOST','/feedback','/Search','/luckyBet']
+      const arr = ['/block','/tx','/account','/applyIOST','/feedback','/search','/luckyBet']
       let arr2 = arr.filter((a, index) => {
         return location.pathname.search(a)+1
       })
@@ -174,7 +174,7 @@
       }else if (result == '/feedback') {
         this.currentColor = 5
         this.currentTheme = false
-      }else if (result == '/Search') {
+      }else if (result == '/search') {
         this.currentColor = 6
         this.currentTheme = false
       }else if (result == '/luckyBet') {

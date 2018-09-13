@@ -1,8 +1,6 @@
 <template>
   <div class="blocks-box">
-    <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-    </div>
+    <LuckyBet/>
 
     <div class="blocks-header">
       <div class="my-header-container">
@@ -10,28 +8,36 @@
           <h1>Blocks</h1>
           <h4>showing the last 30 records</h4>
         </div>
-        <ul class="pagination my-pages">
-          <li><router-link to="/blocks" aria-label="First"><span aria-hidden="true"><img src="../../assets/arrow-douleft.png" alt=""></span></router-link></li>
+        <ul class="my-pages">
+          <li>
+            <router-link to="/blocks">
+              <span><img src="../../assets/arrow-douleft.png" alt=""></span>
+            </router-link>
+          </li>
 
           <li>
-            <a v-if="page == 1" href="javascript:void(0)" aria-label="Previous">
-              <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
+            <a v-if="page == 1" href="javascript:void(0)">
+              <span><img src="../../assets/arrow-left.png" alt=""></span>
             </a>
-            <router-link v-else :to="{path:`/blocks?p=${(page-1)}`}" aria-label="Previous">
-              <span aria-hidden="true"><img src="../../assets/arrow-left.png" alt=""></span>
+            <router-link v-else :to="{path:`/blocks?p=${(page-1)}`}">
+              <span><img src="../../assets/arrow-left.png" alt=""></span>
             </router-link>
           </li>
 
           <li><a class="page-auto" href="#"><b>{{page}}</b> / <b>{{blockInfo.pageLast}}</b></a></li>
           <li>
-            <a v-if="page == blockInfo.pageLast" href="javascript:void(0)" aria-label="Next">
-              <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
+            <a v-if="page == blockInfo.pageLast" href="javascript:void(0)">
+              <span><img src="../../assets/arrow-right.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/blocks?p=${(page+1)}`}">
-              <span aria-hidden="true"><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="../../assets/arrow-right.png" alt=""></span>
             </router-link>
           </li>
-          <li><router-link :to="{path:`/blocks?p=${blockInfo.pageLast}`}" aria-label="Last"><span aria-hidden="true"><img src="../../assets/arrow-douright.png" alt=""></span></router-link></li>
+          <li>
+            <router-link :to="{path:`/blocks?p=${blockInfo.pageLast}`}">
+              <span aria-hidden="true"><img src="../../assets/arrow-douright.png" alt=""></span>
+            </router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -62,17 +68,14 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
-
 
   export default {
     name: "Blocks",
     data() {
       return {
-        // blockList: [],
         page: '',
-        // totalPage: '',
       }
     },
     methods: {
@@ -84,13 +87,6 @@
         }
 
         this.$store.dispatch('getBlockInfo',this.page)
-
-        // axios.get('https://explorer.iost.io/api/blocks?p=' + this.page).then((response) => {
-        // // axios.get('http://47.75.223.44:8080/api/blocks?p=' + this.page).then((response) => {
-        //
-        //   this.blockList = response.data.block_list
-        //   this.totalPage = response.data.page_last
-        // })
       }
     },
 
@@ -105,33 +101,17 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
+    },
+
+    components: {
+      LuckyBet
     }
   }
 </script>
 
 <style lang="less" rel="stylesheet/less">
   .blocks-box {
-    padding-top: 90px;
     padding-bottom: 100px;
-    margin: 0 auto;
-    .luckyBet-box {
-      background: #2C2E31;
-      height: 50px;
-      line-height: 50px;
-      color: #F6F7F8;
-      font-size: 14px;
-      > img {
-        width: 24px;
-        height: 24px;
-        margin-right: 12px;
-      }
-      a {
-        color: #F6F7F8;
-        font-size: 14px;
-        line-height: 18px;
-        text-decoration: none;
-      }
-    }
     .blocks-header {
       background: #F6F7F8;
       box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
@@ -171,15 +151,32 @@
             color: #2C2E31;
           }
         }
+
         .my-pages {
+          display: inline-block;
           margin: 64px 0 0;
-          width: 240px;
+          padding: 0;
           li {
+            list-style: none;
+            display: inline;
             a {
               padding: 5px;
               height: 32px;
               color: #2c2e31;
               text-align: center;
+              position: relative;
+              float: left;
+              margin-left: -1px;
+              line-height: 1.42857143;
+              text-decoration: none;
+              background-color: #fff;
+              border: 1px solid #ddd;
+              &:hover, &:focus {
+                z-index: 2;
+                color: #23527c;
+                background-color: #eee;
+                border-color: #ddd;
+              }
               &.page-auto {
                 width: 112px;
               }
@@ -193,41 +190,10 @@
             }
           }
         }
+
       }
 
-      /*.my-header-container {*/
-        /*display: flex;*/
-        /*justify-content: space-between;*/
-        /*height: 85px;*/
-        /*width: 1000px;*/
-        /*margin: 0 auto;*/
-        /*> h1 {*/
-          /*margin-top: 21px;*/
-          /*font-size: 36px;*/
-          /*line-height: 44px;*/
-          /*font-weight: bold;*/
-        /*}*/
-        /*.my-pages {*/
-          /*margin-top: 29px;*/
-          /*li {*/
-            /*a {*/
-              /*padding: 5px;*/
-              /*height: 32px;*/
-              /*color: #2c2e31;*/
-              /*&.page-auto {*/
-                /*width: 112px;*/
-              /*}*/
-              /*span {*/
-                /*padding: 0;*/
-                /*img {*/
-                  /*width: 20px;*/
-                  /*height: 20px;*/
-                /*}*/
-              /*}*/
-            /*}*/
-          /*}*/
-        /*}*/
-      /*}*/
+
     }
     .blocks-list {
       min-height: 366px;

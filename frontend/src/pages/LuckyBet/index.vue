@@ -253,7 +253,7 @@
   import swal from 'sweetalert2'
 
   export default {
-    name: 'LuckyBet',
+    name: 'LuckyBetPages',
     data() {
       return {
         maxBetBlkHeight: 0,

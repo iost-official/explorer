@@ -43,12 +43,7 @@ export default {
   async getTxnInfo ({commit}, {page, address='', blk=''}) {
 
     const { data } = await axios.get(`${apis.txs}?page=${page}&account=${address}&block=${blk}`)
-    // const { data } = await axios.get(apis.txs,{
-    //   params: {
-    //     p: pages,
-    //
-    //   }
-    // })
+
     if(data.code == 0){
     commit(types.TXNINFO, {txnInfo: data.data})
     }

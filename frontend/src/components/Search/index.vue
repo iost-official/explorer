@@ -1,26 +1,26 @@
 <template>
   <div class="form-search-box">
-    <input type="text" class="form-control" placeholder="Search..." v-model.trim="searchInput" @keydown.enter="searchData()">
+    <input type="text" class="form-control" placeholder="Search..." v-model.trim="searchInput" @keydown.enter="searchData">
     <img src="../../assets/search.png" alt="">
   </div>
 </template>
 
 <script>
   import axios from 'axios';
-
   export default {
     data() {
       return {
         searchInput: ''
       }
     },
+
     methods: {
-      searchData: function () {
+      searchData () {
         if (!this.searchInput) return
         axios.get('http://47.75.223.44:8080/api/search/' + this.searchInput).then((response) => {
           var type = response.data.data.type
           if (type == "block") {
-            if (response.data.text) {
+            if (response.data.data.text) {
               this.$router.push({
                 path: '/block/' + response.data.text
               })
@@ -29,7 +29,6 @@
                 path: '/block/' + this.searchInput
               })
             }
-
           } else if (type == "account") {
             this.$router.push({
               path: '/account/' + this.searchInput
@@ -40,12 +39,15 @@
             })
           } else {
             this.$router.push({
-              path: '/Search/' + this.searchInput
+              path: '/search/' + this.searchInput
             })
           }
+          this.searchInput = ''
+          this.isShow = false
         })
         return false
       }
+
     }
 
   }

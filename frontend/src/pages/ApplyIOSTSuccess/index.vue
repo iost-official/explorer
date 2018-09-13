@@ -1,8 +1,7 @@
 <template>
   <div class="success-box">
-		<div class="luckyBet-box">
-			<img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-		</div>
+		<LuckyBet/>
+
   	<div class="success-header">
 			<div class="my-header-container">
 				<h1>Request successfully processed</h1>
@@ -44,51 +43,39 @@
 </template>
 
 <script>
-export default {
-	name: 'ApplyIOSTSuccess',
-	data() {
-		return {
-			address: this.$route.params.address,
-			email: this.$route.params.email,
-			mobile: this.$route.params.mobile.replace(' ', '+'),
-			txHash: this.$route.params.txHash,
-			privKey: this.$route.params.privKey,
-		}
-	},
-	created: function() {
-		// if (!this.$route.params.txHash) {
-		// 	this.$router.push({
-		// 		path: '/applyIOST',
-		// 	})
-		// }
-	}
-}
+  import LuckyBet from '../../components/LuckyBet'
+
+  export default {
+		name: 'ApplyIOSTSuccess',
+		data() {
+			return {
+				address: this.$route.params.address,
+				email: this.$route.params.email,
+				mobile: this.$route.params.mobile.replace(' ', '+'),
+				txHash: this.$route.params.txHash,
+				privKey: this.$route.params.privKey,
+			}
+		},
+		created: function() {
+			// if (!this.$route.params.txHash) {
+			// 	this.$router.push({
+			// 		path: '/applyIOST',
+			// 	})
+			// }
+		},
+
+    components: {
+      LuckyBet
+
+
+    }
+  }
 </script>
 
 <style lang="less" rel="stylesheet/less">
 	.success-box {
-		padding-top: 90px;
 		padding-bottom: 160px;
-		margin: 0 auto;
 		background: #F6F7F8;
-		.luckyBet-box {
-			background: #2C2E31;
-			height: 50px;
-			line-height: 50px;
-			color: #F6F7F8;
-			font-size: 14px;
-			> img {
-				width: 24px;
-				height: 24px;
-				margin-right: 12px;
-			}
-			a {
-				color: #F6F7F8;
-				font-size: 14px;
-				line-height: 18px;
-				text-decoration: none;
-			}
-		}
 		.success-header {
 			background: #F6F7F8;
 			box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);

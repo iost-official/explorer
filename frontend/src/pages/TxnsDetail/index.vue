@@ -1,8 +1,6 @@
 <template>
   <div class="txnsDetail-box">
-    <div class="luckyBet-box">
-      <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
-    </div>
+    <LuckyBet/>
 
     <div class="txnsDetail-header">
       <div class="my-header-container">
@@ -59,7 +57,7 @@
 </template>
 
 <script>
-  import axios from 'axios';
+  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
 
   export default {
@@ -67,15 +65,6 @@
     data() {
       return {
         txHash: '',
-        // blockHeight: '',
-        // from: '',
-        // to: '',
-        // amount: '',
-        // gasLimit: '',
-        // price: '',
-        // age: '',
-        // utcTime: '',
-        // code: ''
       }
     },
     methods: {
@@ -83,18 +72,6 @@
         this.txHash = r.params.id
 
         this.$store.dispatch('getTxnDetail', this.txHash)
-
-        // axios.get('https://explorer.iost.io/api/tx/' + this.txHash).then((response) => {
-        //   this.blockHeight = response.data.block_height
-        //   this.from = response.data.from
-        //   this.to = response.data.to
-        //   this.amount = response.data.amount
-        //   this.gasLimit = response.data.gas_limit
-        //   this.price = response.data.price
-        //   this.age = response.data.age
-        //   this.utcTime = response.data.utc_time
-        //   this.code = response.data.code
-        // })
       }
     },
 
@@ -109,6 +86,10 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
+    },
+
+    components: {
+      LuckyBet
     }
   }
 </script>
@@ -116,28 +97,8 @@
 
 <style lang="less" rel="stylesheet/less">
   .txnsDetail-box {
-    padding-top: 90px;
     padding-bottom: 160px;
-    margin: 0 auto;
     background: #F6F7F8;
-    .luckyBet-box {
-      background: #2C2E31;
-      height: 50px;
-      line-height: 50px;
-      color: #F6F7F8;
-      font-size: 14px;
-      > img {
-        width: 24px;
-        height: 24px;
-        margin-right: 12px;
-      }
-      a {
-        color: #F6F7F8;
-        font-size: 14px;
-        line-height: 18px;
-        text-decoration: none;
-      }
-    }
     .txnsDetail-header {
       background: #F6F7F8;
       box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);

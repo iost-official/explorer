@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <router-view name="Head"></router-view>
-    <router-view name="Main"></router-view>
+    <div class="my-main">
+      <router-view name="Main"></router-view>
+    </div>
     <router-view name="Foot"></router-view>
   </div>
 </template>
@@ -12,17 +14,22 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" rel="stylesheet/less">
   @font-face{
     font-family: 'Montserrat';
     src: url('./assets/font/Montserrat-Light.woff.ttf');
   }
-
   #app {
-  font-family: Montserrat, "Helvetica Neue",Helvetica,Arial,sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+    position: relative;
+    height: 100%;
+    font-family: Montserrat, "Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    .my-main {
+      padding-top: 90px;
+      min-height: 884px;
+    }
+  }
 </style>

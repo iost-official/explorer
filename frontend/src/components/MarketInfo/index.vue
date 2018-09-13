@@ -3,11 +3,15 @@
     <img class="my-img" src="../../assets/sixTri.png" alt="">
     <div class="my-marketInfo">
       <img class="marketInfo-logo" src="../../assets/iostMarket.png" alt="">
-      <div class="marketInfo-price">
+      <div class="marketInfo-price" v-if="marketInfo.price && marketInfo.btcPrice">
         <p><span>$</span> {{ marketInfo.price }}</p>
         <p>{{marketInfo.btcPrice}} BTC / {{marketInfo.ethPrice}} ETH</p>
       </div>
-      <div class="marketInfo-time">
+      <div class="marketInfo-price" v-else>
+        <img src="../../assets/loading.gif" alt="">
+      </div>
+
+      <div class="marketInfo-time" v-if="marketInfo.volume24h && marketInfo.marketCap && marketInfo.lastUpdate">
         <div class="time-name">
           <p>24h Change:</p>
           <p>24h Volume:</p>
@@ -21,14 +25,15 @@
           <p>{{ marketInfo.lastUpdate }}</p>
         </div>
       </div>
+      <div class="marketInfo-time" v-else>
+        <img src="../../assets/loading.gif" alt="">
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  import axios from 'axios';
   import { mapState } from 'vuex'
-
 
   export default {
     name: "marketInfo",
@@ -77,6 +82,7 @@
         p {
           text-align: left;
           margin-bottom: 0;
+          font-weight: bold;
           &:nth-child(1) {
             margin-top: 45px;
             font-size: 72px;
@@ -93,6 +99,11 @@
             line-height: 22px;
             color: #2c2e31;
           }
+        }
+
+        > img {
+          width: 310px;
+          height: 200px;
         }
       }
       .marketInfo-time {
@@ -124,6 +135,12 @@
           .down {
             color: #FF4D4D;
           }
+        }
+        > img {
+          width: 310px;
+          height: 200px;
+          margin-top: -55px;
+          margin-left: -75px;
         }
       }
     }
