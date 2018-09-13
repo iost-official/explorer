@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+
 func UpdateTxns(wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -41,12 +42,13 @@ func UpdateTxns(wg *sync.WaitGroup) {
 
 		for _, txn := range txns {
 			newTxn, err := db.RpcGetTxByHash(txn.Hash)
-			newTxn.BlockNumber = txn.BlockNumber
 
 			if err != nil {
 				log.Println("UpdateTxns RpcGetTxByHash error:", err)
 				continue
 			}
+
+			newTxn.BlockNumber = txn.BlockNumber
 
 			flatxns := newTxn.ToFlatTx()
 			var tmpFlatxn db.FlatTx
@@ -62,8 +64,9 @@ func UpdateTxns(wg *sync.WaitGroup) {
 					if errInsert != nil {
 						log.Println("failed to insert to flatxnC")
 						//	TODO: save those record to database to try again
+						continue
 					}
-					log.Println("Insert flatxn")
+					log.Println("Insert flatxn on block", tx.BlockNumber)
 				}
 			}
 
@@ -82,8 +85,9 @@ func UpdateTxns(wg *sync.WaitGroup) {
 			if errUpdate != nil {
 				log.Println("failed to update txn")
 				//	TODO: save failed record to database to try again
+				continue
 			}
-			log.Println("Update Txn")
+			log.Println("Update Txn on block", newTxn.BlockNumber)
 		}
 	}
 }

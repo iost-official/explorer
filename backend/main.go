@@ -1,13 +1,16 @@
 package main
 
 import (
+	"github.com/iost-official/explorer/backend/config"
 	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
 	"github.com/labstack/echo"
 	echoMiddle "github.com/labstack/echo/middleware"
+	"github.com/spf13/viper"
 )
 
 func main() {
+	config.ReadConfig()
 	e := echo.New()
 	e.Debug = true
 	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
@@ -38,15 +41,15 @@ func main() {
 
 	// applyIOST
 	e.POST("/api/sendSMS", controller.SendSMS)
-	//e.POST("/api/applyIOST", controller.ApplyIOST)
+	e.POST("/api/applyIOST", controller.ApplyIOST)
 
 	//e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
 
 	// mail
 	e.POST("/api/feedback", controller.SendMail)
 
-	// Test api
-	e.GET("/api/test", controller.TestPage)
+	e.GET("/api/dropDatabase", controller.DropDatabase)
 
-	e.Logger.Fatal(e.Start(":8080"))
+
+	e.Logger.Fatal(e.Start(":" + viper.GetString("port")))
 }

@@ -2,7 +2,9 @@ package db
 
 import (
 	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/explorer/backend/model/blkchain"
 	"github.com/iost-official/explorer/backend/util"
+	"github.com/spf13/viper"
 	"log"
 	"time"
 )
@@ -11,7 +13,7 @@ type Account struct {
 	Address string  `json:"address"`
 	Balance float64 `json:"balance"`
 	Percent float64 `json:"percent"`
-	TxCount int     `json:"txCount"`
+	TxCount int     `bson:"tx_count" json:"txCount"`
 }
 
 type ApplyTestIOST struct {
@@ -27,8 +29,14 @@ type AddressNonce struct {
 	Nonce   int64  `json:"nonce"`
 }
 
+type JsonFlatTx struct {
+	FlatTx
+	Age     string `json:"age"`
+	UTCTime string `json:"utcTime"`
+}
+
 func GetAccounts(start, limit int) ([]*Account, error) {
-	accountC, err := GetCollection("accounts")
+	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +53,7 @@ func GetAccounts(start, limit int) ([]*Account, error) {
 }
 
 func GetAccountByAddress(address string) (*Account, error) {
-	accountC, err := GetCollection("accounts")
+	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +72,7 @@ func GetAccountByAddress(address string) (*Account, error) {
 }
 
 func GetAccountsTotalLen() (int, error) {
-	accountC, err := GetCollection("accounts")
+	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
 		return 0, err
 	}
@@ -123,7 +131,7 @@ func GetAccountTxnLastPage(address string, eachPage int64) (int64, error) {
 }
 
 func SaveApplyTestIOST(at *ApplyTestIOST) error {
-	applyC, err := GetCollection("applyTestIOST")
+	applyC, err := GetCollection(CollectionApplyIost)
 	if err != nil {
 		log.Println("SaveApplyTestIost get collection error:", err)
 		return err
@@ -133,7 +141,7 @@ func SaveApplyTestIOST(at *ApplyTestIOST) error {
 }
 
 func GetApplyNumTodayByMobile(mobile string) (int, error) {
-	applyC, err := GetCollection("applyTestIOST")
+	applyC, err := GetCollection(CollectionApplyIost)
 	if err != nil {
 		log.Println("SaveApplyTestIost get collection error:", err)
 		return 0, err
@@ -245,8 +253,9 @@ func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error
 	return jsonTx, nil
 }
 
-type JsonFlatTx struct {
-	FlatTx
-	Age     string `json:"age"`
-	UTCTime string `json:"utcTime"`
+
+func TransferIOSTToAddress(address string, amount float64) ([]byte, error) {
+	accountInfo := viper.GetStringMapString("transferAccount")
+	return blkchain.Transfer(accountInfo["address"], address, int64(amount), 10000, 1, 100, accountInfo["key"])
 }
+

@@ -153,3 +153,19 @@ func GetFlatTxPageCntWithBlk(eachPage int64, blk int64) (int64, error) {
 
 	return pageLast, nil
 }
+
+func GetTxnDetailByHash(txHash string) (*Tx, error) {
+	txnDC, err := GetCollection(CollectionTxs)
+	if err != nil {
+		log.Println("UpdateTxns get txns collection error:", err)
+		return nil, err
+	}
+
+	query := bson.M{
+		"hash": txHash,
+	}
+	var txn *Tx
+	err = txnDC.Find(query).One(&txn)
+
+	return txn, err
+}

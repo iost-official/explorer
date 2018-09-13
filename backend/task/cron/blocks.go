@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func UpdateBlocks2(ws *sync.WaitGroup) {
+func UpdateBlocks(ws *sync.WaitGroup) {
 	defer ws.Done()
 
 	collection, err := db.GetCollection(db.CollectionBlocks)
@@ -44,7 +44,7 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 
 		topHeightInChain = topBlcHeight
 
-		topBlkInMongo, err := db.GetTopBlock2()
+		topBlkInMongo, err := db.GetTopBlock()
 
 		if err != nil {
 			log.Println("updateBlock get topBlk in mongo error:", err)
@@ -54,18 +54,16 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 		} else {
 			topHeightInMongo = topBlkInMongo.BlockNumber + 1
 		}
-
 		var insertLen int
 		for ; topHeightInMongo <= topHeightInChain; topHeightInMongo++ {
-
 			block, txHashes, err := db.GetBlockInfoByNum(topHeightInMongo)
 
 			if nil != err {
-				log.Println("UpdateBlock2 GetBlockInfoByNum error", err)
+				log.Println("UpdateBlock GetBlockInfoByNum error", err)
 
 				err := recordFailedUpdateBlock(topHeightInMongo, fBlockCollection)
 				if nil != err {
-					log.Println("UpdateBlock2 record sync failed block error", err)
+					log.Println("UpdateBlock record sync failed block error", err)
 				}
 				continue
 			}
@@ -73,11 +71,11 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 			err = collection.Insert(block)
 
 			if err != nil {
-				log.Println("updateBlock2 insert mongo error:", err)
+				log.Println("updateBlock insert mongo error:", err)
 
 				err := recordFailedUpdateBlock(topHeightInMongo, fBlockCollection)
 				if nil != err {
-					log.Println("UpdateBlock2 record sync failed block error", err)
+					log.Println("UpdateBlock record sync failed block error", err)
 				}
 
 				continue
@@ -93,12 +91,12 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 				}
 				err := txCollection.Insert(txs...)
 				if nil != err {
-					log.Println("UpdateBlock2 insert txs error", err)
+					log.Println("UpdateBlock insert txs error", err)
 					err := recordFailedUpdateBlock(topHeightInMongo, fBlockCollection)
 
 					if nil != err {
 						// fix it?
-						log.Println("UpdateBlock2 Record failed insert error", err)
+						log.Println("UpdateBlock Record failed insert error", err)
 					}
 				}
 			}
@@ -107,7 +105,7 @@ func UpdateBlocks2(ws *sync.WaitGroup) {
 			log.Println("updateBlock insert mongo height:", topHeightInMongo)
 		}
 
-		log.Println("updateBlock inserted len:", insertLen)
+		log.Println("updateBlock inserted len: ======", insertLen)
 
 	}
 }

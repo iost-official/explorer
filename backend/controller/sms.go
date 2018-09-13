@@ -20,8 +20,8 @@ const (
 	VerifyCodeLen     = 6
 	MobileMaxSendTime = 1
 
-	AccountSid   = "AC47b8c0b922a3eb016f263869ac0d2951"
-	AuthToken    = "0daee011527a806c76792d46cd71dd13"
+	AccountSid   = "ACbb9c8973309348ffca81bb71291b3a4c"
+	AuthToken    = "1e224c4c3166d94b0578a967ff1dd0ac"
 	TwilioSmsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + AccountSid + "/Messages.json"
 )
 
@@ -55,21 +55,20 @@ func SendSMS(c echo.Context) error {
 
 	remoteip := c.Request().Header.Get("Iost_Remote_Addr")
 	if !verifyGCAP(gcaptcha, remoteip) {
-		log.Println(ErrGreCaptcha.Error())
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{1, ErrGreCaptcha.Error()}))
+		return ErrGreCaptcha
 	}
 
 	if len(mobile) < 10 || mobile[0] != '+' {
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{2, ErrInvalidInput.Error()}))
+		return ErrInvalidInput
 	}
 
 	mobileSendNum, err := db.GetApplyNumTodayByMobile(mobile)
 	if err != nil {
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{3, err.Error()}))
+		return err
 	}
 
 	if mobileSendNum >= MobileMaxSendTime {
-		return c.JSON(http.StatusOK, FormatResponse(&CommOutput{4, ErrMobileApplyExceed.Error()}))
+		return ErrMobileApplyExceed
 	}
 
 	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
@@ -93,7 +92,7 @@ func sendSMS(number string) (string, error) {
 
 	postData := url.Values{}
 	postData.Set("To", number)
-	postData.Set("From", "+13192642988")
+	postData.Set("From", "+12568183697")
 	postData.Set("Body", "[IOST] verification code: "+vc)
 
 	req, _ := http.NewRequest("POST", TwilioSmsUrl, strings.NewReader(postData.Encode()))
@@ -103,14 +102,12 @@ func sendSMS(number string) (string, error) {
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		log.Println("sendSMS error:", err)
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("sendSMS error:", err)
 		return "", err
 	}
 

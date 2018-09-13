@@ -6,22 +6,7 @@ import (
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
-	"log"
 )
-
-func init() {
-	col, err := GetCollection(CollectionFlatTx)
-	if err != nil {
-		log.Fatalln("Flat collection create index, get collection error", err)
-	}
-	err = col.EnsureIndexKey("from")
-	err = col.EnsureIndexKey("to")
-	err = col.EnsureIndexKey("publisher")
-	err = col.EnsureIndexKey("hash")
-	if err != nil {
-		log.Fatalln("Flat collection create index error", err)
-	}
-}
 
 type ActionRaw struct {
 	Contract   string `bson:"contract" json:"contract"`
@@ -80,6 +65,7 @@ type FlatTx struct {
 	Amount      float64        `bson:"amount" json:"amount"`           // 转发数量
 	ActionIndex int            `bson:"actionIndex" json:"actionIndex"` // action 索引
 	ActionName  string         `bson:"actionName" json:"actionName"`   // action 类型
+	Receipt     TxReceiptRaw   `bson:"receipt" json:"receipt"`
 }
 
 func RpcGetTxByHash(txHash string) (*Tx, error) {
@@ -173,6 +159,7 @@ func (tx *Tx) ToFlatTx() []*FlatTx {
 			Amount:      amount,
 			ActionIndex: i,
 			ActionName:  v.ActionName,
+			Receipt:     tx.Receipt,
 		}
 	}
 	return flatTx
