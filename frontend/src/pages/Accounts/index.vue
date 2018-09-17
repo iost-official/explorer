@@ -243,4 +243,25 @@
       }
     }
   }
+
+  @media screen and (max-width:480px) {
+    .accounts-box {
+      padding-bottom: 24px;
+      .accounts-header {
+        .my-header-container {
+          height: auto;
+          width: 100%;
+          flex-direction: column;
+          padding: 0 25px;
+          .my-pages {
+            margin: 0;
+          }
+        }
+      }
+      .accounts-list {
+        overflow: auto;
+        padding: 0 25px;
+      }
+    }
+  }
 </style>

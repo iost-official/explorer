@@ -6,32 +6,64 @@
           <img src="../../assets/logo.png" alt="">
         </router-link>
       </div>
-      <ul class="my-nav-box">
-        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 0}">
-          <router-link to="/">HOME</router-link>
-        </li>
-        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 1}">
-          <router-link to="/blocks">BLOCK</router-link>
-        </li>
-        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 2}">
-          <router-link to="/txs">TRANSACTION</router-link>
-        </li>
+      <div>
+        <ul class="my-nav-box">
+          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 0}">
+            <router-link to="/">HOME</router-link>
+          </li>
+          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 1}">
+            <router-link to="/blocks">BLOCK</router-link>
+          </li>
+          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 2}">
+            <router-link to="/txs">TRANSACTION</router-link>
+          </li>
 
-        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 3}">
-          <router-link to="/accounts">ACCOUNTS</router-link>
-        </li>
-        <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 4}">
-          <router-link to="/applyIOST">REQUEST TEST IOST</router-link>
-        </li>
+          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 3}">
+            <router-link to="/accounts">ACCOUNTS</router-link>
+          </li>
+          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 4}">
+            <router-link to="/applyIOST">REQUEST TEST IOST</router-link>
+          </li>
 
-        <li class="my-nav-item searchActive" v-show="isShow">
-          <input type="text" placeholder="Search..."
-                 @click.stop="" v-model.trim="searchInput" @keydown.enter="searchData">
-        </li>
-        <li class="my-nav-item" v-show="!currentTheme">
-          <img src="../../assets/search.png" alt="" @click="openSearch"/>
-        </li>
-      </ul>
+          <li class="my-nav-item searchActive" v-show="isShow">
+            <input type="text" placeholder="Search..."
+                   @click.stop="" v-model.trim="searchInput" @keydown.enter="searchData">
+          </li>
+          <li class="my-nav-item" v-show="!currentTheme">
+            <img src="../../assets/search.png" alt="" @click="openSearch"/>
+          </li>
+        </ul>
+
+        <!--移动端-->
+        <div class="mobile-box">
+          <i @click.stop="menu = !menu" :class="{active: menu}"></i>
+          <ul class="mobile-nav-box" v-show="menu">
+            <li class="mobile-nav-item" :class="{active: currentColor == 0}">
+              <router-link to="/">HOME</router-link>
+            </li>
+            <li class="mobile-nav-item" :class="{active: currentColor == 1}">
+              <router-link to="/blocks">BLOCK</router-link>
+            </li>
+            <li class="mobile-nav-item" :class="{active: currentColor == 2}">
+              <router-link to="/txs">TRANSACTION</router-link>
+            </li>
+
+            <li class="mobile-nav-item" :class="{active: currentColor == 3}">
+              <router-link to="/accounts">ACCOUNTS</router-link>
+            </li>
+            <li class="mobile-nav-item" :class="{active: currentColor == 4}">
+              <router-link to="/applyIOST">REQUEST TEST IOST</router-link>
+            </li>
+
+            <li class="mobile-nav-item">
+              <input type="text" placeholder="Search..."
+                     @click.stop="" v-model.trim="searchInput" @keydown.enter="searchData">
+              <img src="../../assets/search.png" alt="" @click="searchData"/>
+            </li>
+          </ul>
+
+        </div>
+      </div>
 
     </div>
   </div>
@@ -39,6 +71,8 @@
 
 <script>
   import axios from 'axios';
+  import { config } from '../../utils/config'
+  const { apis } = config
 
   export default {
     name: "Head",
@@ -47,7 +81,8 @@
         currentColor: 0,
         currentTheme: true,
         isShow: false,
-        searchInput: ''
+        searchInput: '',
+        menu: false,
 
       }
     },
@@ -112,22 +147,24 @@
         }
       },
 
+      // 点击页面其他位置，搜索框隐藏
       onSearch () {
+        // 利用事件冒泡
+        this.menu = false
         this.isShow = false
       },
 
       searchData () {
+        this.menu = false
         if (!this.searchInput) return
-        axios.get('http://47.75.223.44:8080/api/search/' + this.searchInput).then((response) => {
+        axios.get(`${apis.search}${this.searchInput}`).then((response) => {
           var type = response.data.data.type
-          console.log(response.data)
           if (type == "block") {
-            if (response.data.text) {
+            if (response.data.data.text) {
               this.$router.push({
                 path: '/block/' + response.data.text
               })
             } else {
-              alert(1)
               this.$router.push({
                 path: '/block/' + this.searchInput
               })
@@ -228,9 +265,6 @@
       .my-search {
         padding-left: 30px;
         margin-right: -20px;
-        .my-input {
-
-        }
       }
       .my-nav-box {
         display: flex;
@@ -271,6 +305,91 @@
             padding-left: 5px;
             &:focus {
               outline: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  @media screen and (max-width:480px) {
+    .header-box {
+      .my-container{
+        width: 100%;
+        padding: 0 10px;
+        .logo-box {
+          margin-left: 0;
+        }
+        .my-nav-box {
+          display: none;
+        }
+
+        .mobile-box {
+          > i {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            background-image: url("../../assets/menu.png");
+            background-size: cover;
+            &.active {
+              background-image: url("../../assets/close.png");
+            }
+          }
+          .mobile-nav-box {
+            position: fixed;
+            z-index: 11;
+            left: 0;
+            top: 90px;
+            bottom: 0;
+            right: 0;
+            background-color: #303030;
+            .mobile-nav-item {
+              text-align: left;
+              margin-top: 50px;
+              margin-left: 28px;
+              list-style: none;
+              &.active {
+                a {
+                  color: #FFFFFF;
+                }
+              }
+              a {
+                color: #8F9A9C;
+                text-decoration: none;
+                font-size: 14px;
+                line-height: 18px;
+              }
+              > img {
+                width: 22px;
+                cursor: pointer;
+              }
+
+              > input {
+                width: 320px;
+                border: none;
+                border-bottom: 1px solid rgba(143,145,156,0.5);
+                background-color: #2c2e31;
+                color: #FFFFFF;
+                padding-left: 5px;
+                &:focus {
+                  outline: none;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width:375px) {
+    .header-box {
+      .my-container {
+        .mobile-box {
+          .mobile-nav-box {
+            .mobile-nav-item {
+              > input {
+                width: 300px;
+              }
             }
           }
         }

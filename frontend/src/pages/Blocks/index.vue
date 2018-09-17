@@ -257,4 +257,24 @@
     }
 
   }
+
+  @media screen and (max-width:480px) {
+    .blocks-box {
+      .blocks-header {
+        .my-header-container {
+          height: auto;
+          width: 100%;
+          flex-direction: column;
+          padding: 0 25px;
+          .my-pages {
+            margin: 0;
+          }
+        }
+      }
+      .blocks-list {
+        overflow: auto;
+        padding: 0 25px;
+      }
+    }
+  }
 </style>

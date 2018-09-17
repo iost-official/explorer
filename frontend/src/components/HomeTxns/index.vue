@@ -171,4 +171,9 @@
 
     }
   }
+  @media screen and (max-width:480px) {
+    .hometxns-box {
+      width: 100%;
+    }
+  }
 </style>

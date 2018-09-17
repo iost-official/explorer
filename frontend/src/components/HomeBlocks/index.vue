@@ -140,5 +140,34 @@
 
     }
   }
+  @media screen and (max-width:480px) {
+    .homeBlocks-box {
+      width: 100%;
+      margin-bottom: 15px;
+      .my-list-body {
+        li {
+          > a {
+            &:first-of-type {
+              width: 340px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width:375px) {
+    .homeBlocks-box {
+      .my-list-body {
+        li {
+          > a {
+            &:first-of-type {
+              width: 300px;
+            }
+          }
+        }
+      }
+    }
+  }
 
 </style>

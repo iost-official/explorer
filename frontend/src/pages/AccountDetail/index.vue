@@ -410,4 +410,62 @@
       }
     }
   }
+
+  @media screen and (max-width:480px) {
+    .accountDetail-box {
+      padding-bottom: 24px;
+      .accountDetail-header {
+        .my-header-container {
+          height: auto;
+          width: 100%;
+          flex-direction: column;
+          padding: 0 25px;
+          > p {
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          .my-pages {
+            margin: 0;
+          }
+        }
+      }
+
+      .accountDetail-info {
+        width: 100%;
+        .accountDetail-tips {
+          padding: 15px 25px 60px;
+        }
+
+        .my-tab {
+          > li {
+            padding-left: 25px;
+          }
+        }
+
+        .my-tab-content {
+          .my-tab-pane1 {
+            .pane1-header {
+              padding: 0 25px;
+              .pane1-content {
+                margin: 30px 0;
+                > p {
+                  &:first-child {
+                    width: 254px;
+                  }
+                }
+              }
+            }
+
+            .accountDetail-list {
+              overflow: auto;
+            }
+          }
+
+          .my-tab-pane2 {
+            padding: 0 25px;
+          }
+        }
+      }
+    }
+  }
 </style>

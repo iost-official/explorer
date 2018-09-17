@@ -191,6 +191,38 @@
         }
       }
     }
+  }
 
+  @media screen and (max-width:480px) {
+    .txnsDetail-box {
+      padding-bottom: 24px;
+      .txnsDetail-header {
+        .my-header-container {
+          height: auto;
+          width: 100%;
+          flex-direction: column;
+          padding: 0 25px;
+          > h1 {
+            font-size: 30px;
+          }
+          .my-pages {
+            margin: 0;
+          }
+        }
+      }
+      .txnsDetail-information {
+        width: 100%;
+        padding: 15px 25px 0 25px;
+        p {
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+        .txnsDetail-block-time {
+          .txnsDetail-block {
+            width: 50%;
+          }
+        }
+      }
+    }
   }
 </style>

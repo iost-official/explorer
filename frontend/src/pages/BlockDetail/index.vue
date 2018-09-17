@@ -158,4 +158,29 @@
       }
     }
   }
+
+  @media screen and (max-width:480px) {
+    .blockDetail-box {
+      padding-bottom: 24px;
+      .blockDetail-header {
+        .my-header-container {
+          height: auto;
+          width: 100%;
+          flex-direction: column;
+          padding: 0 25px;
+          .my-pages {
+            margin: 0;
+          }
+        }
+      }
+      .blockDetail-information {
+        width: 100%;
+        padding: 15px 25px 0 25px;
+        p {
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+    }
+  }
 </style>

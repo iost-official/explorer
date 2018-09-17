@@ -140,10 +140,38 @@
           width: 310px;
           height: 200px;
           margin-top: -55px;
-          margin-left: -75px;
+          margin-left: -55px;
         }
       }
     }
 
+  }
+
+  @media screen and (max-width:480px) {
+    .marketInfo-box {
+      width: 100%;
+      height: auto;
+      margin: 30px auto 0;
+      .my-img {
+        display: none;
+      }
+      .my-marketInfo {
+        flex-direction: column;
+        align-items: center;
+        .marketInfo-logo {
+          display: none;
+        }
+        .marketInfo-price {
+          margin-left: 0;
+          p {
+            text-align: center;
+          }
+        }
+        .marketInfo-time {
+          margin-left: 0;
+        }
+      }
+
+    }
   }
 </style>

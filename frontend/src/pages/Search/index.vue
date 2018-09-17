@@ -9,12 +9,10 @@
     </div>
 
     <div class="my-container">
-      <div class="err-search">
-        <span>Oops!</span>
-        <p>The search string you entered was: </p>
-        <input class="my-input" v-model="searchInput" readonly>
-        <p>Sorry! This is an invalid search string.</p>
-      </div>
+      <span>Oops!</span>
+      <p>The search string you entered was: </p>
+      <input class="my-input" v-model="searchInput" readonly>
+      <p>Sorry! This is an invalid search string.</p>
     </div>
   </div>
 </template>
@@ -69,6 +67,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      > span {
+        color: #555;
+        display: block;
+        font-size: 35px;
+        font-weight: 200;
+
+      }
       .my-input {
         display: block;
         width: 700px;
@@ -79,16 +84,28 @@
         margin: 20px 0;
         color: #555;
         text-align: center;
-
       }
     }
   }
-  .err-search span {
-    color: #555;
-    display: block;
-    font-size: 35px;
-    font-weight: 200;
 
+  @media screen and (max-width:480px) {
+    .search-box {
+      padding-bottom: 24px;
+      .search-header {
+        .my-header-container {
+          height: auto;
+          width: 100%;
+          flex-direction: column;
+          padding: 0 25px;
+          text-align: left;
+        }
+      }
+      .my-container {
+        width: 100%;
+        .my-input {
+          width: 350px;
+        }
+      }
+    }
   }
-
 </style>

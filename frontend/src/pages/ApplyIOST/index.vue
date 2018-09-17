@@ -353,19 +353,19 @@ export default {
 	},
 	mounted: function() {
 		$("#phone").intlTelInput()
-		
-		window.setTimeout(function() {
-			if ($('.g-recaptcha').html().length == 0) {
-				// swal({
-				//   title: 'Failed to load google reCaptcha !',
-				//   text: '',
-				//   confirmButtonText: 'try again'
-				// }).then((result) => {
-				// 	location.reload()
-				// })
-        grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
-			}
-		}, 3000)
+		let rc = document.getElementsByClassName('g-recaptcha')[0].children
+		setTimeout(() => {
+      grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
+      if (rc.length == 0) {
+        swal({
+          title: 'Failed to load google reCaptcha !',
+          text: '',
+          confirmButtonText: 'try again'
+        }).then((result) => {
+          grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
+        })
+      }
+		},2000)
 	},
 
   components: {
@@ -403,6 +403,8 @@ export default {
 			background: #F2DEDE;
 			border: 1px solid #EBCCD1;
 			box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .1);
+			text-align: left;
+			font-weight: 600;
 			p {
 				font-size: 14px;
 				line-height: 22px;
@@ -525,6 +527,112 @@ export default {
 				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 				&.active {
 					background-color: rgba(44,46,49,1);
+				}
+			}
+		}
+	}
+	@media screen and (max-width:480px) {
+		.applyIost-box {
+			padding-bottom: 24px;
+			.applyIost-header {
+				.my-header-container {
+					width: 100%;
+					padding: 0 25px;
+				}
+			}
+			.my-tips-container {
+				width: 100%;
+				padding: 20px 25px;
+			}
+
+			.my-container {
+				width: 100%;
+				margin: 24px auto 0;
+				text-align: left;
+				padding: 30px 25px;
+				.my-err-msg {
+					margin-left: 80px;
+				}
+				.my-group{
+					margin-bottom: 24px;
+					&.my-check {
+						margin-left: 80px;
+					}
+
+					&.my-mobile {
+						/*这是脚本添加的类名*/
+						.intl-tel-input {
+							width: 285px;
+							input {
+								padding-left: 60px;
+							}
+						}
+					}
+					&.my-recaptcha {
+						margin-left: 78px;
+					}
+					&.my-verify {
+						> p {
+							width: 78px;
+						}
+						.input-btn {
+							width: 285px;
+							> input {
+								width: 185px;
+							}
+							> button {
+								width: 90px;
+							}
+						}
+
+					}
+					.my-input {
+						width: 350px;
+					}
+					p {
+						text-align: left;
+						margin-left: 0;
+					}
+				}
+				> button {
+					width: 285px;
+					margin-left: 78px;
+				}
+			}
+		}
+	}
+
+	@media screen and (max-width:375px) {
+		.applyIost-box {
+			.my-container {
+				.my-err-msg {
+					margin-left: 70px;
+				}
+				.my-group{
+					&.my-mobile {
+						/*这是脚本添加的类名*/
+						.intl-tel-input {
+							width: 254px;
+						}
+					}
+					&.my-recaptcha {
+						margin-left: 0;
+					}
+					&.my-verify {
+						.input-btn {
+							width: 250px;
+							> input {
+								width: 170px;
+							}
+							> button {
+								width: 70px;
+							}
+						}
+					}
+				}
+				> button {
+					width: 254px;
+					margin-left: 72px;
 				}
 			}
 		}

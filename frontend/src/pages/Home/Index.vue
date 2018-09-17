@@ -25,24 +25,42 @@
 </script>
 
 <style lang="less" rel="stylesheet/less">
+.bg {
+  background-image: url("../../assets/bg.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin-top: -90px;
+  /*距离底部的高度，添加到blockTxns-container类上，因为要显示阴影*/
+  .home-box {
+    width: 1040px;
+    margin: 0 auto;
+    overflow: hidden;
+    .blockTxns-container {
+      padding: 0 20px 100px;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 75px;
+    }
+  }
+}
+
+@media screen and (max-width:480px){
   .bg {
-    background-image: url("../../assets/bg.png");
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin-top: -90px;
-    /*距离底部的高度，添加到blockTxns-container类上，因为要显示阴影*/
+    width: 100%;
     .home-box {
-      width: 1040px;
+      width: 100%;
       margin: 0 auto;
       overflow: hidden;
       .blockTxns-container {
-        padding: 0 20px 100px;
+        padding: 0 10px 24px;
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
         margin-top: 75px;
       }
     }
   }
+}
 
 
 </style>

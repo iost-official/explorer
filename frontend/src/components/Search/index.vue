@@ -1,12 +1,14 @@
 <template>
   <div class="form-search-box">
     <input type="text" class="form-control" placeholder="Search..." v-model.trim="searchInput" @keydown.enter="searchData">
-    <img src="../../assets/search.png" alt="">
+    <img src="../../assets/search.png" alt="" @click="searchData">
   </div>
 </template>
 
 <script>
   import axios from 'axios';
+  import { config } from '../../utils/config'
+  const { apis } = config
   export default {
     data() {
       return {
@@ -17,7 +19,7 @@
     methods: {
       searchData () {
         if (!this.searchInput) return
-        axios.get('http://47.75.223.44:8080/api/search/' + this.searchInput).then((response) => {
+        axios.get(`${apis.search}${this.searchInput}`).then((response) => {
           var type = response.data.data.type
           if (type == "block") {
             if (response.data.data.text) {
@@ -76,6 +78,13 @@
       position: absolute;
       top: 14px;
       right: 14px;
+    }
+  }
+
+  @media screen and (max-width:480px) {
+    .form-search-box {
+      margin: 180px auto 0;
+      width: 300px;
     }
   }
 </style>

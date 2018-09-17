@@ -320,4 +320,29 @@
     }
 
   }
+
+  @media screen and (max-width:480px) {
+    .txns-box {
+      .txns-header {
+        .my-header-container {
+          height: auto;
+          width: 100%;
+          flex-direction: column;
+          padding: 0 25px;
+          .txns-info {
+            h1 {
+              height: auto;
+            }
+          }
+          .my-pages {
+            margin: 0;
+          }
+        }
+      }
+      .txns-list {
+        overflow: auto;
+        padding: 0 25px;
+      }
+    }
+  }
 </style>

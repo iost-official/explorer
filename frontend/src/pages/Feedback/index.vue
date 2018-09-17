@@ -168,4 +168,65 @@ export default {
 			}
 		}
 	}
+
+	@media screen and (max-width:480px) {
+		.feedBack-box {
+			.feedBack-header {
+				.my-header-container {
+					height: auto;
+					width: 100%;
+					flex-direction: column;
+					padding: 0 25px;
+					text-align: left;
+				}
+			}
+
+			.my-container {
+				width: 100%;
+				padding: 24px 25px;
+				.err-msg {
+					margin-bottom: 24px;
+					margin-left: 76px;
+				}
+				> div {
+					&:nth-child(2) {
+						margin-bottom: 24px;
+					}
+					&:nth-child(3) {
+						margin-bottom: 24px;
+					}
+				}
+				.my-group {
+					.my-input {
+						width: 300px;
+					}
+					input {
+						height: 54px;
+					}
+					textarea {
+						height: 320px;
+					}
+				}
+
+				> button {
+					width: 288px;
+					margin-left: 76px;
+				}
+			}
+		}
+	}
+
+	@media screen and (max-width:375px) {
+		.feedBack-box {
+			.my-container {
+				.err-msg {
+					margin-left: 64px;
+				}
+				> button {
+					width: 260px;
+					margin-left: 64px;
+				}
+			}
+		}
+	}
 </style>
