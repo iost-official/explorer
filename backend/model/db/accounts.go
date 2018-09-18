@@ -43,6 +43,7 @@ func GetAccounts(start, limit int) ([]*Account, error) {
 	//query := bson.M{
 	//	"balance": bson.M{"$ne": 0},
 	//}
+	query := bson.M{}
 	var accountList []*Account
 	err = accountC.Find(query).Sort("-balance").Skip(start).Limit(limit).All(&accountList)
 	if err != nil {
@@ -79,6 +80,7 @@ func GetAccountsTotalLen() (int, error) {
 	//query := bson.M{
 	//	"balance": bson.M{"$ne": 0},
 	//}
+	query := bson.M{}
 	return accountC.Find(query).Count()
 }
 
