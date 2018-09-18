@@ -40,9 +40,9 @@ func GetAccounts(start, limit int) ([]*Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	query := bson.M{
-		"balance": bson.M{"$ne": 0},
-	}
+	//query := bson.M{
+	//	"balance": bson.M{"$ne": 0},
+	//}
 	var accountList []*Account
 	err = accountC.Find(query).Sort("-balance").Skip(start).Limit(limit).All(&accountList)
 	if err != nil {
@@ -76,14 +76,14 @@ func GetAccountsTotalLen() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	query := bson.M{
-		"balance": bson.M{"$ne": 0},
-	}
+	//query := bson.M{
+	//	"balance": bson.M{"$ne": 0},
+	//}
 	return accountC.Find(query).Count()
 }
 
 func GetAccountLastPage(eachPage int64) (int64, error) {
-	accountC, err := GetCollection("accounts")
+	accountC, err := GetCollection(CollectionAccount)
 	if err != nil {
 		log.Println("GetAccounts get collection error:", err)
 		return 0, err
