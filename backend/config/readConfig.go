@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/iost-official/explorer/backend/model/blkchain"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/spf13/viper"
 )
@@ -15,4 +16,5 @@ func ReadConfig () {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 	db.InitConfig()
+	blkchain.InitConfig()
 }
