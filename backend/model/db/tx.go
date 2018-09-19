@@ -133,6 +133,10 @@ func (tx *Tx) ToFlatTx() []*FlatTx {
 	for i, v := range tx.Actions {
 		var from, to string
 		var amount float64
+
+		pubKey := common.Base58Decode(tx.Publisher.PubKey)
+		publisher := account.GetIDByPubkey([]byte(pubKey))
+
 		if v.ActionName == "Transfer" {
 			var tmp []interface{}
 			json.Unmarshal([]byte(v.Data), &tmp) // TODO check error
@@ -140,9 +144,16 @@ func (tx *Tx) ToFlatTx() []*FlatTx {
 			to = tmp[1].(string)
 			amount = tmp[2].(float64)
 		}
+		if v.ActionName == "bet" {
+			to = v.Contract
+			from = publisher
+		}
+		if v.ActionName == "SetCode" {
+			to = v.Contract
+			from = publisher
+		}
 
-		pubKey := common.Base58Decode(tx.Publisher.PubKey)
-		publisher := account.GetIDByPubkey([]byte(pubKey))
+
 		flatTx[i] = &FlatTx{
 			BlockNumber: tx.BlockNumber,
 			Time:        tx.Time,
