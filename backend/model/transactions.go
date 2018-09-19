@@ -64,7 +64,7 @@ func ConvertFlatTx2TxnDetail(tx *db.FlatTx) TxnDetail {
 		Data:        tx.Action.Data,
 	}
 
-	if tx.ActionName == "SetCode" {
+	if tx.Action.ActionName == "SetCode" {
 		c := new(contract.Contract)
 		c.B64Decode(tx.Action.Data)
 		txnOut.Code = c.Code
