@@ -21,6 +21,9 @@ type TxnDetail struct {
 	Code          string  `json:"code"`
 	StatusCode    int32   `json:"statusCode"`
 	StatusMessage string  `json:"statusMessage"`
+	Contract      string  `json:"contract"`
+	ActionName    string  `json:"actionName"`
+	Data          string  `json:"data"`
 }
 
 func GetDetailTxn(txHash string) (TxnDetail, error) {
@@ -55,6 +58,9 @@ func ConvertFlatTx2TxnDetail(tx *db.FlatTx) TxnDetail {
 		Amount:      tx.Amount,
 		GasLimit:    tx.GasLimit,
 		GasPrice:    tx.GasPrice,
+		Contract:    tx.Action.Contract,
+		ActionName:  tx.Action.ActionName,
+		Data:        tx.Action.Data,
 	}
 
 	if tx.ActionName == "SetCode" {
