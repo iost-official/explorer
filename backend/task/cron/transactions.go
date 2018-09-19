@@ -8,11 +8,10 @@ import (
 	"time"
 )
 
-
 func UpdateTxns(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	ticker := time.NewTicker(time.Second * 2)
+	ticker := time.NewTicker(time.Second)
 
 	txnC, err := db.GetCollection(db.CollectionTxs)
 
@@ -28,11 +27,23 @@ func UpdateTxns(wg *sync.WaitGroup) {
 		return
 	}
 
+	// first block contains only ONE transaction
+	tx1stSynced := false
+
 	for range ticker.C {
-		step := 300
+		step := 500
 		var txns = make([]*db.Tx, 0)
 
-		err = txnC.Find(bson.M{"time": bson.M{"$eq": 0}}).
+		query := bson.M{"time": bson.M{"$eq": 0}}
+
+		if tx1stSynced {
+			// skipt block 0
+			query = bson.M{
+				"blockNumber": bson.M{"$nq": 0},
+				"time":       bson.M{"$eq": 0}}
+		}
+
+		err = txnC.Find(query).
 			Sort("_id").Limit(step).All(&txns)
 
 		if err != nil {
@@ -86,6 +97,10 @@ func UpdateTxns(wg *sync.WaitGroup) {
 				log.Println("failed to update txn")
 				//	TODO: save failed record to database to try again
 				continue
+			}
+
+			if newTxn.BlockNumber == 0 {
+				tx1stSynced = true
 			}
 			log.Println("Update Txn on block", newTxn.BlockNumber)
 		}
