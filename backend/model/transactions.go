@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/Go-IOS-Protocol/core/contract"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/explorer/backend/util"
 	"log"
@@ -64,7 +65,9 @@ func ConvertFlatTx2TxnDetail(tx *db.FlatTx) TxnDetail {
 	}
 
 	if tx.ActionName == "SetCode" {
-		txnOut.Code = tx.Action.Data
+		c := new(contract.Contract)
+		c.B64Decode(tx.Action.Data)
+		txnOut.Code = c.Code
 	}
 
 	txnOut.Age = util.ModifyIntToTimeStr(tx.Time / (1000 * 1000 * 1000))
