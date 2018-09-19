@@ -143,16 +143,10 @@ func (tx *Tx) ToFlatTx() []*FlatTx {
 			from = tmp[0].(string)
 			to = tmp[1].(string)
 			amount = tmp[2].(float64)
-		}
-		if v.ActionName == "bet" {
+		} else {
 			to = v.Contract
 			from = publisher
 		}
-		if v.ActionName == "SetCode" {
-			to = v.Contract
-			from = publisher
-		}
-
 
 		flatTx[i] = &FlatTx{
 			BlockNumber: tx.BlockNumber,
