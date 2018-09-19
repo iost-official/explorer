@@ -26,7 +26,9 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 	ticker := time.NewTicker(time.Second * 10)
 	for _ = range ticker.C {
 		fmt.Println("Update account info")
-		var query = bson.M{"actionName": "Transfer"}
+		var query = bson.M{
+			//"actionName": "Transfer",
+		}
 		cursor, err := db.GetAccountTaskCursor()
 		if err == nil {
 			query["_id"] = bson.M{"$gt": cursor}
@@ -35,9 +37,12 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 		err = flatTxCol.Find(query).Sort("_id").Limit(50).All(&txs)
 		for _, ft := range txs {
 			// ===== update from account
-			fromB, err := blkchain.GetBalance(ft.From)
-			if err != nil {
-				fmt.Println("Get balance failed", err)
+			var fromB int64
+			if ft.From[0:4] == "IOST" {  // IOST 地址才会获取
+				fromB, err = blkchain.GetBalance(ft.From)
+				if err != nil {
+					fmt.Println("Get balance failed", err)
+				}
 			}
 			fromCount, err := db.GetAccountTxCount(ft.From)
 			if err != nil {
@@ -47,10 +52,14 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 			if err != nil {
 				fmt.Println("Update failed", err)
 			}
+
+			var toB int64
 			// ====== update to account
-			toB, err := blkchain.GetBalance(ft.To)
-			if err != nil {
-				fmt.Println("Get balance failed", err)
+			if ft.To[0:4] == "IOST" {
+				toB, err = blkchain.GetBalance(ft.To)
+				if err != nil {
+					fmt.Println("Get balance failed", err)
+				}
 			}
 			toCount, err := db.GetAccountTxCount(ft.To)
 			if err != nil {
