@@ -98,6 +98,10 @@ func GetAccountDetail(c echo.Context) error {
 		return err
 	}
 
+	if !(address[0:4] != "IOST" || address[0:8] != "Contract") {
+		return errors.New("Invalid address")
+	}
+
 	account, err := db.GetAccountByAddress(address)
 	// 如果记录不存在创建记录
 	if err != nil && err.Error() == "not found" {
@@ -120,10 +124,12 @@ func GetAccountDetail(c echo.Context) error {
 		account.TxCount = txCount
 		toUpdate["tx_count"] = txCount
 	}
-	balance, err := blkchain.GetBalance(address)
-	if err == nil {
-		account.Balance = float64(balance)
-		toUpdate["balance"] = balance
+	if address[0:4] == "IOST" { // IOST 地址获取余额
+		balance, err := blkchain.GetBalance(address)
+		if err == nil {
+			account.Balance = float64(balance)
+			toUpdate["balance"] = balance
+		}
 	}
 	err = col.Update(bson.M{"address": address}, bson.M{"$set": toUpdate})
 

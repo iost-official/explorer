@@ -53,6 +53,10 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 				fmt.Println("Update failed", err)
 			}
 
+			if ft.To[0:5] == "iost." {  // 跳过特殊地址
+				continue
+			}
+
 			var toB int64
 			// ====== update to account
 			if ft.To[0:4] == "IOST" {
