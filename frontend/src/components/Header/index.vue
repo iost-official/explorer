@@ -313,6 +313,9 @@
   }
   @media screen and (max-width:480px) {
     .header-box {
+      &.active {
+        background-color: #2c2e31;
+      }
       .my-container{
         width: 100%;
         padding: 0 10px;

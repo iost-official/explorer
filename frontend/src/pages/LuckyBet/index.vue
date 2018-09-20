@@ -94,7 +94,7 @@
                   <td>{{betInfo.BlockHeight}}</td>
                   <td>{{betInfo.BlockHeight.toString()[betInfo.BlockHeight.toString().length-1]}}</td>
                   <td>{{betInfo.WinUserNumber}}</td>
-                  <td>{{betInfo.TotalRewards}}</td>
+                  <td>{{Math.round(betInfo.TotalRewards/1000000)/100}}</td>
                   <td>{{betInfo.win_time}}</td>
                 </tr>
                 </tbody>
@@ -166,13 +166,13 @@
                 <tr v-for="(betInfo, index) in betResultList">
                   <td v-if="betInfo.result==null">pending...</td>
                   <td v-else>{{betInfo.result.round}}</td>
-                  <td>{{betInfo.bet_amount}}</td>
+                  <td>{{Math.round(betInfo.bet_amount/1000000)/100}}</td>
                   <td>{{betInfo.lucky_number}}</td>
                   <td>{{betInfo.bet_time}}</td>
                   <td v-if="betInfo.result==null">pending...</td>
                   <td v-else-if="betInfo.result.is_win==false">not win</td>
                   <td v-else>
-                    win <span style="color:#f00">{{betInfo.result.Amount}}</span> IOST
+                    win <span style="color:#f00">{{Math.round(betInfo.result.Amount/1000000)/100}}</span> IOST
                   </td>
                 </tr>
                 </tbody>
@@ -372,7 +372,7 @@
         var params = new URLSearchParams();
         params.append('address', this.address)
         params.append('privKey', this.privKey)
-        params.append('betAmount', this.betAmount)
+        params.append('betAmount', this.betAmount*100000000)
         params.append('luckyNumber', this.luckyNumber)
         params.append('gcaptcha', grecap)
 
@@ -428,7 +428,8 @@
         return time
       },
       cronLatest: function() {
-        axios.get('https://explorer.iost.io/api/luckyBet/latestBetInfo').then((response) => {
+        // axios.get('https://explorer.iost.io/api/luckyBet/latestBetInfo').then((response) => {
+        axios.get('http://13.114.55.155/api/luckyBet/latestBetInfo').then((response) => {
           if (!response.data) {
             return
           }

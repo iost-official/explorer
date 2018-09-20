@@ -199,7 +199,8 @@
       min-height: 366px;
       margin-top: 2px;
       .my-list-header {
-        font-size: 12px;
+        /*font-size: 12px;*/
+        font-size: 14px;
         line-height: 15px;
         font-weight: 500;
         > li {

@@ -16,7 +16,7 @@
         <div class="accountDetail-height-value">
           <div class="accountDetail-height">
             <h4>Balance:</h4>
-            <p>{{accountDetail.balance}}</p>
+            <p>{{(accountDetail.balance/100000000).toFixed(2)}}</p>
           </div>
           <div class="accountDetail-value">
             <h4>IOST Value:</h4>
@@ -251,12 +251,14 @@
         }
 
         p {
-          font-size: 18px;
+          /*font-size: 18px;*/
+          font-size: 14px;
           line-height: 22px;
           color: #2C2E31;
           margin: 0;
           a {
-            font-size: 18px;
+            /*font-size: 18px;*/
+            font-size: 14px;
             line-height: 22px;
             color: #2C2E31;
           }
@@ -289,7 +291,8 @@
           .pane1-header {
             padding: 0 50px;
             .pane1-title {
-              font-size: 18px;
+              /*font-size: 18px;*/
+              font-size: 14px;
               line-height: 22px;
               color: #2C2E31;
               padding-top: 20px;
@@ -298,7 +301,8 @@
               display: flex;
               justify-content: space-between;
               height: 50px;
-              font-size: 18px;
+              /*font-size: 18px;*/
+              font-size: 14px;
               line-height: 22px;
               color: #2C2E31;
               margin-top: 60px;
@@ -313,7 +317,8 @@
 
           .accountDetail-list {
             .my-list-header {
-              font-size: 16px;
+              /*font-size: 16px;*/
+              font-size: 14px;
               font-weight: 500;
               border-bottom: 1px solid #f6f7f8;
               border-top: 1px solid #f6f7f8;

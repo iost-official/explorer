@@ -58,7 +58,7 @@
           <ul class="my-list-body">
             <li>{{index+1}}</li>
             <li><router-link :to="{path:`/account/${account.address}`}">{{account.address}}</router-link></li>
-            <li>{{account.balance.toFixed(2)}}</li>
+            <li>{{(account.balance/100000000).toFixed(2)}}</li>
             <li>{{account.txCount}}</li>
           </ul>
         </div>

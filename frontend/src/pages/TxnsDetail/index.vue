@@ -29,10 +29,20 @@
         <h4>From:</h4>
         <p><router-link :to="{path:`/account/${txnDetail.from}`}">{{txnDetail.from}}</router-link></p>
       </div>
-      <div class="txnsDetail-to">
+
+
+      <div class="txnsDetail-to" v-if="txnDetail.actionName != 'transfer'">
+        <h4>To:</h4>
+        <p v-if="txnDetail.to == 'iost.system'">{{txnDetail.to}}</p>
+        <p><span>actionName：</span>{{txnDetail.actionName}}</p>
+        <p><span>data：</span>{{txnDetail.data}}</p>
+      </div>
+      <div class="txnsDetail-to" v-else>
         <h4>To:</h4>
         <p><router-link :to="{path:`/account/${txnDetail.to}`}">{{txnDetail.to}}</router-link></p>
       </div>
+
+
       <div class="txnsDetail-value-gas">
         <div class="txnsDetail-value">
           <h4>Value:</h4>
@@ -49,7 +59,7 @@
       </div>
       <div>
         <h4>Code</h4>
-        <!--<pre>{{txnDetail.code}}</pre>-->
+        <pre>{{txnDetail.code}}</pre>
       </div>
 
     </div>
@@ -143,7 +153,8 @@
         margin-bottom: 0;
       }
       p {
-        font-size: 18px;
+        /*font-size: 18px;*/
+        font-size: 14px;
         line-height: 22px;
         margin-top: 20px;
         margin-bottom: 0;
@@ -165,6 +176,17 @@
       .txnsDetail-hash {
         margin-top: 35px;
       }
+      .txnsDetail-to {
+        > p {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          > span {
+            font-weight: bold;
+          }
+        }
+      }
+
       .txnsDetail-hash, .txnsDetail-from, .txnsDetail-to {
         >h4 {
           border-bottom: 1px solid #f6f7f8;

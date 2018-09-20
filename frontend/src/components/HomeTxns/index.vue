@@ -128,7 +128,8 @@
                 color: #2C2E31;
                 margin-top: 4px;
                 margin-bottom: 0;
-                padding-left: 26px;
+                /*padding-left: 26px;*/
+                padding-left: 38px;
               }
             }
             &.list-tx {
@@ -137,9 +138,11 @@
             &.list-tx, &.list-from, &.list-to {
               justify-content: space-between;
               padding-bottom: 14px;
-              padding-right: 41px;
+              /*padding-right: 41px;*/
+              padding-right: 32px;
               > a {
-                font-size: 12px;
+                /*font-size: 12px;*/
+                font-size: 14px;
                 line-height: 15px;
                 color: #4b78aa;
                 display: inline-block;
@@ -148,7 +151,8 @@
                 width: 360px;
               }
               > p {
-                font-size: 12px;
+                /*font-size: 12px;*/
+                font-size: 14px;
                 line-height: 15px;
                 color: #2C2E31;
                 margin-bottom: 0;
@@ -156,7 +160,8 @@
             }
             &.list-amount {
               > p {
-                font-size: 12px;
+                /*font-size: 12px;*/
+                font-size: 14px;
                 line-height: 15px;
                 color: #2C2E31;
                 margin-bottom: 0;

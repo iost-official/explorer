@@ -1,4 +1,5 @@
 import axios from 'axios'
+import base58 from 'bs58'
 import types from './mutation_types'
 import { config } from '../utils/config'
 
@@ -27,7 +28,7 @@ export default {
   },
 
   async getBlockInfo ({commit}, pages) {
-    const { data } = await axios.get(`${apis.blocks}?page=${pages}`)
+    const { data } = await axios.get(`${apis.blocks}?p=${pages}`)
     if(data.code == 0){
       commit(types.BLOCKINFO, {blockInfo: data.data})
     }

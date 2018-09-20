@@ -72,7 +72,8 @@
         padding: 16px 0 22px 30px;
         line-height: 1;
         > p{
-          font-size: 12px;
+          /*font-size: 12px;*/
+          font-size: 14px;
           line-height: 15px;
           color: #2C2E31;
           margin-bottom: 0;
@@ -106,7 +107,8 @@
           color: #4b78aa;
           padding-left: 50px;
           padding-top: 14px;
-          font-size: 12px;
+          /*font-size: 12px;*/
+          font-size: 14px;
           line-height: 12px;
 
           &:first-of-type {

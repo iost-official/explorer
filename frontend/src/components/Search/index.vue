@@ -83,7 +83,7 @@
 
   @media screen and (max-width:480px) {
     .form-search-box {
-      margin: 180px auto 0;
+      margin: 140px auto 0;
       width: 300px;
     }
   }

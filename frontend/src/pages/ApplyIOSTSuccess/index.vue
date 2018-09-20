@@ -102,7 +102,8 @@
 			position: relative;
 			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 			p {
-				font-size: 18px;
+				/*font-size: 18px;*/
+				font-size: 14px;
 				line-height: 22px;
 				margin-bottom: 0;
 				font-weight: 300;
@@ -165,7 +166,8 @@
 					}
 				}
 				p {
-					font-size: 18px;
+					/*font-size: 18px;*/
+					font-size: 14px;
 					line-height: 22px;
 					margin-top: 20px;
 					margin-bottom: 0;

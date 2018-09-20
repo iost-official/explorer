@@ -145,13 +145,15 @@
       }
 
       p {
-        font-size: 18px;
+        /*font-size: 18px;*/
+        font-size: 14px;
         line-height: 22px;
         color: #2C2E31;
         margin-top: 20px;
         margin-bottom: 0;
         a {
-          font-size: 18px;
+          /*font-size: 18px;*/
+          font-size: 14px;
           line-height: 22px;
           color: #2C2E31;
         }

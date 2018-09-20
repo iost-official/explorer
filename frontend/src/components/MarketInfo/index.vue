@@ -82,7 +82,7 @@
         p {
           text-align: left;
           margin-bottom: 0;
-          font-weight: bold;
+          /*font-weight: bold;*/
           &:nth-child(1) {
             margin-top: 45px;
             font-size: 72px;
@@ -90,12 +90,14 @@
             color: #000000;
             font-weight: 300;
             span {
-              font-size: 18px;
+              /*font-size: 18px;*/
+              font-size: 14px;
             }
           }
           &:nth-child(2) {
             margin-top: 29px;
-            font-size: 18px;
+            /*font-size: 18px;*/
+            font-size: 14px;
             line-height: 22px;
             color: #2c2e31;
           }
@@ -115,13 +117,14 @@
         text-align: left;
         font-size: 14px;
         line-height: 18px;
-        font-weight: bold;
         color: #2C2E31;
         .time-name, .time-value {
           > p {
             margin-bottom: 15px;
+            font-weight: bold;
             &:last-child {
               margin-bottom: 0;
+              font-weight: normal;
             }
           }
         }
@@ -158,6 +161,9 @@
       .my-marketInfo {
         flex-direction: column;
         align-items: center;
+        border: 1px solid #F6F7F8;
+        margin: 0 10px;
+        box-shadow: 0 10px 40px 0 rgba(0, 0, 0, .1);
         .marketInfo-logo {
           display: none;
         }
@@ -165,10 +171,18 @@
           margin-left: 0;
           p {
             text-align: center;
+            &:nth-child(1) {
+              margin-top: 24px;
+            }
+            &:nth-child(2) {
+              margin-top: 24px;
+            }
           }
         }
         .marketInfo-time {
           margin-left: 0;
+          margin-bottom: 24px;
+          margin-top: 24px;
         }
       }
 

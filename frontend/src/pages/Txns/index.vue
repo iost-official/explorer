@@ -174,7 +174,8 @@
             font-weight: bold;
             height: 44px;
             > p {
-              font-size: 12px;
+              /*font-size: 12px;*/
+              font-size: 14px;
               color: #999;
               font-weight: 400;
               line-height: 1;
@@ -241,7 +242,8 @@
       }
 
       .my-list-header {
-        font-size: 12px;
+        /*font-size: 12px;*/
+        font-size: 14px;
         line-height: 15px;
         font-weight: 500;
         > li {
@@ -276,7 +278,8 @@
           color: #2c2e31;
           a {
             color: #4b78aa;
-            font-size: 12px;
+            /*font-size: 12px;*/
+            font-size: 14px;
             line-height: 15px;
           }
           &:first-child {

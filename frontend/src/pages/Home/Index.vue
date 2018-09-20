@@ -47,6 +47,7 @@
 @media screen and (max-width:480px){
   .bg {
     width: 100%;
+    background-image: none;
     .home-box {
       width: 100%;
       margin: 0 auto;
@@ -56,7 +57,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        margin-top: 75px;
+        margin-top: 24px;
       }
     }
   }
