@@ -88,7 +88,7 @@
     },
     watch: {
       '$route' (to) {
-        const arr = ['/block','/tx','/account','/applyIOST','/feedback','/search','/luckyBet']
+        const arr = ['/block','/tx','/account','/applyIOST','/feedback','/search','/luckyBet','404']
         let arr2 = arr.filter((a, index) => {
           return to.path.search(a)+1
         })
@@ -105,16 +105,19 @@
         } else if (result == '/applyIOST') {
           this.currentColor = 4
           this.currentTheme = false
-        }else if (result == '/feedback') {
+        } else if (result == '/feedback') {
           this.currentColor = 5
           this.currentTheme = false
-        }else if (result == '/search') {
+        } else if (result == '/search') {
           this.currentColor = 6
           this.currentTheme = false
         } else if (result == '/luckyBet') {
           this.currentColor = 7
           this.currentTheme = false
-        }else {
+        } else if (result == '404') {
+          this.currentColor = 8
+          this.currentTheme = false
+        } else {
           this.currentColor = 0
           this.currentTheme = true
         }
@@ -189,37 +192,41 @@
       }
 
     },
-    
+
+    // 为了在当前页刷新之后，依旧保持当前状态
     created () {
-      const arr = ['/block','/tx','/account','/applyIOST','/feedback','/search','/luckyBet']
+      const arr = ['/','/block','/tx','/account','/applyIOST','/feedback','/search','/luckyBet']
       let arr2 = arr.filter((a, index) => {
         return location.pathname.search(a)+1
       })
       let result = arr2.join('')
-      if (result == '/block') {
-        this.currentColor = 1
+      if (result == '/') {
+        this.currentTheme = true
+      } else {
         this.currentTheme = false
+      }
+      if (result == '/') {
+        this.currentColor = 0
+      } else if (result == '/block') {
+        this.currentColor = 1
       } else if (result == '/tx') {
         this.currentColor = 2
-        this.currentTheme = false
       } else if (result == '/account') {
         this.currentColor = 3
-        this.currentTheme = false
       } else if (result == '/applyIOST') {
         this.currentColor = 4
-        this.currentTheme = false
       }else if (result == '/feedback') {
         this.currentColor = 5
-        this.currentTheme = false
       }else if (result == '/search') {
         this.currentColor = 6
-        this.currentTheme = false
       }else if (result == '/luckyBet') {
         this.currentColor = 7
+      }
+
+      // 404页面
+      if (location.pathname != result) {
+        this.currentColor = 8
         this.currentTheme = false
-      }  else {
-        this.currentColor = 0
-        this.currentTheme = true
       }
 
     },

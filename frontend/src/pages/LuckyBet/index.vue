@@ -166,13 +166,20 @@
                 <tr v-for="(betInfo, index) in betResultList">
                   <td v-if="betInfo.result==null">pending...</td>
                   <td v-else>{{betInfo.result.round}}</td>
-                  <td>{{Math.round(betInfo.bet_amount/1000000)/100}}</td>
+                  <td>{{(betInfo.bet_amount/100000000).toFixed(2)}}</td>
                   <td>{{betInfo.lucky_number}}</td>
                   <td>{{betInfo.bet_time}}</td>
-                  <td v-if="betInfo.result==null">pending...</td>
-                  <td v-else-if="betInfo.result.is_win==false">not win</td>
+                  <!--<td v-if="betInfo.result==null">pending...</td>-->
+                  <!--<td v-else-if="betInfo.result.is_win==false">not win</td>-->
+                  <!--<td v-else>-->
+                    <!--win <span style="color:#f00">{{betInfo.result.Amount/100000000).toFixed(2)}}</span> IOST-->
+                  <!--</td>-->
+                  <td v-if="betInfo.result==null && betInfo.status == 0">waiting for confirm</td>
+                  <td v-else-if="betInfo.result==null && betInfo.status == 1">pending</td>
+                  <td v-else-if="betInfo.result==null && betInfo.status == -1">confirm failed</td>
+                  <td v-else-if="!betInfo.result.is_win">not win</td>
                   <td v-else>
-                    win <span style="color:#f00">{{Math.round(betInfo.result.Amount/1000000)/100}}</span> IOST
+                  win <span style="color:#f00">{{(betInfo.result.Amount/100000000).toFixed(2)}}</span> IOST
                   </td>
                 </tr>
                 </tbody>
@@ -669,7 +676,7 @@
   #betBlocks p:not(:first-child){
     text-align: right;
     font-size: 16px;
-    color: #666r;
+    color: #666;
   }
 
   .last5ResultPannel {

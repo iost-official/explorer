@@ -2,7 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Head from '../components/Header'
 import Foot from '../components/Footer'
-import Index from '../pages/Home'
+const Index = () => import('../pages/Home')
+
+// import Index from '../pages/Home'
 import Blocks from '../pages/Blocks'
 import Block from '../pages/BlockDetail'
 import Txs from '../pages/Txns'
@@ -20,6 +22,14 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
+  // 切换路由后，回到顶部
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  },
   routes: [
     {
       path: '/',

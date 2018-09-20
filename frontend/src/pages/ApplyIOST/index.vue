@@ -83,6 +83,7 @@ import LuckyBet from '../../components/LuckyBet'
 import secp256k1 from 'secp256k1'
 import base58 from 'bs58'
 import swal from 'sweetalert2'
+import elliptic from 'elliptic'
 import { config } from '../../utils/config'
 
 const { apis } = config
@@ -119,17 +120,27 @@ export default {
   },
 
 	methods: {
-		randomBytes: function(size) {
-			let rawBytes = new Uint8Array(size)
-			let bytes
+    // 替换后的
+    randomBytes: function(size) {
+      let rawBytes = new Uint8Array(size)
+      let bytes
 
-			do {
-				crypto.getRandomValues(rawBytes)
-				bytes = Buffer.from(rawBytes.buffer)
-			} while (!secp256k1.privateKeyVerify(bytes))
+      crypto.getRandomValues(rawBytes)
+      bytes = Buffer.from(rawBytes.buffer)
 
-			return bytes
-		},
+      return bytes
+    },
+		// randomBytes: function(size) {
+		// 	let rawBytes = new Uint8Array(size)
+		// 	let bytes
+    //
+		// 	do {
+		// 		crypto.getRandomValues(rawBytes)
+		// 		bytes = Buffer.from(rawBytes.buffer)
+		// 	} while (!secp256k1.privateKeyVerify(bytes))
+    //
+		// 	return bytes
+		// },
 		bytesToHex: function(bytes) {
 			return bytes.toString('hex')
 		},
@@ -341,13 +352,36 @@ export default {
 				$('#applyAddress').attr('disabled', false)
 			} else {
 				$('#applyAddress').attr('disabled', true)
-				let bytes = this.randomBytes(32)
-				const pubKey = secp256k1.publicKeyCreate(bytes)
+				// let bytes = this.randomBytes(32)
+				// const pubKey = secp256k1.publicKeyCreate(bytes)
+        //
+				// this.privKey = base58.encode(bytes)
+				// // this.addressx = base58.encode(pubKey)
+				// this.address = base58.encode(pubKey)
 
-				this.privKey = base58.encode(bytes)
-				// this.addressx = base58.encode(pubKey)
-				this.address = base58.encode(pubKey)
-				this.auto = 1
+
+        let bytes = this.randomBytes(32)
+        const EdDSA = elliptic.eddsa;
+        const ec = new EdDSA('ed25519');
+        const key = ec.keyFromSecret(bytes);
+
+        let pubKey = key.pubBytes()
+				let privKey = [...bytes]
+        privKey.push(...pubKey)
+
+				this.privKey = privKey
+
+        const lastBytes = this.randomBytes(4)
+        let addressPubKeyCopy = [...pubKey]
+        addressPubKeyCopy.push(...lastBytes)
+
+        this.address = "IOST" + base58.encode(addressPubKeyCopy)
+
+        console.log("privKey: ", base58.encode(privKey))
+        console.log("pubKey: ", base58.encode(pubKey))
+        console.log("address: ", this.address)
+
+        this.auto = 1
 			}
 		}
 	},

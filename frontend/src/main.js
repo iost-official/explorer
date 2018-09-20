@@ -16,11 +16,13 @@ NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 1000, showSpinner: false, minimum:0.1 })
 
 
+// 全局前置守卫
 router.beforeEach((to,from,next) => {
   NProgress.start()
   next()
 })
 
+// 全部后置钩子
 router.afterEach(() => {
   NProgress.done()
 })
@@ -28,8 +30,6 @@ router.afterEach(() => {
 
 // import './style.less'
 
-// import 'bootstrap/dist/css/bootstrap.min.css'
-// import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false

@@ -35,7 +35,15 @@
         <h4>To:</h4>
         <p v-if="txnDetail.to == 'iost.system'">{{txnDetail.to}}</p>
         <p><span>actionName：</span>{{txnDetail.actionName}}</p>
-        <p><span>data：</span>{{txnDetail.data}}</p>
+
+        <div class="my-pre" v-if="txnDetail.actionName == 'SetCode'">
+          <span>code：</span>
+          <pre>{{txnDetail.code}}</pre>
+        </div>
+        <div class="my-pre-normal" v-else>
+          <span>data：</span><pre>{{txnDetail.data}}</pre>
+        </div>
+
       </div>
       <div class="txnsDetail-to" v-else>
         <h4>To:</h4>
@@ -57,7 +65,7 @@
           <p>{{txnDetail.price}}</p>
         </div>
       </div>
-      <div>
+      <div v-if="txnDetail.code">
         <h4>Code</h4>
         <pre>{{txnDetail.code}}</pre>
       </div>
@@ -135,7 +143,7 @@
       margin: 24px auto 0;
       text-align: left;
       background: #FFFFFF;
-      padding: 15px 50px 0 50px;
+      padding: 15px 50px;
       position: relative;
       box-shadow: 0 2px 3px rgba(0,0,0,0.1);
       h4 {
@@ -177,14 +185,29 @@
         margin-top: 35px;
       }
       .txnsDetail-to {
-        > p {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+        .my-pre {
+          margin-top: 20px;
           > span {
-            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 12px;
           }
         }
+        .my-pre-normal {
+          display: flex;
+          align-items: center;
+          margin-top: 20px;
+          > pre {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 850px;
+          }
+        }
+        span {
+          font-weight: bold;
+        }
+
       }
 
       .txnsDetail-hash, .txnsDetail-from, .txnsDetail-to {
