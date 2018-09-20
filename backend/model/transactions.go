@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/Go-IOS-Protocol/core/contract"
 	"github.com/iost-official/explorer/backend/model/db"
@@ -66,7 +67,17 @@ func ConvertFlatTx2TxnDetail(tx *db.FlatTx) TxnDetail {
 
 	if tx.Action.ActionName == "SetCode" {
 		c := new(contract.Contract)
-		c.B64Decode(tx.Action.Data)
+		dataArr := tx.Action.Data
+
+		// remove comma if necessary
+		if dataArr[len(dataArr)-2] == ',' {
+			dataArr = dataArr[:len(dataArr)-2] + "]"
+		}
+
+		var code []string
+		json.Unmarshal([]byte(dataArr), &code)
+
+		c.B64Decode(code[0])
 		txnOut.Code = c.Code
 	}
 
