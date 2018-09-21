@@ -87,6 +87,7 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 					txs[index] = db.Tx{
 						Hash:        txHash,
 						BlockNumber: topHeightInMongo,
+						Mark:        topHeightInMongo % 4,
 					}
 				}
 				err := txCollection.Insert(txs...)
@@ -182,6 +183,7 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 					txs[index] = db.Tx{
 						Hash:        txHash,
 						BlockNumber: fBlock.BlockNumber,
+						Mark:        fBlock.BlockNumber % 4,
 					}
 				}
 				err := txCollection.Insert(txs...)

@@ -42,6 +42,7 @@ type Tx struct {
 	Expiration  int64          `bson:"expiration"`
 	GasPrice    int64          `bson:"gasPrice"`
 	GasLimit    int64          `bson:"gasLimit"`
+	Mark        int64          `bson:"mark"`
 	Actions     []ActionRaw    `bson:"actions"`
 	Signers     []string       `bson:"signers"`
 	Signs       []SignatureRaw `bson:"signs"`
