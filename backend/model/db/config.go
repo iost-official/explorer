@@ -37,6 +37,7 @@ func InitConfig() {
 	err = col.EnsureIndexKey("to")
 	err = col.EnsureIndexKey("publisher")
 	err = col.EnsureIndexKey("hash")
+	err = col.EnsureIndexKey("blockNumber")
 	if err != nil {
 		log.Fatalln("Flat collection create index error", err)
 	}
@@ -47,6 +48,12 @@ func InitConfig() {
 	}
 	err = colTx.EnsureIndexKey("hash")
 	err = colTx.EnsureIndexKey("blockNumber")
+	colBlock, err := GetCollection(CollectionBlocks)
+	if err != nil {
+		log.Fatalln("Block collection create index, get collection error", err)
+	}
+	err = colBlock.EnsureIndexKey("hash")
+	err = colBlock.EnsureIndexKey("blockNumber")
 }
 
 
