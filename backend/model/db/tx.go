@@ -78,7 +78,6 @@ func elapsed(what string) func() {
 }
 
 func RpcGetTxByHash(txHash string) (*Tx, error) {
-	defer elapsed("RpcGetTxByHash")()
 
 	txRes, err := blkchain.GetTxByHash(txHash)
 	if err != nil {
