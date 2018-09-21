@@ -192,10 +192,10 @@ func ApplyIOST(c echo.Context) error {
 		return ErrInvalidInput
 	}
 
-	if len(address) != 44 && len(address) != 45 {
-		log.Println("ApplyIOST invalid address")
-		return ErrInvalidInput
-	}
+	//if len(address) != 44 && len(address) != 45 {
+	//	log.Println("ApplyIOST invalid address")
+	//	return ErrInvalidInput
+	//}
 
 	if len(mobile) < 10 || mobile[0] != '+' {
 		log.Println("ApplyIOST invalid mobile")
