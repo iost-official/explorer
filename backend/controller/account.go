@@ -207,10 +207,10 @@ func ApplyIOST(c echo.Context) error {
 		return ErrInvalidInput
 	}
 
-	if len(common.Base58Decode(address)) != 33 {
-		log.Println("ApplyIOST invalid decode address")
-		return ErrInvalidInput
-	}
+	//if len(common.Base58Decode(address)) != 33 {
+	//	log.Println("ApplyIOST invalid decode address")
+	//	return ErrInvalidInput
+	//}
 
 	if !RegEmail.MatchString(email) {
 		log.Println("ApplyIOST invaild regexp email")
