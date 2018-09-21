@@ -348,7 +348,7 @@ export default {
         let privKey = [...bytes]
         privKey.push(...pubKey)
 
-        this.privKey = privKey
+        this.privKey = base58.encode(privKey)
 
         const lastBytes = this.randomBytes(4)
         let addressPubKeyCopy = [...pubKey]

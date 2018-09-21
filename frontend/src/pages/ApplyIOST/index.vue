@@ -163,7 +163,6 @@ export default {
 			params.append('gcaptcha', grecap)
 
 			// axios.post('https://explorer.iost.io/api/sendSMS', params).then((response) => {
-			// axios.post('http://47.75.223.44:8080/api/sendSMS', params).then((response) => {
 			axios.post(`${apis.sendSMS}`, params).then((response) => {
 				var retCode = response.data.code
 				if (retCode != 0) {
@@ -201,7 +200,7 @@ export default {
 			return params
 		},
 		apply: function() {
-			if (this.addressx.length == 0 && (this.address.length != 44 && this.address.length != 45)) {
+			if (this.address.length < 45) {
 				$('#errAlert').addClass('alert alert-danger')
 				this.errMsg = 'invalid IOST address'
 				return false
@@ -262,17 +261,14 @@ export default {
 				dotNum++
 			}, 1000)
 
-			// axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam(grecap)).then((response) => {
 			axios.post(`${apis.applyIOST}`, this.getApplyParam(grecap)).then((response) => {
 				let retCode = response.data.code
 				let txHash = response.data.data
 				if (retCode != 0) {
-					// axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
 					axios.post(`${apis.applyIOST}`, this.getApplyParam()).then((response) => {
 						let retCode = response.data.code
 						let txHash = response.data.data
 						if (retCode != 0) {
-							// axios.post('http://47.75.223.44:8080/api/applyIOST', this.getApplyParam()).then((response) => {
 							axios.post(`${apis.applyIOST}`, this.getApplyParam()).then((response) => {
 								let retCode = response.data.code
 								let txHash = response.data.data
@@ -369,7 +365,7 @@ export default {
 				let privKey = [...bytes]
         privKey.push(...pubKey)
 
-				this.privKey = privKey
+				this.privKey = base58.encode(privKey)
 
         const lastBytes = this.randomBytes(4)
         let addressPubKeyCopy = [...pubKey]

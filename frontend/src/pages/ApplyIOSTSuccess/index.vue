@@ -132,7 +132,11 @@
 				background-color: #98D5BD;
 			}
 			.success-private {
+				height: auto;
+				line-height: 27px;
 				background-color: #5EBFD9;
+				padding: 14px 0;
+
 			}
 			.success-tips {
 				font-size: 14px;

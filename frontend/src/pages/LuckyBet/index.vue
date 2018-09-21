@@ -328,13 +328,13 @@
           return false
         }
 
-        if (this.address.length != 44 && this.address.length != 45) {
+        if (this.address.length < 45) {
           $('#errBetAlert').addClass('alert alert-danger')
           this.errMsg = 'invalid IOST address'
           return false
         }
 
-        if (this.privKey.length != 43 && this.privKey.length != 44) {
+        if (this.privKey.length !=87 || this.privKey.length !=88) {
           $('#errBetAlert').addClass('alert alert-danger')
           this.errMsg = 'invalid IOST private Key'
           return false
@@ -456,13 +456,14 @@
         })
       },
       cronAddressBet: function(address) {
-        if (this.address.length != 44 && this.address.length != 45) {
+        if (this.address.length < 45) {
           $('#errBetAlert').addClass('alert alert-danger')
           this.errMsg = 'invalid IOST address'
           return false
         }
 
-        axios.get('https://explorer.iost.io/api/luckyBet/addressBet/' + this.address + '?t=t').then((response) => {
+        // axios.get('https://explorer.iost.io/api/luckyBet/addressBet/' + this.address + '?t=t').then((response) => {
+        axios.get('http://13.114.55.155/api/luckyBet/addressBet/' + this.address + '?t=t').then((response) => {
           let betResList = response.data.address_bet_list
           if (betResList == null || betResList.length == 0) {
             return
@@ -518,7 +519,8 @@
               return false
             }
             modal.find('#searchResults').html("<p>searching...</p>")
-            axios.get('https://explorer.iost.io/api/luckyBet/addressBet/' + addressInput).then((response) => {
+            // axios.get('https://explorer.iost.io/api/luckyBet/addressBet/' + addressInput).then((response) => {
+            axios.get('http://13.114.55.155/api/luckyBet/addressBet/' + addressInput).then((response) => {
               let betResList = response.data.address_bet_list
               if (betResList == null || betResList.length == 0) {
                 return
