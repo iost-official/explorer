@@ -39,7 +39,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 		if tx1stSynced {
 			// skipt block 0
 			query = bson.M{
-				"blockNumber": bson.M{"$nq": 0},
+				"blockNumber": bson.M{"$ne": 0},
 				"time":       bson.M{"$eq": 0}}
 		}
 
