@@ -6,6 +6,8 @@ import (
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
 	"github.com/iost-official/explorer/backend/model/blkchain"
+	"log"
+	"time"
 )
 
 type ActionRaw struct {
@@ -68,7 +70,16 @@ type FlatTx struct {
 	Receipt     TxReceiptRaw   `bson:"receipt" json:"receipt"`
 }
 
+func elapsed(what string) func() {
+	start := time.Now()
+	return func() {
+		log.Printf("%s took %v\n", what, time.Since(start))
+	}
+}
+
 func RpcGetTxByHash(txHash string) (*Tx, error) {
+	defer elapsed("RpcGetTxByHash")()
+
 	txRes, err := blkchain.GetTxByHash(txHash)
 	if err != nil {
 		return nil, err
