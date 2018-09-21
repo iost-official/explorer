@@ -250,6 +250,9 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 					},
 				},
 			},
+			{
+				"$limit": 5,
+			},
 		}
 
 		var payList []*db.BlockPay
