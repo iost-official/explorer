@@ -11,7 +11,7 @@ import (
 func UpdateTxns(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	ticker := time.NewTicker(time.Second * 2)
+	ticker := time.NewTicker(time.Second)
 
 	txnC, err := db.GetCollection(db.CollectionTxs)
 
@@ -31,7 +31,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 	tx1stSynced := false
 
 	for range ticker.C {
-		step := 300
+		step := 2000
 		var txns = make([]*db.Tx, 0)
 
 		query := bson.M{"time": bson.M{"$eq": 0}}
