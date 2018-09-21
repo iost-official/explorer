@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"google.golang.org/grpc"
+
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/iost-official/Go-IOS-Protocol/account"
 	"github.com/iost-official/Go-IOS-Protocol/common"
@@ -176,7 +178,7 @@ func Transfer(from, to string, amount, gasLimit, gasPrice, expiration int64, pri
 	}
 	stx, err := tx.SignTx(trx, acc)
 
-	conn, err := transport.GetGRPCClient(RPCAddress)
+	conn, err := grpc.Dial(RPCAddress, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
