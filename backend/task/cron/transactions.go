@@ -48,7 +48,7 @@ func UpdateTxns(wg *sync.WaitGroup) {
 
 		if err != nil {
 			log.Println("UpdateTxns query txns collection error:", err)
-			return
+			continue
 		}
 
 		for _, txn := range txns {
