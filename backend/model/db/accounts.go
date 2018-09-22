@@ -1,12 +1,13 @@
 package db
 
 import (
+	"log"
+	"time"
+
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model/blkchain"
 	"github.com/iost-official/explorer/backend/util"
 	"github.com/spf13/viper"
-	"log"
-	"time"
 )
 
 type Account struct {
@@ -202,6 +203,7 @@ func GetFlatTxnLenByAccount(account string) (int, error) {
 		log.Println("GetFlatTxnLenByAccount CollectionFlatTx collection error:", err)
 		return 0, err
 	}
+	return 0, nil
 
 	query := bson.M{
 		"$or": []bson.M{
@@ -219,6 +221,7 @@ func GetAccountTxCount(address string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	return 0, nil
 	num, err := ftxCol.Find(bson.M{"$or": []bson.M{
 		bson.M{"from": address},
 		bson.M{"to": address},
@@ -255,9 +258,7 @@ func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error
 	return jsonTx, nil
 }
 
-
 func TransferIOSTToAddress(address string, amount float64) ([]byte, error) {
 	accountInfo := viper.GetStringMapString("transferAccount")
 	return blkchain.Transfer(accountInfo["address"], address, int64(amount), 10000, 1, 100, accountInfo["key"])
 }
-

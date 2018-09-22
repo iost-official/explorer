@@ -1,8 +1,9 @@
 package db
 
 import (
-	"github.com/globalsign/mgo/bson"
 	"log"
+
+	"github.com/globalsign/mgo/bson"
 )
 
 /// get at most `limit` flat txns from start using block and account address
@@ -82,6 +83,7 @@ func GetTotalFlatTxnLen(address string, block int64) (int, error) {
 				bson.M{"publisher": address},
 			},
 		}
+		return 0, nil
 	} else if block >= 0 {
 		query = bson.M{
 			"blockNumber": block,
