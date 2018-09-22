@@ -244,12 +244,12 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 			{
 				"$group": bson.M{
 					"_id": "$blockNumber",
-					"avggasprice": bson.M{
-						"$avg": "$gasPrice",
-					},
-					"totalgaslimit": bson.M{
-						"$sum": "$gasLimit",
-					},
+					//"avggasprice": bson.M{
+					//	"$avg": "$gasPrice",
+					//},
+					//"totalgaslimit": bson.M{
+					//	"$sum": "$gasLimit",
+					//},
 				},
 			},
 			{

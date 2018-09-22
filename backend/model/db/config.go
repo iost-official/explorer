@@ -49,6 +49,7 @@ func InitConfig() {
 	err = colTx.EnsureIndexKey("hash")
 	err = colTx.EnsureIndexKey("blockNumber")
 	err = colTx.EnsureIndexKey("mark")
+	err = colTx.EnsureIndexKey("time")
 	colBlock, err := GetCollection(CollectionBlocks)
 	if err != nil {
 		log.Fatalln("Block collection create index, get collection error", err)
