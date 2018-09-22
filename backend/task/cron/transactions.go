@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model/db"
 	"log"
@@ -35,9 +34,7 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 		step := 2000
 		var txns = make([]*db.Tx, 0)
 
-		query := bson.M{
-			"time": bson.M{"$eq": 0},
-			"mark": mark}
+		query := bson.M{"time": bson.M{"$eq": 0}, "mark": mark}
 
 		if tx1stSynced {
 			// skipt block 0
@@ -55,66 +52,61 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 			continue
 		}
 
-		var wg sync.WaitGroup
+		var flatxs []interface{}
 
 		for _, txn := range txns {
-			wg.Add(1)
-			go updateTxns(&tx1stSynced, txn, flatxnC, txnC, &wg)
-		}
-		wg.Wait()
-		log.Println("Update txns goroutine finish, txn length: ", len(txns))
-	}
-}
+			newTxn, err := db.RpcGetTxByHash(txn.Hash)
 
-func updateTxns(tx1stSynced *bool, txn *db.Tx, flatxnC *mgo.Collection, txnC *mgo.Collection, wg *sync.WaitGroup) {
-	defer wg.Done()
-	newTxn, err := db.RpcGetTxByHash(txn.Hash)
-
-	if err != nil {
-		log.Println("UpdateTxns RpcGetTxByHash error:", err)
-		return
-	}
-
-	newTxn.BlockNumber = txn.BlockNumber
-
-	flatxns := newTxn.ToFlatTx()
-	var tmpFlatxn db.FlatTx
-
-	for _, tx := range flatxns {
-		errFind := flatxnC.Find(bson.M{"actionIndex": tx.ActionIndex,
-			"hash": tx.Hash}).One(&tmpFlatxn)
-
-		// flatxn not found
-		if errFind != nil {
-			errInsert := flatxnC.Insert(*tx)
-
-			if errInsert != nil {
-				log.Println("failed to insert to flatxnC")
-				//	TODO: save those record to database to try again
+			if err != nil {
+				log.Println("UpdateTxns RpcGetTxByHash error:", err)
 				continue
 			}
+
+			newTxn.BlockNumber = txn.BlockNumber
+
+			flatxns := newTxn.ToFlatTx()
+			var tmpFlatxn db.FlatTx
+
+			for _, tx := range flatxns {
+				errFind := flatxnC.Find(bson.M{"actionIndex": tx.ActionIndex,
+					"hash": tx.Hash}).One(&tmpFlatxn)
+
+				// flatxn not found
+				if errFind != nil {
+					flatxs = append(flatxs, *tx)
+				}
+			}
+
+			errUpdate := txnC.Update(bson.M{"hash": newTxn.Hash},
+				bson.M{
+					"$set": bson.M{
+						"time":       newTxn.Time,
+						"expiration": newTxn.Expiration,
+						"gasPrice":   newTxn.GasPrice,
+						"gasLimit":   newTxn.GasLimit,
+						"actions":    newTxn.Actions,
+						"signers":    newTxn.Signers,
+						"signs":      newTxn.Signs,
+						"publisher":  newTxn.Publisher}})
+
+			if errUpdate != nil {
+				log.Println("failed to update txn")
+				//	TODO: save failed record to database to try again
+				continue
+			}
+
+			if newTxn.BlockNumber == 0 {
+				tx1stSynced = true
+			}
 		}
-	}
-
-	errUpdate := txnC.Update(bson.M{"hash": newTxn.Hash},
-		bson.M{
-			"$set": bson.M{
-				"time":       newTxn.Time,
-				"expiration": newTxn.Expiration,
-				"gasPrice":   newTxn.GasPrice,
-				"gasLimit":   newTxn.GasLimit,
-				"actions":    newTxn.Actions,
-				"signers":    newTxn.Signers,
-				"signs":      newTxn.Signs,
-				"publisher":  newTxn.Publisher}})
-
-	if errUpdate != nil {
-		log.Println("failed to update txn")
-		//	TODO: save failed record to database to try again
-		return
-	}
-
-	if newTxn.BlockNumber == 0 {
-		*tx1stSynced = true
+		if len(flatxs) != 0 {
+			err := txnC.Insert(flatxs...)
+			if nil != err{
+				log.Println("fail to insert flatxs, err: ", err)
+			} else {
+				log.Println("update flatxs, size: ", len(flatxs))
+			}
+		}
+		log.Println("update txs, size: ", len(txns))
 	}
 }
