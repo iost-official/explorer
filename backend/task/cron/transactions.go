@@ -100,7 +100,7 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 			}
 		}
 		if len(flatxs) != 0 {
-			err := txnC.Insert(flatxs...)
+			err := flatxnC.Insert(flatxs...)
 			if nil != err{
 				log.Println("fail to insert flatxs, err: ", err)
 			} else {
