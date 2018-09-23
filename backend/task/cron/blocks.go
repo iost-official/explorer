@@ -234,7 +234,7 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 			{
 				"$match": bson.M{
 					"blockNumber": bson.M{
-						"$eq": topHeightInPay,
+						"$gte": topHeightInPay,
 					},
 					"time": bson.M{
 						"$ne": 0,
