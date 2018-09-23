@@ -234,7 +234,7 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 			{
 				"$match": bson.M{
 					"blockNumber": bson.M{
-						"$gte": topHeightInPay,
+						"$eq": topHeightInPay,
 					},
 					"time": bson.M{
 						"$ne": 0,
@@ -244,16 +244,13 @@ func UpdateBlockPay(wg *sync.WaitGroup) {
 			{
 				"$group": bson.M{
 					"_id": "$blockNumber",
-					//"avggasprice": bson.M{
-					//	"$avg": "$gasPrice",
-					//},
-					//"totalgaslimit": bson.M{
-					//	"$sum": "$gasLimit",
-					//},
+					"avggasprice": bson.M{
+						"$avg": "$gasPrice",
+					},
+					"totalgaslimit": bson.M{
+						"$sum": "$gasLimit",
+					},
 				},
-			},
-			{
-				"$limit": 5,
 			},
 		}
 
