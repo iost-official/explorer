@@ -35,7 +35,15 @@ type TxReceiptRaw struct {
 	StatusMessage string       `bson:"statusMessage"`
 }
 
+type TmpTx struct {
+	Id          bson.ObjectId `bson:"_id,omitempty"`
+	Hash        string        `bson:"hash"`
+	BlockNumber int64         `bson:"blockNumber"`
+	Mark        int64         `bson:"mark"`
+}
+
 type Tx struct {
+	ExternalId  bson.ObjectId  `bson:"externalId"`
 	BlockNumber int64          `bson:"blockNumber"`
 	Time        int64          `bson:"time"`
 	Hash        string         `bson:"hash"`

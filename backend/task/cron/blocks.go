@@ -19,7 +19,7 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 		return
 	}
 
-	txCollection, err := db.GetCollection(db.CollectionTxs)
+	tmpTxCollection, err := db.GetCollection(db.CollectionTmpTxs)
 
 	if nil != err {
 		log.Println("can not get txs collection when update", err)
@@ -84,13 +84,13 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 			if nil != txHashes {
 				txs := make([]interface{}, len(*txHashes))
 				for index, txHash := range *txHashes {
-					txs[index] = db.Tx{
+					txs[index] = db.TmpTx{
 						Hash:        txHash,
 						BlockNumber: topHeightInMongo,
 						Mark:        topHeightInMongo % 2,
 					}
 				}
-				err := txCollection.Insert(txs...)
+				err := tmpTxCollection.Insert(txs...)
 				if nil != err {
 					log.Println("UpdateBlock insert txs error", err)
 					err := recordFailedUpdateBlock(topHeightInMongo, fBlockCollection)
@@ -126,7 +126,7 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 		return
 	}
 
-	txCollection, err := db.GetCollection(db.CollectionTxs)
+	tmpTxCollection, err := db.GetCollection(db.CollectionTmpTxs)
 
 	if nil != err {
 		log.Println("Process failed sync blocks get txs collection error", err)
@@ -180,13 +180,13 @@ func ProcessFailedSyncBlocks(ws *sync.WaitGroup) {
 			if nil != txHashes {
 				txs := make([]interface{}, len(*txHashes))
 				for index, txHash := range *txHashes {
-					txs[index] = db.Tx{
+					txs[index] = db.TmpTx{
 						Hash:        txHash,
 						BlockNumber: fBlock.BlockNumber,
 						Mark:        fBlock.BlockNumber % 2,
 					}
 				}
-				err := txCollection.Insert(txs...)
+				err := tmpTxCollection.Insert(txs...)
 				if nil != err {
 					fBlock.RetryTimes++
 					fBlockCollection.Update(bson.M{"blockNumber": fBlock.BlockNumber}, bson.M{"$set": bson.M{

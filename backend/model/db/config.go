@@ -8,18 +8,20 @@ import (
 
 var (
 	MongoLink = "mongodb://127.0.0.1:27017"
-	Db string
+	Db        string
 )
 
 const (
-	CollectionBlocks  = "blocks"
-	CollectionTxs     = "txs"
-	CollectionFlatTx  = "flatxs"
-	CollectionFBlocks = "fBlocks"
-	CollectionAccount = "accounts"
+	CollectionBlocks     = "blocks"
+	CollectionTmpTxs     = "tmpTxs"
+	CollectionTxs        = "txs"
+	CollectionRpcTxs     = "rpcErrTxs"
+	CollectionFlatTx     = "flatxs"
+	CollectionFBlocks    = "fBlocks"
+	CollectionAccount    = "accounts"
 	CollectionTaskCursor = "taskCursors"
-	CollectionBlockPay = "blockPays"
-	CollectionApplyIost = "applyTestIOST"
+	CollectionBlockPay   = "blockPays"
+	CollectionApplyIost  = "applyTestIOST"
 )
 
 func InitConfig() {
@@ -50,6 +52,7 @@ func InitConfig() {
 	err = colTx.EnsureIndexKey("blockNumber")
 	err = colTx.EnsureIndexKey("mark")
 	err = colTx.EnsureIndexKey("time")
+	err = colTx.EnsureIndexKey("externalId")
 	colBlock, err := GetCollection(CollectionBlocks)
 	if err != nil {
 		log.Fatalln("Block collection create index, get collection error", err)
@@ -57,5 +60,3 @@ func InitConfig() {
 	err = colBlock.EnsureIndexKey("hash")
 	err = colBlock.EnsureIndexKey("blockNumber")
 }
-
-
