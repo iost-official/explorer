@@ -26,6 +26,8 @@
 import swal from 'sweetalert2'
 import axios from 'axios';
 import LuckyBet from '../../components/LuckyBet'
+import { config } from '../../utils/config'
+const { apis } = config
 
 export default {
 	name: "Feedback",
@@ -66,8 +68,8 @@ export default {
 			params.append('content', this.content)
 
 			// axios.post('https://explorer.iost.io/api/feedback', params).then((response) => {
-			axios.post('http://47.75.223.44:8080/api/feedback', params).then((response) => {
-				swal(
+			axios.post(`${apis.search}`, params).then((response) => {
+          swal(
 				  'Feedback success!',
 				  '',
 				  'success'

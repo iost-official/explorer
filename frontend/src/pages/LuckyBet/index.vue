@@ -277,7 +277,8 @@
     },
     methods: {
       showRoundInfo: function(round, blkHeight, winUserNumber, totalRewards, winTime) {
-        axios.get('https://explorer.iost.io/api/luckyBet/round/' + round).then((response) => {
+        // axios.get('https://explorer.iost.io/api/luckyBet/round/' + round).then((response) => {
+        axios.get('/api/luckyBet/round/' + round).then((response) => {
           let roundInfoList = response.data
 
           $("#roundDetail").on('show.bs.modal', function(event) {
@@ -383,7 +384,8 @@
         params.append('luckyNumber', this.luckyNumber)
         params.append('gcaptcha', grecap)
 
-        axios.post('https://explorer.iost.io/api/luckyBet', params).then((response) => {
+        // axios.post('https://explorer.iost.io/api/luckyBet', params).then((response) => {
+        axios.post('/api/luckyBet', params).then((response) => {
           $('#joinBetButton').attr('disabled', false)
           window.clearInterval(interval)
           this.betButtonMsg = 'Place Bet'
@@ -436,7 +438,8 @@
       },
       cronLatest: function() {
         // axios.get('https://explorer.iost.io/api/luckyBet/latestBetInfo').then((response) => {
-        axios.get('http://13.114.55.155/api/luckyBet/latestBetInfo').then((response) => {
+        // axios.get('http://13.114.55.155/api/luckyBet/latestBetInfo').then((response) => {
+        axios.get('/api/luckyBet/latestBetInfo').then((response) => {
           if (!response.data) {
             return
           }
@@ -463,7 +466,8 @@
         }
 
         // axios.get('https://explorer.iost.io/api/luckyBet/addressBet/' + this.address + '?t=t').then((response) => {
-        axios.get('http://13.114.55.155/api/luckyBet/addressBet/' + this.address + '?t=t').then((response) => {
+        // axios.get('http://13.114.55.155/api/luckyBet/addressBet/' + this.address + '?t=t').then((response) => {
+        axios.get('/api/luckyBet/addressBet/' + this.address + '?t=t').then((response) => {
           let betResList = response.data.address_bet_list
           if (betResList == null || betResList.length == 0) {
             return
@@ -479,7 +483,8 @@
         })
       },
       todayRanking: function() {
-        axios.get('https://explorer.iost.io/api/luckyBet/todayRanking').then((response) => {
+        // axios.get('https://explorer.iost.io/api/luckyBet/todayRanking').then((response) => {
+        axios.get('/api/luckyBet/todayRanking').then((response) => {
           let rankList = response.data
 
 
@@ -520,7 +525,8 @@
             }
             modal.find('#searchResults').html("<p>searching...</p>")
             // axios.get('https://explorer.iost.io/api/luckyBet/addressBet/' + addressInput).then((response) => {
-            axios.get('http://13.114.55.155/api/luckyBet/addressBet/' + addressInput).then((response) => {
+            // axios.get('http://13.114.55.155/api/luckyBet/addressBet/' + addressInput).then((response) => {
+            axios.get('/api/luckyBet/addressBet/' + addressInput).then((response) => {
               let betResList = response.data.address_bet_list
               if (betResList == null || betResList.length == 0) {
                 return
@@ -607,7 +613,8 @@
       //   window.location = window.location.href + '?r';
       //   location.reload()
       // }
-      axios.get('https://explorer.iost.io/api/luckyBetBlockInfo').then((response) => {
+      // axios.get('https://explorer.iost.io/api/luckyBetBlockInfo').then((response) => {
+      axios.get('/api/luckyBetBlockInfo').then((response) => {
         if (response.data.ret == 0) {
           let blkList = response.data.top_6_blk
           this.maxBetBlkHeight = blkList[0].height

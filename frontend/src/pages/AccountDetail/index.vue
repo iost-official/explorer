@@ -27,7 +27,7 @@
 
       <ul class="my-tab">
         <li :class="{active: currentTab}" @click="goTab(1)">Transactions</li>
-        <li :class="{active: !currentTab}" @click="goTab(2)">Contract Code</li>
+        <li v-show="showContractCode" :class="{active: !currentTab}" @click="goTab(2)">Contract Code</li>
       </ul>
 
       <div class="my-tab-content">
@@ -76,17 +76,17 @@
         <div class="my-tab-pane2" v-else>
           <div class="pane2-tips1">
             <h4>Publisher:</h4>
-            <!--<p>{{ContractInfo.from}}</p>-->
-            <p>fsdfsdfdffsdfsfasfasfsdf</p>
+            <p>{{ContractInfo.from}}</p>
+            <!--<p>fsdfsdfdffsdfsfasfasfsdf</p>-->
           </div>
           <div class="pane2-tips2">
             <h4>Time:</h4>
-            <!--<p>{{ContractInfo.time}}</p>-->
-            <p>2018-4-19</p>
+            <p>{{ContractInfo.time}}</p>
+            <!--<p>2018-4-19</p>-->
           </div>
           <div class="pane2-tips3">
             <h4>Code:</h4>
-            <!--<pre>{{ContractInfo.code}}</pre>-->
+            <pre>{{ContractInfo.code}}</pre>
           </div>
         </div>
       </div>
@@ -98,6 +98,8 @@
   import axios from 'axios';
   import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
+  import { config } from '../../utils/config'
+  const { apis } = config
 
   export default {
     name: "AccountDetail",
@@ -114,7 +116,10 @@
     },
 
     computed: {
-      ...mapState(['accountDetail', 'accountTxnInfo'])
+      ...mapState(['accountDetail', 'accountTxnInfo']),
+      showContractCode () {
+        return this.address.slice(0,4) != 'IOST'
+      }
     },
 
     methods: {
@@ -136,7 +141,7 @@
         // })
 
         // axios.get('https://explorer.iost.io/api/tx/' + this.address).then((response) => {
-        axios.get('http://47.75.223.44:8080/api/tx/' + this.address).then((response) => {
+        axios.get(`${apis.tx}${this.address}`).then((response) => {
           if (response.data.code == 1) {
             this.isShow = true
             return
