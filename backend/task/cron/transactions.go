@@ -79,6 +79,7 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 		for _, tmpTx := range txns {
 
 			newTxn, err := db.RpcGetTxByHash(tmpTx.Hash)
+			newTxn.BlockNumber = tmpTx.BlockNumber
 
 			if err != nil {
 				log.Println("UpdateTxns RpcGetTxByHash error:", err)
@@ -93,7 +94,6 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 				flatxs = append(flatxs, *tx)
 			}
 
-			newTxn.BlockNumber = tmpTx.BlockNumber
 			newTxn.Mark = tmpTx.Mark
 			newTxn.ExternalId = tmpTx.Id
 			txs = append(txs, *newTxn)
