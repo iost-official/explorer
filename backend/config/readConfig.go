@@ -16,5 +16,6 @@ func ReadConfig () {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 	db.InitConfig()
+	db.EnsureCapped()
 	blkchain.InitConfig()
 }

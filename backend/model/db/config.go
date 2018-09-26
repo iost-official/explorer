@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/globalsign/mgo/bson"
 	"github.com/spf13/viper"
 	"log"
 )
@@ -59,4 +60,42 @@ func InitConfig() {
 	}
 	err = colBlock.EnsureIndexKey("hash")
 	err = colBlock.EnsureIndexKey("blockNumber")
+
+	colTmpTx, err := GetCollection(CollectionTmpTxs)
+	if err != nil {
+		log.Fatalln("get tmp tx collection failed")
+	}
+	colTmpTx.EnsureIndexKey("blockNumber")
+}
+
+func EnsureCapped() {
+	gb := int64(1 << 30)
+	ensureCapped(CollectionFlatTx, 4*gb)
+	ensureCapped(CollectionTxs, 4*gb)
+	ensureCapped(CollectionTmpTxs, 2*gb)
+}
+
+func ensureCapped(col string, size int64) {
+	var doc bson.M
+	db, err := GetDb()
+	if nil != err {
+		log.Fatalln("ensure capped get db error", err)
+		return
+	}
+	err = db.Run(bson.D{{Name: "collStats", Value: col}}, &doc)
+	if nil != err {
+		log.Fatalln("ensure capped get coll Stats error", err)
+	}
+	capped, ok := doc["capped"].(bool)
+	log.Println("is ok", ok)
+	if ok && !capped {
+		err := db.Run(bson.D{
+			{Name: "convertToCapped", Value: col},
+			{Name: "size", Value: size}}, &doc)
+		if nil != err {
+			log.Println("convert to capped error", err)
+		} else {
+			log.Println("convert to capped result", doc)
+		}
+	}
 }
