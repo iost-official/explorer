@@ -80,10 +80,5 @@ func GetBlockDetail(c echo.Context) error {
 
 	blkOutput := model.GenerateBlockOutput(blkInfo)
 
-	txList, err := db.GetBlockTxnHashes(blkInfo.BlockNumber)
-	if nil == err {
-		blkOutput.Txn = int64(len(*txList))
-	}
-
 	return c.JSON(http.StatusOK, FormatResponse(blkOutput))
 }

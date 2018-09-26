@@ -41,33 +41,35 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 		return
 	}
 
+	var startExternalId bson.ObjectId = ""
+
 	for range ticker.C {
 		step := 2000
 		var txns = make([]*db.TmpTx, 0)
 
-		log.Println("on ticker, mark:", mark)
-
 		var txn db.Tx
-		err = txnC.Find(bson.M{"mark": mark}).Sort("-externalId").Limit(1).One(&txn)
 		var query = bson.M{"mark": mark}
-		if nil != err {
-			if err.Error() == "not found" {
-				err := tmpTxc.Find(query).Sort("_id").Limit(step).All(&txns)
-				if nil != err {
+		if "" == startExternalId {
+			err = txnC.Find(bson.M{"mark": mark}).Sort("-externalId").Limit(1).One(&txn)
+			if nil != err {
+				if err.Error() != "not found" {
 					log.Println("update tmpTx query error:", err)
 					continue
 				}
 			} else {
-				log.Println("can not get txs id error:", err)
-				continue
+				startExternalId = txn.ExternalId
+				query = bson.M{"_id": bson.M{"$gt": startExternalId},
+					"mark": mark}
 			}
 		} else {
-			err := tmpTxc.Find(bson.M{"_id": bson.M{"$gt": txn.ExternalId},
-				"mark": mark}).Sort("_id").Limit(step).All(&txns)
-			if nil != err {
-				log.Println("update tmpTx query error:", err)
-				continue
-			}
+			query = bson.M{"_id": bson.M{"$gt": startExternalId},
+				"mark": mark}
+		}
+
+		err = tmpTxc.Find(query).Sort("_id").Limit(step).All(&txns)
+		if nil != err {
+			log.Println("query tmp txs error", err)
+			continue
 		}
 
 		log.Println("need update txs length:", len(txns))
@@ -96,6 +98,7 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 
 			newTxn.Mark = tmpTx.Mark
 			newTxn.ExternalId = tmpTx.Id
+			startExternalId = newTxn.ExternalId
 			txs = append(txs, *newTxn)
 		}
 

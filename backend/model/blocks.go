@@ -3,7 +3,6 @@ package model
 import (
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/explorer/backend/util"
-	"log"
 )
 
 type BlockOutput struct {
@@ -44,15 +43,6 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 			output.AvgGasPrice = pay.AvgGasPrice
 		}
 
-		txList, err := db.GetBlockTxnHashes(v.BlockNumber)
-
-		if nil == err {
-			output.TxList = *txList
-			output.Txn = int64(len(output.TxList))
-		} else {
-			log.Println("get block txn list fail", err)
-		}
-
 		blockOutputList = append(blockOutputList, output)
 	}
 
@@ -67,6 +57,7 @@ func GenerateBlockOutput(bInfo *db.Block) *BlockOutput {
 		ParentHash: bInfo.ParentHash,
 		BlockHash:  bInfo.Hash,
 		Witness:    bInfo.Witness,
+		Txn:        bInfo.TxNumber,
 		Age:        util.ModifyBlockIntToTimeStr(timestamp),
 		UTCTime:    util.FormatUTCTime(timestamp),
 		Timestamp:  timestamp,
