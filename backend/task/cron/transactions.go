@@ -81,7 +81,6 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 		for _, tmpTx := range txns {
 
 			newTxn, err := db.RpcGetTxByHash(tmpTx.Hash)
-			newTxn.BlockNumber = tmpTx.BlockNumber
 
 			if err != nil {
 				log.Println("UpdateTxns RpcGetTxByHash error:", err)
@@ -89,6 +88,7 @@ func UpdateTxns(wg *sync.WaitGroup, mark int) {
 				rpcErrTxs = append(rpcErrTxs, tx)
 				continue
 			}
+			newTxn.BlockNumber = tmpTx.BlockNumber
 
 			flatxns := newTxn.ToFlatTx()
 
