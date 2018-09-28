@@ -2,11 +2,12 @@ package model
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/Go-IOS-Protocol/core/contract"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/explorer/backend/util"
-	"log"
+	"github.com/iost-official/go-iost/core/contract"
 )
 
 /// this struct is used as json to return

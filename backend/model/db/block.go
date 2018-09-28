@@ -1,10 +1,11 @@
 package db
 
 import (
-	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/Go-IOS-Protocol/common"
-	"github.com/iost-official/explorer/backend/model/blkchain"
 	"log"
+
+	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/explorer/backend/model/blkchain"
+	"github.com/iost-official/go-iost/common"
 )
 
 type Block struct {
@@ -47,7 +48,9 @@ func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
 		return nil, err
 	}
 
-	var hashes []*struct{ Hash string `bson:"hash"` }
+	var hashes []*struct {
+		Hash string `bson:"hash"`
+	}
 	err = txnC.Find(bson.M{"blockNumber": blockNumber}).Select(bson.M{"hash": 1, "_id": 0}).All(&hashes)
 	if nil != err {
 		log.Println("query block tx failed", err)
@@ -92,7 +95,7 @@ func GetBlockInfoByNum(num int64) (*Block, *[]string, error) {
 	return &block, nil, nil
 }
 
-func GetBlockByHash(hash string) (*Block, *[]string, error)  {
+func GetBlockByHash(hash string) (*Block, *[]string, error) {
 	blockCollection, err := GetCollection(CollectionBlocks)
 
 	if nil != err {

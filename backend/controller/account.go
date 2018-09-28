@@ -3,17 +3,18 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/Go-IOS-Protocol/common"
-	"github.com/iost-official/explorer/backend/model/blkchain"
-	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/explorer/backend/util/session"
-	"github.com/labstack/echo"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/explorer/backend/model/blkchain"
+	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/util/session"
+	"github.com/iost-official/go-iost/common"
+	"github.com/labstack/echo"
 )
 
 type AccountsOutput struct {
@@ -43,7 +44,7 @@ func init() {
 func calLastPage(total int) int {
 	var lastPage int
 	if total%AccountEachPage == 0 {
-		lastPage = total/AccountEachPage
+		lastPage = total / AccountEachPage
 	} else {
 		lastPage = total/AccountEachPage + 1
 	}
@@ -373,7 +374,6 @@ func TestPage(c echo.Context) error {
 	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
 	defer sess.SessionRelease(c.Response())
 
-
 	sess.Set("test-session", "hello-123-456")
 	return c.JSON(http.StatusOK, FormatResponse([]string{"hello world"}))
 }
@@ -381,7 +381,6 @@ func TestPage(c echo.Context) error {
 func TestPage2(c echo.Context) error {
 	sess, _ := session.GlobalSessions.SessionStart(c.Response(), c.Request())
 	defer sess.SessionRelease(c.Response())
-
 
 	info := sess.Get("test-session")
 	vcInSession, _ := info.(string)

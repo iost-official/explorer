@@ -4,14 +4,14 @@
 	"package": [
 		{
 			"checksumSHA1": "oYSzF/9oJ32QRCeMq1THJeUpICw=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/InWeCrypto/sha3",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/InWeCrypto/sha3",
 			"path": "github.com/InWeCrypto/sha3",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "CSPbwbyzqA6sfORicn4HFtIhF/c=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/davecgh/go-spew/spew",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
@@ -72,7 +72,7 @@
 		},
 		{
 			"checksumSHA1": "nTHr8B2CPLP8kcJRtBEXluFvzUY=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/gogo/protobuf/proto",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/gogo/protobuf/proto",
 			"path": "github.com/gogo/protobuf/proto",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
@@ -163,97 +163,97 @@
 		},
 		{
 			"checksumSHA1": "d/AAdG42i/b/U7zanKRJzvg26Ks=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/account",
+			"path": "github.com/iost-official/go-iost/account",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "+KdHn2KlQv48jA0nyBpMY/eHxSo=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/common",
+			"path": "github.com/iost-official/go-iost/common",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "v7N4tupGIPtXYuKVDHQcN88gPhQ=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/common/hash",
+			"path": "github.com/iost-official/go-iost/common/hash",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "Hbk/j1nCkwSlM5LmN4+gk9XrPQM=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/core/block",
+			"path": "github.com/iost-official/go-iost/core/block",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "22GxzHN+ra0YwJP1sEKzuEK2HuY=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/core/event",
+			"path": "github.com/iost-official/go-iost/core/event",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "MEkPmqsm0fsNmWz2ZakDqf6DU38=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/core/merkletree",
+			"path": "github.com/iost-official/go-iost/core/merkletree",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "7ioK9vHdIhNvPmgaG6Tp36WUQGc=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/core/tx",
+			"path": "github.com/iost-official/go-iost/core/tx",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "+kweYE9DbZ2mEicCeAOQgvgFqlo=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/crypto",
+			"path": "github.com/iost-official/go-iost/crypto",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "4vBQhu9Ve1L2dp7a+XcJEuSW0q0=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/crypto/backend",
+			"path": "github.com/iost-official/go-iost/crypto/backend",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "aDi5JDx/4ZOtqnaCJb9ikXi0pVo=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/db",
+			"path": "github.com/iost-official/go-iost/db",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "TXxvuAYpG42cjN9ObhwnSSNT3tQ=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/db/mvcc",
+			"path": "github.com/iost-official/go-iost/db/mvcc",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "JfcMBu0asakgeYnvPdmn9TYiRfA=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/db/mvcc/map",
+			"path": "github.com/iost-official/go-iost/db/mvcc/map",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "ZaBSub62m04P8ztg5L5VkxUQpHQ=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/db/mvcc/trie",
+			"path": "github.com/iost-official/go-iost/db/mvcc/trie",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "BSz1Dd53xqs4DN1hOk84CwtuRnc=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/db/storage",
+			"path": "github.com/iost-official/go-iost/db/storage",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "QTec/yg7mCUT/ltd61ivDJfgr04=",
-			"path": "github.com/iost-official/Go-IOS-Protocol/ilog",
+			"path": "github.com/iost-official/go-iost/ilog",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "Js/yx9fZ3+wH1wZpHNIxSTMIaCg=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/jtolds/gls",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/jtolds/gls",
 			"path": "github.com/jtolds/gls",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
@@ -284,49 +284,49 @@
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/pmezard/go-difflib/difflib",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/pmezard/go-difflib/difflib",
 			"path": "github.com/pmezard/go-difflib/difflib",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "wVmkBavCZSwHYTDGxa1xOD3RKe0=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/smartystreets/assertions",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/smartystreets/assertions",
 			"path": "github.com/smartystreets/assertions",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "v6W3GIQMzr3QSXB2NtBa9X7SwiI=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/smartystreets/assertions/internal/go-render/render",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/smartystreets/assertions/internal/go-render/render",
 			"path": "github.com/smartystreets/assertions/internal/go-render/render",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "r6FauVdOTFnwYQgrKGFuWUbIAJE=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/smartystreets/assertions/internal/oglematchers",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/smartystreets/assertions/internal/oglematchers",
 			"path": "github.com/smartystreets/assertions/internal/oglematchers",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "c71WVAQlpp3r4I+BtTxRz1Cq1Lw=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/smartystreets/goconvey/convey",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/smartystreets/goconvey/convey",
 			"path": "github.com/smartystreets/goconvey/convey",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "6Mgn4H/4vpqYGlaIKZ0UwOmJN0E=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/smartystreets/goconvey/convey/gotest",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/smartystreets/goconvey/convey/gotest",
 			"path": "github.com/smartystreets/goconvey/convey/gotest",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "FWDhk37bhAwZ2363D/L2xePwR64=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/smartystreets/goconvey/convey/reporting",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/smartystreets/goconvey/convey/reporting",
 			"path": "github.com/smartystreets/goconvey/convey/reporting",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
@@ -369,49 +369,49 @@
 		},
 		{
 			"checksumSHA1": "c6pbpF7eowwO59phRTpF8cQ80Z0=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/stretchr/testify/assert",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/stretchr/testify/assert",
 			"path": "github.com/stretchr/testify/assert",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "wnEANt4k5X/KGwoFyfSSnpxULm4=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/stretchr/testify/require",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/stretchr/testify/require",
 			"path": "github.com/stretchr/testify/require",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "uefllr2OtKBGo/kQSAPbW3w6p0A=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/github.com/stretchr/testify/suite",
+			"origin": "github.com/iost-official/go-iost/vendor/github.com/stretchr/testify/suite",
 			"path": "github.com/stretchr/testify/suite",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "2LpxYGSf068307b7bhAuVjvzLLc=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/golang.org/x/crypto/ed25519",
+			"origin": "github.com/iost-official/go-iost/vendor/golang.org/x/crypto/ed25519",
 			"path": "golang.org/x/crypto/ed25519",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "0JTAFXPkankmWcZGQJGScLDiaN8=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/golang.org/x/crypto/ed25519/internal/edwards25519",
+			"origin": "github.com/iost-official/go-iost/vendor/golang.org/x/crypto/ed25519/internal/edwards25519",
 			"path": "golang.org/x/crypto/ed25519/internal/edwards25519",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "BGm8lKZmvJbf/YOJLeL1rw2WVjA=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/golang.org/x/crypto/ssh/terminal",
+			"origin": "github.com/iost-official/go-iost/vendor/golang.org/x/crypto/ssh/terminal",
 			"path": "golang.org/x/crypto/ssh/terminal",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
 		},
 		{
 			"checksumSHA1": "m5QCvoZ2KaoLTG9VWjYNonM08b8=",
-			"origin": "github.com/iost-official/Go-IOS-Protocol/vendor/golang.org/x/sys/windows",
+			"origin": "github.com/iost-official/go-iost/vendor/golang.org/x/sys/windows",
 			"path": "golang.org/x/sys/windows",
 			"revision": "5b5d16c3ed0773ea0fbffd7e26ae162fab74c53a",
 			"revisionTime": "2018-09-04T12:28:55Z"
