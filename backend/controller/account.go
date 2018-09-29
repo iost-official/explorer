@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"github.com/iost-official/explorer/backend/model"
 	"log"
 	"net/http"
 	"strconv"
@@ -138,7 +139,19 @@ func GetAccountDetail(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, FormatResponse(account))
+	marketInfo, err := model.GetMarketInfo()
+	price, _ := strconv.ParseFloat(marketInfo.Price, 32)
+
+	value := account.Balance / 100000000 * price
+
+
+	return c.JSON(http.StatusOK, FormatResponse(struct{
+		db.Account
+		Value float64 `json:"value"`
+	}{
+		*account,
+		value,
+	}))
 }
 
 func GetAccountTxs(c echo.Context) error {

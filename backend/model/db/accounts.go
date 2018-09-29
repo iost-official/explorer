@@ -203,7 +203,6 @@ func GetFlatTxnLenByAccount(account string) (int, error) {
 		log.Println("GetFlatTxnLenByAccount CollectionFlatTx collection error:", err)
 		return 0, err
 	}
-	return 0, nil
 
 	query := bson.M{
 		"$or": []bson.M{
@@ -221,7 +220,6 @@ func GetAccountTxCount(address string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return 0, nil
 	num, err := ftxCol.Find(bson.M{"$or": []bson.M{
 		bson.M{"from": address},
 		bson.M{"to": address},
