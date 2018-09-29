@@ -44,11 +44,7 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 					fmt.Println("Get balance failed", err)
 				}
 			}
-			fromCount, err := db.GetAccountTxCount(ft.From)
-			if err != nil {
-				fmt.Println("Get txcount error", err)
-			}
-			_, err = accountCol.Upsert(bson.M{"address": ft.From}, bson.M{"$set": bson.M{"balance": fromB, "tx_count": fromCount}}) // TODO: check error update
+			_, err = accountCol.Upsert(bson.M{"address": ft.From}, bson.M{"$set": bson.M{"balance": fromB}})
 			if err != nil {
 				fmt.Println("Update failed", err)
 			}
@@ -65,11 +61,7 @@ func UpdateAccounts(wg *sync.WaitGroup) {
 					fmt.Println("Get balance failed", err)
 				}
 			}
-			toCount, err := db.GetAccountTxCount(ft.To)
-			if err != nil {
-				fmt.Println("Get tx failed", err)
-			}
-			_, err = accountCol.Upsert(bson.M{"address": ft.To}, bson.M{"$set": bson.M{"balance": toB, "tx_count": toCount}})
+			_, err = accountCol.Upsert(bson.M{"address": ft.To}, bson.M{"$set": bson.M{"balance": toB}})
 			if err != nil {
 				fmt.Println("Update failed", err)
 			}
