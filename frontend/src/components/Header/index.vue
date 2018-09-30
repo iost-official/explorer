@@ -3,7 +3,7 @@
     <div class="my-container">
       <div class="logo-box">
         <router-link class="logo-link" to="/">
-          <img src="../../assets/logo.png" alt="">
+          <img src="/static/img/logo.png" alt="">
         </router-link>
       </div>
       <div>
@@ -30,7 +30,7 @@
                    @click.stop="" v-model.trim="searchInput" @keydown.enter="searchData">
           </li>
           <li class="my-nav-item" v-show="!currentTheme">
-            <img src="../../assets/search.png" alt="" @click="openSearch"/>
+            <img src="/static/img/search.png" alt="" @click="openSearch"/>
           </li>
         </ul>
 
@@ -58,7 +58,7 @@
             <li class="mobile-nav-item">
               <input type="text" placeholder="Search..."
                      @click.stop="" v-model.trim="searchInput" @keydown.enter="searchData">
-              <img src="../../assets/search.png" alt="" @click="searchData"/>
+              <img src="/static/img/search.png" alt="" @click="searchData"/>
             </li>
           </ul>
 
@@ -338,10 +338,10 @@
             width: 30px;
             height: 30px;
             display: inline-block;
-            background-image: url("../../assets/menu.png");
+            background-image: url("/static/img/menu.png");
             background-size: cover;
             &.active {
-              background-image: url("../../assets/close.png");
+              background-image: url("/static/img/close.png");
             }
           }
           .mobile-nav-box {

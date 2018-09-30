@@ -11,31 +11,31 @@
         <ul class="my-pages">
           <li>
             <router-link to="/blocks">
-              <span><img src="../../assets/arrow-douleft.png" alt=""></span>
+              <span><img src="/static/img/arrow-douleft.png" alt=""></span>
             </router-link>
           </li>
 
           <li>
             <a v-if="page == 1" href="javascript:void(0)">
-              <span><img src="../../assets/arrow-left.png" alt=""></span>
+              <span><img src="/static/img/arrow-left.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/blocks?p=${(page-1)}`}">
-              <span><img src="../../assets/arrow-left.png" alt=""></span>
+              <span><img src="/static/img/arrow-left.png" alt=""></span>
             </router-link>
           </li>
 
           <li><a class="page-auto" href="#"><b>{{page}}</b> / <b>{{blockInfo.pageLast}}</b></a></li>
           <li>
             <a v-if="page == blockInfo.pageLast" href="javascript:void(0)">
-              <span><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="/static/img/arrow-right.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/blocks?p=${(page+1)}`}">
-              <span><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="/static/img/arrow-right.png" alt=""></span>
             </router-link>
           </li>
           <li>
             <router-link :to="{path:`/blocks?p=${blockInfo.pageLast}`}">
-              <span aria-hidden="true"><img src="../../assets/arrow-douright.png" alt=""></span>
+              <span aria-hidden="true"><img src="/static/img/arrow-douright.png" alt=""></span>
             </router-link>
           </li>
         </ul>
@@ -236,8 +236,8 @@
             width: 100px;
           }
           &:nth-child(2) {
-            width: 480px;
-            padding-right: 80px;
+            width: 450px;
+            padding-right: 50px;
             overflow: hidden;
             text-overflow: ellipsis;
           }
@@ -245,13 +245,13 @@
             width: 100px;
           }
           &:nth-child(4) {
-            width: 110px;
+            width: 180px;
           }
           &:nth-child(5) {
             width: 120px;
           }
           &:nth-child(6) {
-            width: 50px;
+            width: 70px;
           }
         }
       }

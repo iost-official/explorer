@@ -1,14 +1,14 @@
 <template>
   <div class="marketInfo-box">
-    <img class="my-img" src="../../assets/sixTri.png" alt="">
+    <img class="my-img" src="/static/img/sixTri.png" alt="">
     <div class="my-marketInfo">
-      <img class="marketInfo-logo" src="../../assets/iostMarket.png" alt="">
+      <img class="marketInfo-logo" src="/static/img/iostMarket.png" alt="">
       <div class="marketInfo-price" v-if="marketInfo.price && marketInfo.btcPrice">
         <p><span>$</span> {{ marketInfo.price }}</p>
         <p>{{marketInfo.btcPrice}} BTC / {{marketInfo.ethPrice}} ETH</p>
       </div>
       <div class="marketInfo-price" v-else>
-        <img src="../../assets/loading.gif" alt="">
+        <img src="/static/img/loading.gif" alt="">
       </div>
 
       <div class="marketInfo-time" v-if="marketInfo.volume24h && marketInfo.marketCap && marketInfo.lastUpdate">
@@ -26,7 +26,7 @@
         </div>
       </div>
       <div class="marketInfo-time" v-else>
-        <img src="../../assets/loading.gif" alt="">
+        <img src="/static/img/loading.gif" alt="">
       </div>
     </div>
   </div>

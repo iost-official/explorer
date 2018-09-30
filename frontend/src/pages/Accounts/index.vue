@@ -14,32 +14,32 @@
         <ul class="my-pages">
           <li>
             <router-link to="/accounts">
-              <span><img src="../../assets/arrow-douleft.png" alt=""></span>
+              <span><img src="/static/img/arrow-douleft.png" alt=""></span>
             </router-link>
           </li>
 
           <li>
             <a v-if="page == 1" href="javascript:void(0)">
-              <span><img src="../../assets/arrow-left.png" alt=""></span>
+              <span><img src="/static/img/arrow-left.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/accounts?p=${(page-1)}`}">
-              <span><img src="../../assets/arrow-left.png" alt=""></span>
+              <span><img src="/static/img/arrow-left.png" alt=""></span>
             </router-link>
           </li>
 
           <li><a href="#" class="page-auto"><b>{{page}}</b> / <b>{{accountInfo.pageLast}}</b></a></li>
           <li>
             <a v-if="page == accountInfo.pageLast" href="javascript:void(0)">
-              <span><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="/static/img/arrow-right.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/accounts?p=${(page+1)}`}">
-              <span><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="/static/img/arrow-right.png" alt=""></span>
             </router-link>
           </li>
 
           <li>
             <router-link :to="{path:`/accounts?p=${accountInfo.pageLast}`}">
-              <span><img src="../../assets/arrow-douright.png" alt=""></span>
+              <span><img src="/static/img/arrow-douright.png" alt=""></span>
             </router-link>
           </li>
         </ul>

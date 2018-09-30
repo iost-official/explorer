@@ -3,7 +3,7 @@
     <div class="my-container">
       <div class="my-footer-top">
         <div class="my-footer-left">
-          <img src="../../assets/iostFoot.png">
+          <img src="/static/img/iostFoot.png">
           <h2>IOST</h2>
         </div>
         <ul class="my-footer-middle">

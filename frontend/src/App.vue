@@ -17,7 +17,7 @@ export default {
 <style lang="less" rel="stylesheet/less">
   @font-face{
     font-family: 'Montserrat';
-    src: url('./assets/font/Montserrat-Light.woff.ttf');
+    src: url('/static/fonts/Montserrat-Light.woff.ttf');
   }
   #app {
     position: relative;

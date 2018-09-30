@@ -10,7 +10,7 @@
     </div>
 
     <div class="txnsDetail-information">
-      <img src="../../assets/iostWhite.png" alt="">
+      <img src="/static/img/iostWhite.png" alt="">
       <div class="txnsDetail-hash">
         <h4>TxHash:</h4>
         <p>{{txHash}}</p>

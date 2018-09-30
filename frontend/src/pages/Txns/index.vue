@@ -23,31 +23,31 @@
         <ul class="my-pages">
           <li>
             <router-link :to="{path:`/txs?a=${address}&b=${blk}`}">
-              <span><img src="../../assets/arrow-douleft.png" alt=""></span>
+              <span><img src="/static/img/arrow-douleft.png" alt=""></span>
             </router-link>
           </li>
 
           <li>
             <a v-if="page == 1" href="javascript:void(0)">
-              <span><img src="../../assets/arrow-left.png" alt=""></span>
+              <span><img src="/static/img/arrow-left.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/txs?p=${(page-1)}&a=${address}&b=${blk}`}">
-              <span><img src="../../assets/arrow-left.png" alt=""></span>
+              <span><img src="/static/img/arrow-left.png" alt=""></span>
             </router-link>
           </li>
 
           <li><a class="page-auto" href="#"><b>{{page}}</b> / <b>{{txnInfo.pageLast}}</b></a></li>
           <li>
             <a v-if="page == txnInfo.pageLast" href="javascript:void(0)">
-              <span><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="/static/img/arrow-right.png" alt=""></span>
             </a>
             <router-link v-else :to="{path:`/txs?p=${(page+1)}&a=${address}&b=${blk}`}">
-              <span><img src="../../assets/arrow-right.png" alt=""></span>
+              <span><img src="/static/img/arrow-right.png" alt=""></span>
             </router-link>
           </li>
           <li>
             <router-link :to="{path:`/txs?p=${txnInfo.pageLast}&a=${address}&b=${blk}`}">
-              <span><img src="../../assets/arrow-douright.png" alt=""></span>
+              <span><img src="/static/img/arrow-douright.png" alt=""></span>
             </router-link>
           </li>
         </ul>
@@ -78,14 +78,14 @@
               <router-link v-else :to="{path:`/account/${tx.from}`}">{{tx.from}}</router-link>
             </li>
             <li>
-              <img v-if="tx.state == 0" src="../../assets/failure.png" alt="">
-              <img v-else src="../../assets/success.png" alt="">
+              <img v-if="tx.state == 0" src="/static/img/failure.png" alt="">
+              <img v-else src="/static/img/success.png" alt="">
             </li>
             <li>
               <router-link :to="{path:`/account/${tx.to}`}">{{tx.to}}...</router-link>
             </li>
             <li>{{tx.age}}</li>
-            <li>{{tx.amount}} IOST</li>
+            <li>{{tx.amount/100000000}} IOST</li>
           </ul>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <template>
   <div class="luckyBet-box">
-    <img src="../../assets/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
+    <img src="/static/img/activity.png" alt="">Latest Activity: <a href="/luckyBet" target="_blank">Play Lucky Bet !</a>
   </div>
 </template>
 

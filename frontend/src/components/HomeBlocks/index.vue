@@ -9,7 +9,7 @@
     <ul class="my-list-body">
       <li my-list-wrap v-for="block in indexBlockList">
         <p>
-          <img src="../../assets/block.png" alt="">
+          <img src="/static/img/block.png" alt="">
           <router-link :to="{path:`/block/${block.height}`}">Block {{block.height}}</router-link>
         </p>
         <p>Minted By</p>

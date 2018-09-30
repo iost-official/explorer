@@ -12,7 +12,7 @@
 
     <div class="accountDetail-info">
       <div class="accountDetail-tips">
-        <img src="../../assets/iostWhite.png" alt="">
+        <img src="/static/img/iostWhite.png" alt="">
         <div class="accountDetail-height-value">
           <div class="accountDetail-height">
             <h4>Balance:</h4>
@@ -20,7 +20,7 @@
           </div>
           <div class="accountDetail-value">
             <h4>IOST Value:</h4>
-            <p></p>
+            <p>{{accountDetail.value.toFixed(2)}}</p>
           </div>
         </div>
       </div>

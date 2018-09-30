@@ -26,7 +26,7 @@
 
 <style lang="less" rel="stylesheet/less">
 .bg {
-  background-image: url("../../assets/bg.png");
+  background-image: url("/static/img/bg.png");
   background-size: 100%;
   background-repeat: no-repeat;
   margin-top: -90px;

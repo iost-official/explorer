@@ -1,7 +1,7 @@
 <template>
   <div class="form-search-box">
     <input type="text" class="form-control" placeholder="Search..." v-model.trim="searchInput" @keydown.enter="searchData">
-    <img src="../../assets/search.png" alt="" @click="searchData">
+    <img src="/static/img/search.png" alt="" @click="searchData">
   </div>
 </template>
 

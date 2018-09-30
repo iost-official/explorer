@@ -4,7 +4,7 @@
       <h1>Whoops!</h1>
       <p>We were unable to find the page you were looking for</p>
     </div>
-    <img src="../../assets/404.png" class="image">
+    <img src="/static/img/404.png" class="image">
   </div>
 </template>
 

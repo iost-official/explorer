@@ -10,7 +10,7 @@
     </div>
 
     <div class="blockDetail-information">
-      <img src="../../assets/iostWhite.png" alt="">
+      <img src="/static/img/iostWhite.png" alt="">
 
       <div class="blockDetail-height-txns">
         <div class="blockDetail-height">

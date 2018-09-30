@@ -10,7 +10,7 @@
       <li v-for="(txn, index) in indexTxnList" :key="index">
         <div class="my-list-wrap">
           <div class="list-block">
-            <img src="../../assets/txns.png" alt="">
+            <img src="/static/img/txns.png" alt="">
             <p>Tx</p>
           </div>
           <div class="list-tx">
@@ -27,7 +27,7 @@
           </div>
           <div class="list-amount">
             <p>Amount</p>
-            <p>{{txn.amount}} IOST</p>
+            <p>{{txn.amount/100000000}} IOST</p>
           </div>
         </div>
       </li>
