@@ -146,7 +146,7 @@ func GetAccountDetail(c echo.Context) error {
 
 	// 合约地址， 获取合约代码
 	code := ""
-	if address[0:8] != "Contract" {
+	if address[0:8] == "Contract" {
 		txhash := address[8:]
 		txDetail, _ := db.GetFlatTxnDetailByHash(txhash);
 		code = txDetail.Action.Data
