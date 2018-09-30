@@ -139,18 +139,28 @@ func GetAccountDetail(c echo.Context) error {
 		return err
 	}
 
+	// 计算iost对应的美元价值
 	marketInfo, err := model.GetMarketInfo()
 	price, _ := strconv.ParseFloat(marketInfo.Price, 32)
-
 	value := account.Balance / 100000000 * price
+
+	// 合约地址， 获取合约代码
+	code := ""
+	if address[0:8] != "Contract" {
+		txhash := address[8:]
+		txDetail, _ := db.GetFlatTxnDetailByHash(txhash);
+		code = txDetail.Action.Data
+	}
 
 
 	return c.JSON(http.StatusOK, FormatResponse(struct{
 		db.Account
 		Value float64 `json:"value"`
+		Code string `json:"code"`
 	}{
 		*account,
 		value,
+		code,
 	}))
 }
 

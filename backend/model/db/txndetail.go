@@ -171,3 +171,19 @@ func GetTxnDetailByHash(txHash string) (*Tx, error) {
 
 	return txn, err
 }
+
+func GetFlatTxnDetailByHash(txHash string) (*FlatTx, error) {
+	txnDC, err := GetCollection(CollectionFlatTx)
+	if err != nil {
+		log.Println("UpdateTxns get txns collection error:", err)
+		return nil, err
+	}
+
+	query := bson.M{
+		"hash": txHash,
+	}
+	var txn *FlatTx
+	err = txnDC.Find(query).One(&txn)
+
+	return txn, err
+}
