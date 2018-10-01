@@ -10,7 +10,7 @@
 
 		<div class="my-tips-container">
 			<div class="" id="luckyBetIntro">
-				<p>Lucky Bet is operating on the v0.5 Everest testnet of the IOST Blockchain. It provides a way for users to participate and try out the IOST testnet. Everest is still in its early testing phase. In order to launch a stable Mainnet, IOST engineers will be constantly pressure testing, adjusting, fixing and upgrading the testnet. This may result in instability, periods where the testnet is offline, and other abnormalities.</p>
+				<p>Lucky Bet is operating on the v1.0 Everest testnet of the IOST Blockchain. It provides a way for users to participate and try out the IOST testnet. Everest is still in its early testing phase. In order to launch a stable Mainnet, IOST engineers will be constantly pressure testing, adjusting, fixing and upgrading the testnet. This may result in instability, periods where the testnet is offline, and other abnormalities.</p>
 				<p>If you encounter any issues or bugs, please email team@iost.io or report your issue via the following link:</p>
 				<!--<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>-->
 				<router-link to="/feedback">https://explorer.iost.io/#/feedback</router-link>

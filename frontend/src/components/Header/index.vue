@@ -6,6 +6,9 @@
           <img src="/static/img/logo.png" alt="">
         </router-link>
       </div>
+      <div class="my-luckybet" :class="{active: currentColor == 7}">
+        <router-link to="/luckyBet">Play Lucky Bet !</router-link>
+      </div>
       <div>
         <ul class="my-nav-box">
           <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 0}">
@@ -266,6 +269,20 @@
         .logo-link{
           > img {
             width: 130px;
+          }
+        }
+      }
+      .my-luckybet {
+        color: #FFFFFF;
+        a {
+          color: #8F9A9C;
+          text-decoration: none;
+          font-size: 14px;
+          line-height: 18px;
+        }
+        &.active {
+          a {
+            color: #FFFFFF;
           }
         }
       }
