@@ -140,7 +140,7 @@
                 <div class="form-group">
                   <div class="col-sm-offset-2 col-sm-10">
                     <button type="button" class="btn btn-primary" id="joinBetButton" @click="joinBet" style="min-width:90px; text-align: left;">{{betButtonMsg}}</button>
-                    <a :href="'/#/applyIOST'">Do not have test IOST?</a>
+                    <router-link to="/applyIOST">Do not have test IOST?</router-link>
                   </div>
                 </div>
               </form>
@@ -317,29 +317,29 @@
       },
       joinBet: function() {
         swal.close()
-        if (this.betAmount <= 0 || this.betAmount > 5 || this.betAmount % 1 !== 0) {
-          $('#errBetAlert').addClass('alert alert-danger')
-          this.errMsg = 'invalid amount'
-          return false
-        }
+        // if (this.betAmount <= 0 || this.betAmount > 5 || this.betAmount % 1 !== 0) {
+        //   $('#errBetAlert').addClass('alert alert-danger')
+        //   this.errMsg = 'invalid amount'
+        //   return false
+        // }
 
-        if (this.luckyNumber == '' || this.luckyNumber < 0 || this.luckyNumber > 9 || this.luckyNumber % 1 !== 0) {
-          $('#errBetAlert').addClass('alert alert-danger')
-          this.errMsg = 'invalid luckyNumber'
-          return false
-        }
+        // if (this.luckyNumber == '' || this.luckyNumber < 0 || this.luckyNumber > 9 || this.luckyNumber % 1 !== 0) {
+        //   $('#errBetAlert').addClass('alert alert-danger')
+        //   this.errMsg = 'invalid luckyNumber'
+        //   return false
+        // }
 
-        if (this.address.length < 45) {
-          $('#errBetAlert').addClass('alert alert-danger')
-          this.errMsg = 'invalid IOST address'
-          return false
-        }
+        // if (this.address.length < 45) {
+        //   $('#errBetAlert').addClass('alert alert-danger')
+        //   this.errMsg = 'invalid IOST address'
+        //   return false
+        // }
 
-        if (this.privKey.length !=87 || this.privKey.length !=88) {
-          $('#errBetAlert').addClass('alert alert-danger')
-          this.errMsg = 'invalid IOST private Key'
-          return false
-        }
+        // if (this.privKey.length !=87 || this.privKey.length !=88) {
+        //   $('#errBetAlert').addClass('alert alert-danger')
+        //   this.errMsg = 'invalid IOST private Key'
+        //   return false
+        // }
 
         var grecap = grecaptcha.getResponse()
         if (grecap.length == 0) {
@@ -587,20 +587,33 @@
       },
     },
     mounted: function() {
-      window.setTimeout(function() {
-        if ($('.g-recaptcha').html().length == 0) {
-          // swal({
-          //   title: 'Failed to load google reCaptcha !',
-          //   text: '',
-          //   confirmButtonText: 'try again'
-          // }).then((result) => {
-          //   location.reload()
-          // })
-          grecaptcha.render('recap2',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
-
-
+      let rc = document.getElementsByClassName('g-recaptcha')[0].children
+      setTimeout(() => {
+        grecaptcha.render('recap2',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
+        if (rc.length == 0) {
+          swal({
+            title: 'Failed to load google reCaptcha !',
+            text: '',
+            confirmButtonText: 'try again'
+          }).then((result) => {
+            grecaptcha.render('recap2',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
+          })
         }
-      }, 3000)
+      },2000)
+      // window.setTimeout(function() {
+      //   if ($('.g-recaptcha').html().length == 0) {
+      //     // swal({
+      //     //   title: 'Failed to load google reCaptcha !',
+      //     //   text: '',
+      //     //   confirmButtonText: 'try again'
+      //     // }).then((result) => {
+      //     //   location.reload()
+      //     // })
+      //     grecaptcha.render('recap2',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
+      //
+      //
+      //   }
+      // }, 3000)
       let interval = window.setInterval(() => {
         this.cronLatest()
         if (this.address) {
@@ -655,6 +668,11 @@
 </script>
 
 <style>
+
+  #luckyBetIntro {
+    text-align: left;
+    margin-top: 24px;
+  }
   .bet-pannel {
     text-align: left;
   }
