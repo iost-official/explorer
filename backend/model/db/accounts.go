@@ -258,5 +258,5 @@ func GetTxnListByAccount(account string, start, limit int) ([]*JsonFlatTx, error
 
 func TransferIOSTToAddress(address string, amount float64) ([]byte, error) {
 	accountInfo := viper.GetStringMapString("transferAccount")
-	return blkchain.Transfer(accountInfo["address"], address, int64(amount), 10000, 1, 100, accountInfo["key"])
+	return blkchain.Transfer(accountInfo["address"], address, int64(amount), 10000, 1, 1000, accountInfo["key"])
 }
