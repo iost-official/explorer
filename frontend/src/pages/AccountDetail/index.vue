@@ -16,11 +16,13 @@
         <div class="accountDetail-height-value">
           <div class="accountDetail-height">
             <h4>Balance:</h4>
-            <p>{{(accountDetail.balance/100000000).toFixed(2)}}</p>
+            <p v-if="accountDetail.balance">{{(accountDetail.balance/100000000).toFixed(2)}}</p>
+            <p v-else>0.00</p>
           </div>
           <div class="accountDetail-value">
             <h4>IOST Value:</h4>
-            <p>{{accountDetail.value.toFixed(2)}}</p>
+            <p v-if="accountDetail.value">{{accountDetail.value.toFixed(2)}}</p>
+            <p v-else>0.00</p>
           </div>
         </div>
       </div>
@@ -106,6 +108,7 @@
     data() {
       return {
         address: this.$route.params.id,
+        addressx: "",
         // account: {},
         txnList: {},
         txnLen: '',
@@ -118,7 +121,8 @@
     computed: {
       ...mapState(['accountDetail', 'accountTxnInfo']),
       showContractCode () {
-        return this.address.slice(0,4) != 'IOST'
+        // return this.address.slice(0,4) != 'IOST'
+        return this.address.slice(0,8) == 'Contract'
       }
     },
 
@@ -140,13 +144,16 @@
         //   this.txnLen = response.data.txn_len
         // })
 
+        this.addressx = this.address.replace('Contract','')
         // axios.get('https://explorer.iost.io/api/tx/' + this.address).then((response) => {
-        axios.get(`${apis.tx}${this.address}`).then((response) => {
+        axios.get(`${apis.tx}${this.addressx}`).then((response) => {
           if (response.data.code == 1) {
             this.isShow = true
             return
           }
-          let blkDate = new Date(response.data.time / 1000 / 1000)
+
+          // let blkDate = new Date(response.data.time / 1000 / 1000)
+          let blkDate = new Date(response.data.data.utcTime)
           let time = ''
           time += blkDate.getFullYear() + '-'
           time += (blkDate.getMonth()+1 < 10 ? '0'+(blkDate.getMonth()+1) : blkDate.getMonth()+1) + '-'
@@ -166,15 +173,12 @@
           } else {
             time += ':' + blkDate.getSeconds()
           }
-          response.data.time = time
-          this.ContractInfo = response.data
+          response.data.data.time = time
+          this.ContractInfo = response.data.data
         })
       },
 
       goTab (num) {
-        if (this.isShow) {
-          return
-        }
         if (num == 1) {
           this.currentTab = false
         } else {
@@ -231,6 +235,7 @@
     .accountDetail-info {
       width: 1000px;
       margin: 24px auto 0;
+      padding-bottom: 15px;
       background: #FFFFFF;
       text-align: left;
       .accountDetail-tips {
@@ -410,7 +415,7 @@
             }
 
             p {
-              font-size: 18px;
+              font-size: 14px;
               line-height: 22px;
               color: #2C2E31;
               margin: 20px 0 0;
