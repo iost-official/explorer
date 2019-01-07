@@ -11,18 +11,24 @@ type TaskCursor struct {
 
 const AccountCursorName = "Account_cursor"
 
-func GetAccountTaskCursor() (bson.ObjectId, error) {
-	col := GetCollection(CollectionTaskCursor)
+func GetAccountTaskCursor () (bson.ObjectId, error) {
+	col, err := GetCollection(CollectionTaskCursor)
+	if err != nil {
+		return bson.NewObjectId(), err
+	}
 	var taskCursor TaskCursor
-	err := col.Find(bson.M{"name": AccountCursorName}).One(&taskCursor)
+	err = col.Find(bson.M{"name": AccountCursorName}).One(&taskCursor)
 	if err != nil {
 		return bson.NewObjectId(), err
 	}
 	return taskCursor.Cursor, nil
 }
 
-func UpdateAccountTaskCursor(cursor bson.ObjectId) error {
-	col := GetCollection(CollectionTaskCursor)
-	_, err := col.Upsert(bson.M{"name": AccountCursorName}, bson.M{"$set": bson.M{"cursor": cursor}})
+func UpdateAccountTaskCursor (cursor bson.ObjectId) error {
+	col, err := GetCollection(CollectionTaskCursor)
+	if err != nil {
+		return err
+	}
+	_, err = col.Upsert(bson.M{"name": AccountCursorName}, bson.M{"$set": bson.M{"cursor": cursor}})
 	return err
 }

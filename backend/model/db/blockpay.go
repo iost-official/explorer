@@ -1,9 +1,8 @@
 package db
 
 import (
-	"log"
-
 	"github.com/globalsign/mgo/bson"
+	"log"
 )
 
 type BlockPay struct {
@@ -12,8 +11,13 @@ type BlockPay struct {
 	TotalGasLimit int64   `json:"total_gas_limit"`
 }
 
+
 func GetBlockPayListByHeight(heightList []int64) (map[int64]*BlockPay, error) {
-	blkPC := GetCollection(CollectionBlockPay)
+	blkPC, err := GetCollection(CollectionBlockPay)
+	if err != nil {
+		log.Println("GetBlockPayByHeight get blockpay collection error:", err)
+		return nil, err
+	}
 
 	query := bson.M{
 		"_id": bson.M{
@@ -22,7 +26,7 @@ func GetBlockPayListByHeight(heightList []int64) (map[int64]*BlockPay, error) {
 	}
 
 	var payList []*BlockPay
-	err := blkPC.Find(query).All(&payList)
+	err = blkPC.Find(query).All(&payList)
 	if err != nil {
 		return nil, err
 	}
@@ -45,13 +49,17 @@ func GetBlockPayByHeight(height int64) (*BlockPay, error) {
 }
 
 func GetTopBlockPay() (*BlockPay, error) {
-	blkPC := GetCollection(CollectionBlockPay)
+	blkPC, err := GetCollection(CollectionBlockPay)
+	if err != nil {
+		log.Println("GetTopBlockPay get blockpay collection error:", err)
+		return nil, err
+	}
 
 	var (
 		emptyQuery   interface{}
 		topPayDetail *BlockPay
 	)
-	err := blkPC.Find(emptyQuery).Sort("-_id").Limit(1).One(&topPayDetail)
+	err = blkPC.Find(emptyQuery).Sort("-_id").Limit(1).One(&topPayDetail)
 	if err != nil {
 		log.Println("GetTopBlockPay error:", err)
 		return nil, err

@@ -4,7 +4,8 @@ import (
 	"log"
 
 	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+	"github.com/iost-official/explorer/backend/model/blkchain"
+	"github.com/iost-official/go-iost/common"
 )
 
 type Block struct {
@@ -28,9 +29,12 @@ type FailBlock struct {
 }
 
 func GetLastBlockNumber() (int64, error) {
-	collection := GetCollection("block")
+	collection, err := GetCollection("block")
+	if err != nil {
+		return -1, nil
+	}
 	var block Block
-	err := collection.Find(bson.M{}).Sort("-blockNumber").One(&block)
+	err = collection.Find(bson.M{}).Sort("-blockNumber").One(&block)
 	if err != nil && err.Error() == "not found" {
 		return 0, nil
 	}
@@ -38,12 +42,16 @@ func GetLastBlockNumber() (int64, error) {
 }
 
 func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
-	txnC := GetCollection(CollectionTxs)
+	txnC, err := GetCollection(CollectionTxs)
+	if nil != err {
+		log.Println("Get block txn hashes failed", err)
+		return nil, err
+	}
 
 	var hashes []*struct {
 		Hash string `bson:"hash"`
 	}
-	err := txnC.Find(bson.M{"blockNumber": blockNumber}).Select(bson.M{"hash": 1, "_id": 0}).All(&hashes)
+	err = txnC.Find(bson.M{"blockNumber": blockNumber}).Select(bson.M{"hash": 1, "_id": 0}).All(&hashes)
 	if nil != err {
 		log.Println("query block tx failed", err)
 		return nil, err
@@ -55,8 +63,8 @@ func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
 	return &result, nil
 }
 
-/*func GetBlockInfoByNum(num int64) (*Block, *[]string, error) {
-	blockInfo, err := blockchain.GetBlockByNum(num, false)
+func GetBlockInfoByNum(num int64) (*Block, *[]string, error) {
+	blockInfo, err := blkchain.GetBlockByNum(num, false)
 
 	if nil != err {
 		return nil, nil, err
@@ -85,14 +93,19 @@ func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
 	}
 
 	return &block, nil, nil
-}*/
+}
 
 func GetBlockByHash(hash string) (*Block, *[]string, error) {
-	blockCollection := GetCollection(CollectionBlocks)
+	blockCollection, err := GetCollection(CollectionBlocks)
+
+	if nil != err {
+		log.Println("get block by hash can not get collection", err)
+		return nil, nil, err
+	}
 
 	var block Block
 
-	err := blockCollection.Find(bson.M{"hash": hash}).One(&block)
+	err = blockCollection.Find(bson.M{"hash": hash}).One(&block)
 	if nil != err {
 		log.Println("get block by hash can not find block by hash", err)
 		return nil, nil, err
@@ -108,14 +121,18 @@ func GetBlockByHash(hash string) (*Block, *[]string, error) {
 	return &block, blockTxHashes, nil
 }
 
-func GetBlocks(start, limit int) ([]*rpcpb.Block, error) {
-	blockCollection := GetCollection(CollectionBlocks)
+func GetBlocks(start, limit int) ([]*Block, error) {
+	blockCollection, err := GetCollection(CollectionBlocks)
+	if nil != err {
+		log.Println("Get blocks get blocks db err", err)
+		return nil, err
+	}
 	var (
 		emptyQuery  interface{}
-		blkInfoList []*rpcpb.Block
+		blkInfoList []*Block
 	)
 
-	err := blockCollection.Find(emptyQuery).Sort("-number").Skip(start).Limit(limit).All(&blkInfoList)
+	err = blockCollection.Find(emptyQuery).Sort("-blockNumber").Skip(start).Limit(limit).All(&blkInfoList)
 
 	if nil != err {
 		log.Println("Get blocks collection query err", err)
@@ -125,12 +142,15 @@ func GetBlocks(start, limit int) ([]*rpcpb.Block, error) {
 	return blkInfoList, nil
 }
 
-func GetTopBlock() (*rpcpb.Block, error) {
-	collection := GetCollection(CollectionBlocks)
+func GetTopBlock() (*Block, error) {
+	collection, err := GetCollection(CollectionBlocks)
+	if err != nil {
+		return nil, err
+	}
 
 	var emptyQuery interface{}
-	var topBlk *rpcpb.Block
-	err := collection.Find(emptyQuery).Sort("-number").Limit(1).One(&topBlk)
+	var topBlk *Block
+	err = collection.Find(emptyQuery).Sort("-blockNumber").Limit(1).One(&topBlk)
 	if err != nil {
 		log.Println("getTopBlock error:", err)
 		return nil, err
@@ -142,24 +162,27 @@ func GetTopBlock() (*rpcpb.Block, error) {
 func GetBlockLastPage(eachPage int64) int64 {
 	var pageLast int64
 	if topBlock, err := GetTopBlock(); err == nil {
-		if topBlock.Number%eachPage == 0 {
-			pageLast = topBlock.Number / eachPage
+		if topBlock.BlockNumber%eachPage == 0 {
+			pageLast = topBlock.BlockNumber / eachPage
 		} else {
-			pageLast = topBlock.Number/eachPage + 1
+			pageLast = topBlock.BlockNumber/eachPage + 1
 		}
 	}
 
 	return pageLast
 }
 
-func GetBlockByHeight(height int64) (*rpcpb.Block, error) {
-	collection := GetCollection(CollectionBlocks)
+func GetBlockByHeight(height int64) (*Block, error) {
+	collection, err := GetCollection(CollectionBlocks)
+	if err != nil {
+		return nil, err
+	}
 
 	blkQuery := bson.M{
-		"number": height,
+		"blockNumber": height,
 	}
-	var blk *rpcpb.Block
-	err := collection.Find(blkQuery).One(&blk)
+	var blk *Block
+	err = collection.Find(blkQuery).One(&blk)
 
 	if err != nil {
 		return nil, err
