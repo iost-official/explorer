@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"github.com/iost-official/explorer/backend/model"
-	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/labstack/echo"
 	"net/http"
-	"strconv"
+
+	"github.com/iost-official/explorer/backend/model"
+	"github.com/labstack/echo"
 )
 
 const (
@@ -22,6 +21,7 @@ type TxsOutput struct {
 	TotalLen int                `json:"totalLen"`
 }
 
+/*
 func GetTxnDetail(c echo.Context) error {
 	txHash := c.Param("id")
 
@@ -37,7 +37,7 @@ func GetTxnDetail(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, FormatResponse(txnOut))
 }
-
+*/
 func GetIndexTxns(c echo.Context) error {
 	topTxs, err := model.GetFlatTxnSlicePage(1, 15, -1, "")
 
@@ -48,6 +48,7 @@ func GetIndexTxns(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse(topTxs))
 }
 
+/*
 func GetTxs(c echo.Context) error {
 	page := c.QueryParam("page")
 	address := c.QueryParam("account")
@@ -105,3 +106,4 @@ func GetTxs(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, FormatResponse(output))
 }
+*/

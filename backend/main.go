@@ -19,7 +19,7 @@ func main() {
 	// index
 	e.GET("/api/market", controller.GetMarket)
 	e.GET("/api/indexBlocks", controller.GetIndexBlocks)
-	// e.GET("/api/indexTxns", controller.GetIndexTxns)
+	e.GET("/api/indexTxns", controller.GetIndexTxns)
 
 	/* // blocks */
 	// e.GET("/api/blocks", controller.GetBlocks)
