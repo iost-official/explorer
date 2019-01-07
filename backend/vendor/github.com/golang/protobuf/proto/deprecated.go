@@ -1,6 +1,6 @@
 // Go support for Protocol Buffers - Google's data interchange format
 //
-// Copyright 2014 The Go Authors.  All rights reserved.
+// Copyright 2018 The Go Authors.  All rights reserved.
 // https://github.com/golang/protobuf
 //
 // Redistribution and use in source and binary forms, with or without
@@ -29,69 +29,35 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-syntax = "proto3";
+package proto
 
-import "google/protobuf/any.proto";
-import "test_proto/test.proto";
+import "errors"
 
-package proto3_proto;
+// Deprecated: do not use.
+type Stats struct{ Emalloc, Dmalloc, Encode, Decode, Chit, Cmiss, Size uint64 }
 
-message Message {
-  enum Humour {
-    UNKNOWN = 0;
-    PUNS = 1;
-    SLAPSTICK = 2;
-    BILL_BAILEY = 3;
-  }
+// Deprecated: do not use.
+func GetStats() Stats { return Stats{} }
 
-  string name = 1;
-  Humour hilarity = 2;
-  uint32 height_in_cm = 3;
-  bytes data = 4;
-  int64 result_count = 7;
-  bool true_scotsman = 8;
-  float score = 9;
-
-  repeated uint64 key = 5;
-  repeated int32 short_key = 19;
-  Nested nested = 6;
-  repeated Humour r_funny = 16;
-
-  map<string, Nested> terrain = 10;
-  test_proto.SubDefaults proto2_field = 11;
-  map<string, test_proto.SubDefaults> proto2_value = 13;
-
-  google.protobuf.Any anything = 14;
-  repeated google.protobuf.Any many_things = 15;
-
-  Message submessage = 17;
-  repeated Message children = 18;
-
-  map<string, string> string_map = 20;
+// Deprecated: do not use.
+func MarshalMessageSet(interface{}) ([]byte, error) {
+	return nil, errors.New("proto: not implemented")
 }
 
-message Nested {
-  string bunny = 1;
-  bool cute = 2;
+// Deprecated: do not use.
+func UnmarshalMessageSet([]byte, interface{}) error {
+	return errors.New("proto: not implemented")
 }
 
-message MessageWithMap {
-  map<bool, bytes> byte_mapping = 1;
+// Deprecated: do not use.
+func MarshalMessageSetJSON(interface{}) ([]byte, error) {
+	return nil, errors.New("proto: not implemented")
 }
 
-
-message IntMap {
-  map<int32, int32> rtt = 1;
+// Deprecated: do not use.
+func UnmarshalMessageSetJSON([]byte, interface{}) error {
+	return errors.New("proto: not implemented")
 }
 
-message IntMaps {
-  repeated IntMap maps = 1;
-}
-
-message TestUTF8 {
-  string scalar = 1;
-  repeated string vector = 2;
-  oneof oneof { string field = 3; }
-  map<string, int64> map_key = 4;
-  map<int64, string> map_value = 5;
-}
+// Deprecated: do not use.
+func RegisterMessageSetType(Message, int32, string) {}

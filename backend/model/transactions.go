@@ -30,16 +30,11 @@ type TxnDetail struct {
 }
 
 func GetDetailTxn(txHash string) (TxnDetail, error) {
-	txnC, err := db.GetCollection(db.CollectionFlatTx)
-
-	if err != nil {
-		log.Println("failed To open collection collectionTxs")
-		return TxnDetail{}, err
-	}
+	txnC := db.GetCollection(db.CollectionFlatTx)
 
 	var tx db.FlatTx
 
-	err = txnC.Find(bson.M{"hash": txHash}).One(&tx)
+	err := txnC.Find(bson.M{"hash": txHash}).One(&tx)
 
 	if err != nil {
 		log.Println("transaction not found")

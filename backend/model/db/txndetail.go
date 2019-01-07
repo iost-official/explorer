@@ -1,19 +1,12 @@
 package db
 
 import (
-	"log"
-
 	"github.com/globalsign/mgo/bson"
 )
 
 /// get at most `limit` flat txns from start using block and account address
 func GetFlatTxnSlice(start, limit, block int, address string) ([]*FlatTx, error) {
-	txnDC, err := GetCollection(CollectionFlatTx)
-
-	if err != nil {
-		log.Println("GetFlatTxnSlice get FlatTx collection error:", err)
-		return nil, err
-	}
+	txnDC := GetCollection(CollectionFlatTx)
 
 	var pip []bson.M
 
@@ -55,7 +48,7 @@ func GetFlatTxnSlice(start, limit, block int, address string) ([]*FlatTx, error)
 
 	var flatTx []*FlatTx
 
-	err = txnDC.Pipe(pip).All(&flatTx)
+	err := txnDC.Pipe(pip).All(&flatTx)
 
 	if err != nil {
 		return nil, err
@@ -66,12 +59,7 @@ func GetFlatTxnSlice(start, limit, block int, address string) ([]*FlatTx, error)
 
 /// get length of transaction list using account and block number
 func GetTotalFlatTxnLen(address string, block int64) (int, error) {
-	txnDC, err := GetCollection(CollectionFlatTx)
-
-	if err != nil {
-		log.Println("GetTotalFlatTxnLen get txns collection error:", err)
-		return 0, err
-	}
+	txnDC := GetCollection(CollectionFlatTx)
 
 	var query bson.M
 
@@ -110,30 +98,25 @@ func GetFlatTxTotalPageCnt(eachPage int64, account string, block int64) (int64, 
 	return pageMax, nil
 }
 
-func GetFlatTxPageCntWithAddress(eachPage int64, account string) (int64, error) {
-	intLen, err := GetFlatTxnLenByAccount(account)
-	if err != nil {
-		return 0, err
-	}
+/* func GetFlatTxPageCntWithAddress(eachPage int64, account string) (int64, error) { */
+// intLen, err := GetFlatTxnLenByAccount(account)
+// if err != nil {
+// return 0, err
+// }
 
-	txsInt64Len := int64(intLen)
+// txsInt64Len := int64(intLen)
 
-	var pageMax = txsInt64Len / eachPage
+// var pageMax = txsInt64Len / eachPage
 
-	if txsInt64Len%eachPage != 0 {
-		pageMax++
-	}
+// if txsInt64Len%eachPage != 0 {
+// pageMax++
+// }
 
-	return pageMax, nil
-}
+// return pageMax, nil
+/* } */
 
 func GetFlatTxPageCntWithBlk(eachPage int64, blk int64) (int64, error) {
-	txnDC, err := GetCollection(CollectionFlatTx)
-
-	if err != nil {
-		log.Println("GetFlatTxPageCntWithAddress get collection error:", err)
-		return 0, err
-	}
+	txnDC := GetCollection(CollectionFlatTx)
 
 	query := bson.M{
 		"blockNumber": blk,
@@ -157,33 +140,25 @@ func GetFlatTxPageCntWithBlk(eachPage int64, blk int64) (int64, error) {
 }
 
 func GetTxnDetailByHash(txHash string) (*Tx, error) {
-	txnDC, err := GetCollection(CollectionTxs)
-	if err != nil {
-		log.Println("UpdateTxns get txns collection error:", err)
-		return nil, err
-	}
+	txnDC := GetCollection(CollectionTxs)
 
 	query := bson.M{
 		"hash": txHash,
 	}
 	var txn *Tx
-	err = txnDC.Find(query).One(&txn)
+	err := txnDC.Find(query).One(&txn)
 
 	return txn, err
 }
 
 func GetFlatTxnDetailByHash(txHash string) (*FlatTx, error) {
-	txnDC, err := GetCollection(CollectionFlatTx)
-	if err != nil {
-		log.Println("UpdateTxns get txns collection error:", err)
-		return nil, err
-	}
+	txnDC := GetCollection(CollectionFlatTx)
 
 	query := bson.M{
 		"hash": txHash,
 	}
 	var txn *FlatTx
-	err = txnDC.Find(query).One(&txn)
+	err := txnDC.Find(query).One(&txn)
 
 	return txn, err
 }
