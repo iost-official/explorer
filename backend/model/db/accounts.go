@@ -49,10 +49,6 @@ func NewAccount(name string, time int64, creator string) *Account {
 
 func GetAccountTxByName(name string, start, limit int) ([]*AccountTx, error) {
 	accountTxC := GetCollection(CollectionAccountTx)
-	//query := bson.M{
-	//	"balance": bson.M{"$ne": 0},
-	//}
-
 	query := bson.M{
 		"name": name,
 	}

@@ -27,7 +27,7 @@ func main() {
 
 	// // transactions
 	// e.GET("/api/txs", controller.GetTxs)
-	// e.GET("/api/tx/:id", controller.GetTxnDetail)
+	e.GET("/api/tx/:id", controller.GetTxnDetail)
 
 	// accounts
 	e.GET("/api/accounts", controller.GetAccounts)

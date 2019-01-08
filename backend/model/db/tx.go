@@ -152,6 +152,9 @@ func GetTxsByHash(hashes []string) ([]*TxStore, error) {
 	}
 	var txs []*TxStore
 	err := txnDC.Find(query).All(&txs)
+	if err != nil {
+		return nil, err
+	}
 
 	txMap := make(map[string]*TxStore)
 	for _, t := range txs {
@@ -176,4 +179,38 @@ func GetTxCountByNumber(number int64) (int, error) {
 func convertTxs(txs []*rpcpb.Transaction) []FlatTx {
 
 	return nil
+}
+
+func GetTxTotalPageCnt(eachPage, blockNumber int64) (int64, error) {
+	txnDC := GetCollection(CollectionTxs)
+	query := bson.M{}
+	if blockNumber >= 0 {
+		query["blocknumber"] = blockNumber
+	}
+
+	count, err := txnDC.Find(query).Count()
+	if err != nil {
+		return 0, err
+	}
+	txsInt64Len := int64(count)
+	pageMax := txsInt64Len / eachPage
+	if txsInt64Len%eachPage != 0 {
+		pageMax++
+	}
+	return pageMax, nil
+}
+
+func GetTxs(blockNumber int64, start, limit int) ([]*TxStore, error) {
+	txnDC := GetCollection(CollectionTxs)
+	query := bson.M{}
+	if blockNumber >= 0 {
+		query["blocknumber"] = blockNumber
+	}
+	var txStores []*TxStore
+
+	err := txnDC.Find(query).Sort("-tx.time").Skip(start).Limit(limit).All(&txStores)
+	if err != nil {
+		return nil, err
+	}
+	return txStores, nil
 }

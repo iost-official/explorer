@@ -27,10 +27,10 @@ type AccountsOutput struct {
 }
 
 type AccountTxsOutput struct {
-	Name string `json:"address"`
-	// TxnList  []*db.JsonFlatTx `json:"txnList"`
-	TxnLen   int `json:"txnLen"`
-	PageLast int `json:"pageLast"`
+	Name     string          `json:"address"`
+	TxnList  []*model.TxJson `json:"txnList"`
+	TxnLen   int             `json:"txnLen"`
+	PageLast int             `json:"pageLast"`
 }
 
 func convertAccOutputs(acc []*db.Account) []*AccountOutput {
@@ -137,7 +137,15 @@ func GetAccountTxs(c echo.Context) error {
 	}
 
 	start := (pageInt - 1) * AccountEachPage
-	_, err = db.GetAccountTxByName(address, start, AccountEachPage)
+	accTxs, err := db.GetAccountTxByName(address, start, AccountEachPage)
+	if err != nil {
+		return err
+	}
+	var txHashes []string
+	for _, accTx := range accTxs {
+		txHashes = append(txHashes, accTx.TxHash)
+	}
+	txList, err := db.GetTxsByHash(txHashes)
 	if err != nil {
 		return err
 	}
@@ -151,7 +159,7 @@ func GetAccountTxs(c echo.Context) error {
 
 	output := &AccountTxsOutput{
 		address,
-		// txnList,
+		model.ConvertTxJsons(txList),
 		totalLen,
 		pageLast,
 	}
