@@ -9,17 +9,17 @@ import (
 )
 
 type BlockOutput struct {
-	Height     int64    `json:"height"`
-	ParentHash string   `json:"parentHash"`
-	BlockHash  string   `json:"blockHash"`
-	Witness    string   `json:"witness"`
-	Age        string   `json:"age"`
-	UTCTime    string   `json:"utcTime"`
-	Timestamp  int64    `json:"timestamp"`
-	TxList     []string `json:"txList"`
-	Txn        int64    `json:"txn"`
-	// TotalGasLimit int64    `json:"totalGasLimit"`
-	// AvgGasPrice   float64  `json:"avgGasPrice"`
+	Height        int64    `json:"height"`
+	ParentHash    string   `json:"parentHash"`
+	BlockHash     string   `json:"blockHash"`
+	Witness       string   `json:"witness"`
+	Age           string   `json:"age"`
+	UTCTime       string   `json:"utcTime"`
+	Timestamp     int64    `json:"timestamp"`
+	TxList        []string `json:"txList"`
+	Txn           int64    `json:"txn"`
+	TotalGasLimit int64    `json:"totalGasLimit"`
+	AvgGasPrice   float64  `json:"avgGasPrice"`
 }
 
 func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
@@ -29,15 +29,15 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 	if err != nil {
 		return nil, err
 	}
-/*
-	var blkHeightList []int64
+	/*
+		var blkHeightList []int64
 
-	for _, v := range blkInfoList {
-		blkHeightList = append(blkHeightList, v.Number)
-	}
+		for _, v := range blkInfoList {
+			blkHeightList = append(blkHeightList, v.Number)
+		}
 
-	payMap, _ := db.GetBlockPayListByHeight(blkHeightList)
-*/
+		payMap, _ := db.GetBlockPayListByHeight(blkHeightList)
+	*/
 	var blockOutputList []*BlockOutput
 	for _, v := range blkInfoList {
 		output := GenerateBlockOutput(v)
