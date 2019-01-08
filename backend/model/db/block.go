@@ -87,25 +87,26 @@ func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {
 	return &block, nil, nil
 }*/
 
-func GetBlockByHash(hash string) (*Block, *[]string, error) {
+func GetBlockByHash(hash string) (*rpcpb.Block, *[]string, error) {
 	blockCollection := GetCollection(CollectionBlocks)
 
-	var block Block
+	var block rpcpb.Block
 
 	err := blockCollection.Find(bson.M{"hash": hash}).One(&block)
 	if nil != err {
 		log.Println("get block by hash can not find block by hash", err)
 		return nil, nil, err
 	}
+	return &block, nil, nil
 
-	blockTxHashes, err := GetBlockTxnHashes(block.BlockNumber)
+	/*  blockTxHashes, err := GetBlockTxnHashes(block.Number) */
 
-	if nil != err {
-		log.Println("get block by hash can not find block tx hashes", err)
-		return &block, nil, nil
-	}
+	// if nil != err {
+	// log.Println("get block by hash can not find block tx hashes", err)
+	// return &block, nil, nil
+	// }
 
-	return &block, blockTxHashes, nil
+	/* return &block, blockTxHashes, nil */
 }
 
 func GetBlocks(start, limit int) ([]*rpcpb.Block, error) {

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
@@ -30,22 +31,24 @@ func GetSearch(c echo.Context) error {
 		return c.JSON(http.StatusOK, FormatResponse(output))
 	}
 
-	/*  tx, _ := db.GetTxnDetailByHash(search) */
-	// if tx != nil {
-	// output.Type = "tx"
-	// }
+	tx, _ := db.GetTxByHash(search)
+	if tx != nil {
+		output.Type = "tx"
+		return c.JSON(http.StatusOK, FormatResponse(output))
+	}
 
-	// blkHash, _, _ := db.GetBlockByHash(search)
-	// if blkHash != nil {
-	// output.Type = "block"
-	// output.Text = strconv.FormatInt(blkHash.BlockNumber, 10)
-	// }
+	blkHash, _, _ := db.GetBlockByHash(search)
+	if blkHash != nil {
+		output.Type = "block"
+		output.Text = strconv.FormatInt(blkHash.Number, 10)
+		return c.JSON(http.StatusOK, FormatResponse(output))
+	}
 
-	// if searchInt64, _ := strconv.ParseInt(search, 10, 64); searchInt64 > 0 {
-	// block, _ := db.GetBlockByHeight(searchInt64)
-	// if block != nil {
-	// output.Type = "block"
-	// }
-	/* } */
+	if searchInt64, _ := strconv.ParseInt(search, 10, 64); searchInt64 > 0 {
+		block, _ := db.GetBlockByHeight(searchInt64)
+		if block != nil {
+			output.Type = "block"
+		}
+	}
 	return c.JSON(http.StatusOK, FormatResponse(output))
 }
