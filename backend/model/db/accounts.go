@@ -30,7 +30,6 @@ type Account struct {
 	Name        string         `bson:"name" json:"name"`
 	CreateTime  int64          `bson:"createTime" json:"create_time"`
 	Creator     string         `bson:"creator" json:"creator"`
-	Balance     float64        `bson:"balance" json:"balance"`
 	AccountInfo *rpcpb.Account `bson:"accountInfo" json:"account_info"`
 	// AccountPb   []byte         `bson:"accountPb"`
 }
@@ -48,7 +47,7 @@ func NewAccount(name string, time int64, creator string) *Account {
 	}
 }
 
-func GetAccountTxByName(name string, start, limit int, onlyTransfer bool, transferToken string) ([]*AccountTx, error) {
+func GetAccountTxByName(name string, start, limit int) ([]*AccountTx, error) {
 	accountTxC := GetCollection(CollectionAccountTx)
 	//query := bson.M{
 	//	"balance": bson.M{"$ne": 0},
@@ -56,15 +55,6 @@ func GetAccountTxByName(name string, start, limit int, onlyTransfer bool, transf
 
 	query := bson.M{
 		"name": name,
-	}
-	if onlyTransfer {
-		if transferToken == "*" {
-			query["token"] = bson.M{
-				"$ne": "",
-			}
-		} else {
-			query["token"] = transferToken
-		}
 	}
 
 	var accountTxList []*AccountTx
@@ -75,20 +65,11 @@ func GetAccountTxByName(name string, start, limit int, onlyTransfer bool, transf
 	return accountTxList, nil
 }
 
-func GetAccountTxNumber(name string, onlyTransfer bool, transferToken string) (int, error) {
+func GetAccountTxNumber(name string) (int, error) {
 	accountTxC := GetCollection(CollectionAccountTx)
 
 	query := bson.M{
 		"name": name,
-	}
-	if onlyTransfer {
-		if transferToken == "*" {
-			query["token"] = bson.M{
-				"$ne": "",
-			}
-		} else {
-			query["token"] = transferToken
-		}
 	}
 	return accountTxC.Find(query).Count()
 }
@@ -121,12 +102,9 @@ func GetAccountPubkeyByPubkey(pubkey string) ([]*AccountPubkey, error) {
 
 func GetAccounts(start, limit int) ([]*Account, error) {
 	accountC := GetCollection(CollectionAccount)
-	//query := bson.M{
-	//	"balance": bson.M{"$ne": 0},
-	//}
 	query := bson.M{}
 	var accountList []*Account
-	err := accountC.Find(query).Sort("-balance").Skip(start).Limit(limit).All(&accountList)
+	err := accountC.Find(query).Sort("-accountInfo.balance").Skip(start).Limit(limit).All(&accountList)
 	if err != nil {
 		return nil, err
 	}
