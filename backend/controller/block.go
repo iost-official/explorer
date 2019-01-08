@@ -66,20 +66,20 @@ func GetBlocks(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse(output))
 }
 
-/* func GetBlockDetail(c echo.Context) error { */
-// blkId := c.Param("id")
-// blkIdInt, err := strconv.Atoi(blkId)
-// if err != nil {
-// return err
-// }
+func GetBlockDetail(c echo.Context) error {
+	blkId := c.Param("id")
+	blkIdInt, err := strconv.Atoi(blkId)
+	if err != nil {
+		return err
+	}
 
-// blkInfo, err := db.GetBlockByHeight(int64(blkIdInt))
+	blkInfo, err := db.GetBlockByHeight(int64(blkIdInt))
 
-// if nil != err {
-// return err
-// }
+	if nil != err {
+		return err
+	}
 
-// blkOutput := model.GenerateBlockOutput(blkInfo)
+	blkOutput := model.GenerateBlockOutput(blkInfo)
 
-// return c.JSON(http.StatusOK, FormatResponse(blkOutput))
-/* } */
+	return c.JSON(http.StatusOK, FormatResponse(blkOutput))
+}
