@@ -1,6 +1,5 @@
 <template>
   <div class="applyIost-box">
-		<LuckyBet/>
 
 		<div class="applyIost-header">
       <div class="my-header-container">
@@ -79,7 +78,6 @@
 
 <script>
 import axios from 'axios';
-import LuckyBet from '../../components/LuckyBet'
 import secp256k1 from 'secp256k1'
 import base58 from 'bs58'
 import swal from 'sweetalert2'
@@ -396,11 +394,7 @@ export default {
         })
       }
 		},2000)
-	},
-
-  components: {
-    LuckyBet
-  }
+	}
 }
 </script>
 

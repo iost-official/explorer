@@ -6,9 +6,6 @@
           <img src="/static/img/logo.png" alt="">
         </router-link>
       </div>
-      <div class="my-luckybet" :class="{active: currentColor == 7}">
-        <router-link to="/luckyBet">Play Lucky Bet !</router-link>
-      </div>
       <div>
         <ul class="my-nav-box">
           <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 0}">

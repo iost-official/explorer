@@ -1,6 +1,5 @@
 <template>
   <div class="success-box">
-		<LuckyBet/>
 
   	<div class="success-header">
 			<div class="my-header-container">
@@ -43,8 +42,6 @@
 </template>
 
 <script>
-  import LuckyBet from '../../components/LuckyBet'
-
   export default {
 		name: 'ApplyIOSTSuccess',
 		data() {
@@ -62,13 +59,7 @@
 			// 		path: '/applyIOST',
 			// 	})
 			// }
-		},
-
-    components: {
-      LuckyBet
-
-
-    }
+		}
   }
 </script>
 

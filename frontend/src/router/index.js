@@ -14,7 +14,6 @@ import AccountDetail from '../pages/AccountDetail'
 import Search from '../pages/Search'
 import ApplyIOST from '../pages/ApplyIOST'
 import ApplyIOSTSuccess from '../pages/ApplyIOSTSuccess'
-import LuckyBet from '../pages/LuckyBet'
 import NotFound404 from '../pages/404'
 import Feedback from '../pages/Feedback'
 
@@ -118,15 +117,6 @@ export default new Router({
       components: {
         Head: Head,
         Main: ApplyIOSTSuccess,
-        Foot: Foot
-      }
-    },
-    {
-      path: '/luckyBet',
-      name: 'LuckyBet',
-      components: {
-        Head: Head,
-        Main: LuckyBet,
         Foot: Foot
       }
     },

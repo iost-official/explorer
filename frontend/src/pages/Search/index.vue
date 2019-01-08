@@ -1,6 +1,5 @@
 <template>
   <div class="search-box">
-    <LuckyBet/>
 
     <div class="search-header">
       <div class="my-header-container">
@@ -18,8 +17,6 @@
 </template>
 
 <script>
-  import LuckyBet from '../../components/LuckyBet'
-
   export default {
     name: 'SearchPages',
     data() {
@@ -31,10 +28,6 @@
       '$route': function (r) {
         this.searchInput = r.params.id
       }
-    },
-
-    components: {
-      LuckyBet
     }
   }
 </script>

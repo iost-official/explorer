@@ -98,7 +98,6 @@
 
 <script>
   import axios from 'axios';
-  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
   import { config } from '../../utils/config'
   const { apis } = config
@@ -194,10 +193,6 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
-    },
-
-    components: {
-      LuckyBet
     }
   }
 </script>
