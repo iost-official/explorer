@@ -3,11 +3,10 @@ package model
 import (
 	"encoding/json"
 	"log"
+	"strconv"
 
-	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/explorer/backend/util"
-	"github.com/iost-official/go-iost/core/contract"
 )
 
 /// this struct is used as json to return
@@ -17,8 +16,8 @@ type TxnDetail struct {
 	From          string  `json:"from"`
 	To            string  `json:"to"`
 	Amount        float64 `json:"amount"`
-	GasLimit      int64   `json:"gasLimit"`
-	GasPrice      int64   `json:"price"`
+	GasLimit      float64 `json:"gasLimit"`
+	GasPrice      float64 `json:"price"`
 	Age           string  `json:"age"`
 	UTCTime       string  `json:"utcTime"`
 	Code          string  `json:"code"`
@@ -29,72 +28,126 @@ type TxnDetail struct {
 	Data          string  `json:"data"`
 }
 
-func GetDetailTxn(txHash string) (TxnDetail, error) {
-	txnC := db.GetCollection(db.CollectionFlatTx)
+type TxJson struct {
+	Hash        string  `json:"hash"`
+	BlockNumber int64   `json:"blockNumber"`
+	From        string  `json:"from"`
+	To          string  `json:"to"`
+	Amount      float64 `json:"amount"`
+	GasLimit    float64 `json:"gasLimit"`
+	GasPrice    float64 `json:"gasPrice"`
+	Age         string  `json:"age"`
+	UTCTime     string  `json:"utcTime"`
+}
 
-	var tx db.FlatTx
+func ConvertTxJsons(txs []*db.TxStore) []*TxJson {
+	var ret []*TxJson
+	for _, tx := range txs {
+		txnOut := &TxJson{
+			Hash:        tx.Tx.Hash,
+			BlockNumber: tx.BlockNumber,
+			From:        tx.Tx.Publisher,
+			To:          tx.Tx.Actions[0].Contract,
+			GasLimit:    tx.Tx.GasLimit,
+			GasPrice:    tx.Tx.GasRatio,
+			Age:         util.ModifyIntToTimeStr(tx.Tx.Time / 1e9),
+			UTCTime:     util.FormatUTCTime(tx.Tx.Time),
+		}
 
-	err := txnC.Find(bson.M{"hash": txHash}).One(&tx)
-
-	if err != nil {
-		log.Println("transaction not found")
-		return TxnDetail{}, err
+		if tx.Tx.Actions[0].Contract == "token.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
+			var params []string
+			err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
+			if err == nil && len(params) == 5 && params[0] == "iost" {
+				txnOut.From = params[1]
+				txnOut.To = params[2]
+				f, _ := strconv.ParseFloat(params[3], 64)
+				txnOut.Amount = f
+			}
+		}
+		ret = append(ret, txnOut)
 	}
+	return ret
+}
 
-	txnOut := ConvertFlatTx2TxnDetail(&tx)
-
-	return txnOut, nil
+func ConvertTxsOutputs(tx []*db.TxStore) []*TxnDetail {
+	var ret []*TxnDetail
+	for _, t := range tx {
+		ret = append(ret, ConvertTxOutput(t))
+	}
+	return ret
 }
 
 /// convert FlatTx to TxnDetail
-func ConvertFlatTx2TxnDetail(tx *db.FlatTx) TxnDetail {
-	txnOut := TxnDetail{
-		Hash:        tx.Hash,
-		BlockNumber: tx.BlockNumber,
-		From:        tx.From,
-		To:          tx.To,
-		Amount:      tx.Amount,
-		GasLimit:    tx.GasLimit,
-		GasPrice:    tx.GasPrice,
-		Contract:    tx.Action.Contract,
-		ActionName:  tx.Action.ActionName,
-		Data:        tx.Action.Data,
+func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
+	txnOut := &TxnDetail{
+		Hash:          tx.Tx.Hash,
+		BlockNumber:   tx.BlockNumber,
+		From:          tx.Tx.Publisher,
+		To:            tx.Tx.Actions[0].Contract,
+		GasLimit:      tx.Tx.GasLimit,
+		GasPrice:      tx.Tx.GasRatio,
+		Age:           util.ModifyIntToTimeStr(tx.Tx.Time / 1e9),
+		UTCTime:       util.FormatUTCTime(tx.Tx.Time),
+		Code:          "",
+		StatusCode:    int32(tx.Tx.TxReceipt.StatusCode),
+		StatusMessage: tx.Tx.TxReceipt.Message,
+		Contract:      tx.Tx.Actions[0].Contract,
+		ActionName:    tx.Tx.Actions[0].ActionName,
+		Data:          tx.Tx.Actions[0].Data,
 	}
 
-	if tx.Action.ActionName == "SetCode" {
-		c := new(contract.Contract)
-		dataArr := tx.Action.Data
-
-		// remove comma if necessary
-		if dataArr[len(dataArr)-2] == ',' {
-			dataArr = dataArr[:len(dataArr)-2] + "]"
+	if tx.Tx.Actions[0].Contract == "token.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
+		var params []string
+		err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
+		if err == nil && len(params) == 5 && params[0] == "iost" {
+			txnOut.From = params[1]
+			txnOut.To = params[2]
+			f, _ := strconv.ParseFloat(params[3], 64)
+			txnOut.Amount = f
 		}
-
-		var code []string
-		json.Unmarshal([]byte(dataArr), &code)
-
-		c.B64Decode(code[0])
-		txnOut.Code = c.Code
 	}
 
-	txnOut.Age = util.ModifyIntToTimeStr(tx.Time / (1000 * 1000 * 1000))
-	txnOut.UTCTime = util.FormatUTCTime(tx.Time / (1000 * 1000 * 1000))
-	txnOut.StatusCode = tx.Receipt.StatusCode
-	txnOut.StatusMessage = tx.Receipt.StatusMessage
+	if tx.Tx.Actions[0].ActionName == "SetCode" {
+		/*      c := new(contract.Contract) */
+		// dataArr := tx.Action.Data
+
+		// // remove comma if necessary
+		// if dataArr[len(dataArr)-2] == ',' {
+		// dataArr = dataArr[:len(dataArr)-2] + "]"
+		// }
+
+		// var code []string
+		// json.Unmarshal([]byte(dataArr), &code)
+
+		// c.B64Decode(code[0])
+		/* txnOut.Code = c.Code */
+	}
 
 	return txnOut
 }
 
+func GetDetailTxn(txHash string) (*TxnDetail, error) {
+	tx, err := db.GetTxByHash(txHash)
+
+	if err != nil {
+		log.Printf("transaction not found. txHash:%v, err=%v", txHash, err)
+		return nil, err
+	}
+
+	txnOut := ConvertTxOutput(tx)
+
+	return txnOut, nil
+}
+
 /// get a list of transactions for a specific page using account and block
-func GetFlatTxnSlicePage(page, eachPageNum, block int64, address string) ([]*TxnDetail, error) {
-	lastPageNum, err := db.GetFlatTxTotalPageCnt(eachPageNum, address, block)
+func GetFlatTxnSlicePage(page, eachPageNum, block int64) ([]*TxnDetail, error) {
+	lastPageNum, err := db.GetTxTotalPageCnt(eachPageNum, block)
+	if err != nil {
+		return nil, err
+	}
 
 	if lastPageNum == 0 {
 		return []*TxnDetail{}, nil
-	}
-
-	if err != nil {
-		return nil, err
 	}
 
 	if page > lastPageNum {
@@ -102,18 +155,11 @@ func GetFlatTxnSlicePage(page, eachPageNum, block int64, address string) ([]*Txn
 	}
 
 	start := int((page - 1) * eachPageNum)
-	txnsFlat, err := db.GetFlatTxnSlice(start, int(eachPageNum), int(block), address)
+	txnsFlat, err := db.GetTxs(block, start, int(eachPageNum))
 
 	if err != nil {
 		return nil, err
 	}
 
-	var txnDetailList []*TxnDetail
-
-	for _, v := range txnsFlat {
-		td := ConvertFlatTx2TxnDetail(v)
-		txnDetailList = append(txnDetailList, &td)
-	}
-
-	return txnDetailList, nil
+	return ConvertTxsOutputs(txnsFlat), nil
 }
