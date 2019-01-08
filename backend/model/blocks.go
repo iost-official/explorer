@@ -29,15 +29,15 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 	if err != nil {
 		return nil, err
 	}
-
+/*
 	var blkHeightList []int64
 
 	for _, v := range blkInfoList {
 		blkHeightList = append(blkHeightList, v.Number)
 	}
 
-	// payMap, _ := db.GetBlockPayListByHeight(blkHeightList)
-
+	payMap, _ := db.GetBlockPayListByHeight(blkHeightList)
+*/
 	var blockOutputList []*BlockOutput
 	for _, v := range blkInfoList {
 		output := GenerateBlockOutput(v)

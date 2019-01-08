@@ -4,8 +4,32 @@ import Vue from 'vue'
 import BootstrapVue from "bootstrap-vue"
 import App from './App'
 import router from './router'
-// import 'bootstrap/dist/css/bootstrap.min.css'
-// import 'bootstrap-vue/dist/bootstrap-vue.css'
+import store from './store'
+import './style.less'
+
+//引入nprogress
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css' //这个样式必须引入
+
+// 简单配置
+NProgress.inc(0.2)
+NProgress.configure({ easing: 'ease', speed: 1000, showSpinner: false, minimum:0.1 })
+
+
+// 全局前置守卫
+router.beforeEach((to,from,next) => {
+  NProgress.start()
+  next()
+})
+
+// 全部后置钩子
+router.afterEach(() => {
+  NProgress.done()
+})
+
+
+// import './style.less'
+
 
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
@@ -15,5 +39,6 @@ new Vue({
   el: '#app',
   router,
   template: '<App/>',
-  components: { App }
+  components: { App },
+  store
 })
