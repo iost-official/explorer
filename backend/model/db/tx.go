@@ -171,7 +171,10 @@ func GetTxsByHash(hashes []string) ([]*TxStore, error) {
 
 func GetTxCountByNumber(number int64) (int, error) {
 	txnDC := GetCollection(CollectionTxs)
-	query := bson.M{"blocknumber": number}
+	query := bson.M{}
+	if number >= 0 {
+		query["blocknumber"] = number
+	}
 	return txnDC.Find(query).Count()
 }
 

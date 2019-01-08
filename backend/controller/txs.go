@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/iost-official/explorer/backend/model"
+	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
 )
 
@@ -21,7 +24,6 @@ type TxsOutput struct {
 	TotalLen int                `json:"totalLen"`
 }
 
-/*
 func GetTxnDetail(c echo.Context) error {
 	txHash := c.Param("id")
 
@@ -37,9 +39,9 @@ func GetTxnDetail(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, FormatResponse(txnOut))
 }
-*/
+
 func GetIndexTxns(c echo.Context) error {
-	topTxs, err := model.GetFlatTxnSlicePage(1, 15, -1, "")
+	topTxs, err := model.GetFlatTxnSlicePage(1, 15, -1)
 
 	if err != nil {
 		return err
@@ -48,10 +50,9 @@ func GetIndexTxns(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse(topTxs))
 }
 
-/*
 func GetTxs(c echo.Context) error {
 	page := c.QueryParam("page")
-	address := c.QueryParam("account")
+	// address := c.QueryParam("account")
 	blk := c.QueryParam("block")
 
 	pageInt64, err := strconv.ParseInt(page, 10, 64)
@@ -66,29 +67,19 @@ func GetTxs(c echo.Context) error {
 		blockInt64 = -1
 	}
 
-	txList, err := model.GetFlatTxnSlicePage(pageInt64, TxEachPageNum, blockInt64, address)
+	txList, err := model.GetFlatTxnSlicePage(pageInt64, TxEachPageNum, blockInt64)
 
 	if err != nil {
 		return err
 	}
 
-	var (
-		lastPage int64
-		totalLen int
-	)
-
-	if address != "" {
-		// get total page count for specific account
-		lastPage, _ = db.GetFlatTxPageCntWithAddress(TxEachPageNum, address)
-		totalLen, _ = db.GetTotalFlatTxnLen(address, -1)
-	} else if blk != "" {
-		// get total page count for specific block
-		lastPage, _ = db.GetFlatTxPageCntWithBlk(TxEachPageNum, blockInt64)
-		totalLen, _ = db.GetTotalFlatTxnLen("", blockInt64)
-	} else {
-		// get all page count for all transactions
-		lastPage, _ = db.GetFlatTxTotalPageCnt(TxEachPageNum, "", -1)
-		totalLen, _ = db.GetTotalFlatTxnLen("", -1)
+	lastPage, err := db.GetTxTotalPageCnt(TxEachPageNum, blockInt64)
+	if err != nil {
+		log.Printf("GetTxTotalPageCnt failed. blockInt64=%v, err=%v", blockInt64, err)
+	}
+	txCount, err := db.GetTxCountByNumber(blockInt64)
+	if err != nil {
+		log.Printf("GetTxCountByNumber failed. blockInt64=%v, err=%v", blockInt64, err)
 	}
 
 	if lastPage > TxMaxPage {
@@ -101,9 +92,8 @@ func GetTxs(c echo.Context) error {
 		PagePrev: pageInt64 - 1,
 		PageNext: pageInt64 + 1,
 		PageLast: lastPage,
-		TotalLen: totalLen,
+		TotalLen: txCount,
 	}
 
 	return c.JSON(http.StatusOK, FormatResponse(output))
 }
-*/
