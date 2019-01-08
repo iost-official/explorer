@@ -29,24 +29,16 @@ func main() {
 	// e.GET("/api/txs", controller.GetTxs)
 	// e.GET("/api/tx/:id", controller.GetTxnDetail)
 
-	// // accounts
-	// e.GET("/api/accounts", controller.GetAccounts)
-	// e.GET("/api/account/:id", controller.GetAccountDetail)
-	// e.GET("/api/account/:id/txs", controller.GetAccountTxs)
+	// accounts
+	e.GET("/api/accounts", controller.GetAccounts)
+	e.GET("/api/account/:id", controller.GetAccountDetail)
+	e.GET("/api/account/:id/txs", controller.GetAccountTxs)
 
-	// // search
-	// e.GET("/api/search/:id", controller.GetSearch)
+	// search
+	e.GET("/api/search/:id", controller.GetSearch)
 
-	// // applyIOST
-	// e.POST("/api/sendSMS", controller.SendSMS)
-	// e.POST("/api/applyIOST", controller.ApplyIOST)
-
-	// //e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
-
-	// // mail
-	// e.POST("/api/feedback", controller.SendMail)
-
-	/* e.GET("/api/dropDatabase", controller.DropDatabase) */
+	// mail
+	e.POST("/api/feedback", controller.SendMail)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
