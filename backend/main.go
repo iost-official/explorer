@@ -40,5 +40,8 @@ func main() {
 	// mail
 	e.POST("/api/feedback", controller.SendMail)
 
+	// applyIOST
+	e.POST("/api/applyIOST", controller.ApplyIOST)
+
 	e.Logger.Fatal(e.Start(":8080"))
 }

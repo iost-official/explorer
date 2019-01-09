@@ -16,4 +16,5 @@ const (
 	CollectionContractTx    = "contractTx"
 	CollectionTaskCursor    = "taskCursors"
 	CollectionBlockPay      = "blockPays"
+	CollectionApplyIOST     = "applyIOST"
 )
