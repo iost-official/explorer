@@ -52,22 +52,40 @@ func GetIndexTxns(c echo.Context) error {
 
 func getTxsOfAddress(c echo.Context, address string, page int64) error {
 	start := (int(page) - 1) * AccountEachPage
-	accTxs, err := db.GetAccountTxByName(address, start, AccountEachPage)
-	if err != nil {
-		return err
-	}
 	var txHashes []string
-	for _, accTx := range accTxs {
-		txHashes = append(txHashes, accTx.TxHash)
+	var totalLen int
+	if isContract(address) {
+		conTxs, err := db.GetContractTxByID(address, start, AccountEachPage)
+		if err != nil {
+			return err
+		}
+		for _, conTx := range conTxs {
+			txHashes = append(txHashes, conTx.TxHash)
+		}
+
+		totalLen, err = db.GetContractTxNumber(address)
+		if err != nil {
+			log.Printf("get contract tx number failed. contract=%v, err=%v", address, err)
+		}
+	} else {
+		accTxs, err := db.GetAccountTxByName(address, start, AccountEachPage)
+		if err != nil {
+			return err
+		}
+		for _, accTx := range accTxs {
+			txHashes = append(txHashes, accTx.TxHash)
+		}
+
+		totalLen, err = db.GetAccountTxNumber(address)
+		if err != nil {
+			log.Printf("get account tx number failed. account=%v, err=%v", address, err)
+		}
+
 	}
+
 	txList, err := db.GetTxsByHash(txHashes)
 	if err != nil {
 		return err
-	}
-
-	totalLen, err := db.GetAccountTxNumber(address)
-	if err != nil {
-		log.Printf("get account tx number failed. account=%v, err=%v", address, err)
 	}
 
 	lastPage := calLastPage(totalLen)
