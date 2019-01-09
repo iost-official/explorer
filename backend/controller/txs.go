@@ -50,15 +50,57 @@ func GetIndexTxns(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse(topTxs))
 }
 
+func getTxsOfAddress(c echo.Context, address string, page int64) error {
+	start := (int(page) - 1) * AccountEachPage
+	accTxs, err := db.GetAccountTxByName(address, start, AccountEachPage)
+	if err != nil {
+		return err
+	}
+	var txHashes []string
+	for _, accTx := range accTxs {
+		txHashes = append(txHashes, accTx.TxHash)
+	}
+	txList, err := db.GetTxsByHash(txHashes)
+	if err != nil {
+		return err
+	}
+
+	totalLen, err := db.GetAccountTxNumber(address)
+	if err != nil {
+		log.Printf("get account tx number failed. account=%v, err=%v", address, err)
+	}
+
+	lastPage := calLastPage(totalLen)
+	if lastPage > TxMaxPage {
+		lastPage = TxMaxPage
+	}
+
+	output := &TxsOutput{
+		TxList:   model.ConvertTxsOutputs(txList),
+		Page:     page,
+		PagePrev: page - 1,
+		PageNext: page + 1,
+		PageLast: int64(lastPage),
+		TotalLen: totalLen,
+	}
+
+	return c.JSON(http.StatusOK, FormatResponse(output))
+
+}
+
 func GetTxs(c echo.Context) error {
 	page := c.QueryParam("page")
-	// address := c.QueryParam("account")
+	address := c.QueryParam("account")
 	blk := c.QueryParam("block")
 
 	pageInt64, err := strconv.ParseInt(page, 10, 64)
 
 	if err != nil || pageInt64 <= 0 {
 		pageInt64 = 1
+	}
+
+	if address != "" {
+		return getTxsOfAddress(c, address, pageInt64)
 	}
 
 	blockInt64, err := strconv.ParseInt(blk, 10, 64)

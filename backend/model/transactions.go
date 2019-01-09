@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 
+	simplejson "github.com/bitly/go-simplejson"
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/iost-official/explorer/backend/util"
 )
@@ -107,17 +108,17 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 		}
 	}
 
-	if tx.Tx.Actions[0].ActionName == "SetCode" {
-		/*      c := new(contract.Contract) */
-		// dataArr := tx.Action.Data
-
-		// // remove comma if necessary
-		// if dataArr[len(dataArr)-2] == ',' {
-		// dataArr = dataArr[:len(dataArr)-2] + "]"
-		// }
-
-		// var code []string
-		// json.Unmarshal([]byte(dataArr), &code)
+	if tx.Tx.Actions[0].Contract == "system.iost" && tx.Tx.Actions[0].ActionName == "SetCode" {
+		var params []string
+		err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
+		if err == nil && len(params) > 0 {
+			j, e := simplejson.NewJson([]byte(params[0]))
+			if e != nil {
+				log.Printf("json decode SetCode param failed. err=%v", err)
+			} else {
+				txnOut.Code, _ = j.Get("code").String()
+			}
+		}
 
 		// c.B64Decode(code[0])
 		/* txnOut.Code = c.Code */
