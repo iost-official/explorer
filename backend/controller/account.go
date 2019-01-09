@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/iost-official/explorer/backend/model"
 	"github.com/iost-official/explorer/backend/model/db"
@@ -61,6 +62,10 @@ func calLastPage(total int) int {
 		lastPage = AccountMaxPage
 	}
 	return lastPage
+}
+
+func isContract(name string) bool {
+	return strings.HasPrefix(name, "Contract") || strings.Index(name, ".") > -1
 }
 
 func GetAccounts(c echo.Context) error {
@@ -137,22 +142,41 @@ func GetAccountTxs(c echo.Context) error {
 	}
 
 	start := (pageInt - 1) * AccountEachPage
-	accTxs, err := db.GetAccountTxByName(address, start, AccountEachPage)
-	if err != nil {
-		return err
-	}
+
 	var txHashes []string
-	for _, accTx := range accTxs {
-		txHashes = append(txHashes, accTx.TxHash)
+	var totalLen int
+	if isContract(address) {
+		conTxs, err := db.GetContractTxByID(address, start, AccountEachPage)
+		if err != nil {
+			return err
+		}
+		for _, conTx := range conTxs {
+			txHashes = append(txHashes, conTx.TxHash)
+		}
+
+		totalLen, err = db.GetContractTxNumber(address)
+		if err != nil {
+			log.Printf("get contract tx number failed. contract=%v, err=%v", address, err)
+		}
+
+	} else {
+		accTxs, err := db.GetAccountTxByName(address, start, AccountEachPage)
+		if err != nil {
+			return err
+		}
+		for _, accTx := range accTxs {
+			txHashes = append(txHashes, accTx.TxHash)
+		}
+
+		totalLen, err = db.GetAccountTxNumber(address)
+		if err != nil {
+			log.Printf("get account tx number failed. account=%v, err=%v", address, err)
+		}
+
 	}
 	txList, err := db.GetTxsByHash(txHashes)
 	if err != nil {
 		return err
-	}
-
-	totalLen, err := db.GetAccountTxNumber(address)
-	if err != nil {
-		log.Printf("get account tx number failed. account=%v, err=%v", address, err)
 	}
 
 	pageLast := calLastPage(totalLen)

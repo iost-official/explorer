@@ -1,6 +1,9 @@
 package db
 
-import "github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+import (
+	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+)
 
 type ContractTx struct {
 	ID     string `bson:"id"`
@@ -23,4 +26,27 @@ func NewContract(id string, time int64, creator string) *Contract {
 		CreateTime: time,
 		Creator:    creator,
 	}
+}
+
+func GetContractTxByID(ID string, start, limit int) ([]*ContractTx, error) {
+	contractTxC := GetCollection(CollectionContractTx)
+	query := bson.M{
+		"id": ID,
+	}
+
+	var contractTxList []*ContractTx
+	err := contractTxC.Find(query).Sort("-time").Skip(start).Limit(limit).All(&contractTxList)
+	if err != nil {
+		return nil, err
+	}
+	return contractTxList, nil
+}
+
+func GetContractTxNumber(ID string) (int, error) {
+	contractTxC := GetCollection(CollectionContractTx)
+	query := bson.M{
+		"id": ID,
+	}
+
+	return contractTxC.Find(query).Count()
 }
