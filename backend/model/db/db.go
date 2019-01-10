@@ -5,11 +5,18 @@ import (
 	"time"
 
 	"github.com/globalsign/mgo"
-	"github.com/iost-official/explorer/backend/util/transport"
+	"github.com/iost-official/iost-api/util/transport"
 )
 
 func GetDb() (*mgo.Database, error) {
-	mongoClient, err := transport.GetMongoClient(MongoLink)
+	var err error
+	var mongoClient *mgo.Session
+
+	if MongoUser == "" && MongoPassWord == "" {
+		mongoClient, err = transport.GetMongoClient(MongoLink, Db)
+	} else {
+		mongoClient, err = transport.GetMongoClientWithAuth(MongoLink, MongoUser, MongoPassWord, Db)
+	}
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,16 @@
 package db
 
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
+
 var (
-	MongoLink = "mongodb://47.244.109.92:27017"
-	Db        string
+	MongoLink     = "mongodb://127.0.0.1:27017"
+	MongoUser     = ""
+	MongoPassWord = ""
+	Db            string
 )
 
 const (
@@ -18,3 +26,12 @@ const (
 	CollectionBlockPay      = "blockPays"
 	CollectionApplyIOST     = "applyIOST"
 )
+
+func InitConfig() {
+	dbConfig := viper.GetStringMapString("mongodb")
+	Db = dbConfig["db"]
+	MongoUser = dbConfig["username"]
+	MongoPassWord = dbConfig["password"]
+	MongoLink = fmt.Sprintf("%s:%s", dbConfig["host"], dbConfig["port"])
+	fmt.Println("mongolink", Db, MongoLink)
+}

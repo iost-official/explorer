@@ -1,5 +1,16 @@
 package blockchain
 
-var (
-	RPCAddress = "47.244.109.92:30002"
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
 )
+
+var (
+	RPCAddress = "127.0.0.1:30002"
+)
+
+func InitConfig() {
+	RPCAddress := viper.GetString("rpcHost")
+	fmt.Println("RPCHost:", RPCAddress)
+}
