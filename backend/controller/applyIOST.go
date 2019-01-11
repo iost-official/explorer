@@ -44,7 +44,7 @@ func init() {
 		Transport: &http.Transport{
 			MaxIdleConns: 10,
 		},
-		Timeout: time.Second * 10,
+		Timeout: time.Second * 30,
 	}
 
 	go cronUpdateIPFreqMap()
@@ -167,7 +167,12 @@ func createAccount(pubKey, name string) (string, error) {
 		return applyResp.Msg, nil
 	}
 
-	return "", errors.New(applyResp.Msg)
+	errFound := applyErrReg.FindStringSubmatch(applyResp.Msg)
+	if len(errFound) < 2 {
+		return "", errors.New(applyResp.Msg)
+	}
+
+	return "", errors.New(errFound[1])
 }
 
 type GCAPResponse struct {
