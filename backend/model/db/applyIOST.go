@@ -3,6 +3,7 @@ package db
 import "time"
 
 type ApplyAccount struct {
+	TxHash     string
 	PubKey     string
 	Name       string
 	Email      string
@@ -10,10 +11,11 @@ type ApplyAccount struct {
 	InsertTime int64
 }
 
-func AddApply(accountPubKey, accountName, email, remoteIP string) error {
+func AddApply(txHash, accountPubKey, accountName, email, remoteIP string) error {
 	applyIOSTC := GetCollection(CollectionApplyIOST)
 
 	record := &ApplyAccount{
+		TxHash:     txHash,
 		PubKey:     accountPubKey,
 		Name:       accountName,
 		Email:      email,

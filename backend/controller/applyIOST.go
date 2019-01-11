@@ -17,8 +17,14 @@ import (
 	"regexp"
 )
 
+type applyAccountResp struct {
+	Code int
+	Msg  string
+}
+
 var (
-	applyHttpClient *http.Client
+	GCAPHttpClient  *http.Client
+	ApplyHTTPClient *http.Client
 	ipFreqMapMutex  sync.RWMutex
 	applyErrReg     = regexp.MustCompile(`Uncaught exception:(.*)\n`)
 	ipFreqMap       = make(map[string]int)
@@ -27,10 +33,18 @@ var (
 )
 
 func init() {
-	applyHttpClient = &http.Client{
+	GCAPHttpClient = &http.Client{
 		Transport: &http.Transport{
 			MaxIdleConns: 10,
 		},
+		Timeout: time.Second * 2,
+	}
+
+	ApplyHTTPClient = &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConns: 10,
+		},
+		Timeout: time.Second * 10,
 	}
 
 	go cronUpdateIPFreqMap()
@@ -40,7 +54,7 @@ func ApplyIOST(c echo.Context) error {
 	accountPubKey := c.FormValue("address")
 	accountName := c.FormValue("account")
 	email := c.FormValue("email")
-	gcaptcha := c.FormValue("gcaptcha")
+	//gcaptcha := c.FormValue("gcaptcha")
 
 	if accountPubKey == "" || email == "" {
 		log.Println("ApplyIOST nil params")
@@ -58,24 +72,27 @@ func ApplyIOST(c echo.Context) error {
 	}
 
 	remoteIP := c.Request().Header.Get("Iost_Remote_Addr")
-	if !verifyGCAP(gcaptcha, remoteIP) {
-		log.Println(ErrGreCaptcha.Error())
-		return c.JSON(http.StatusOK, &CommOutput{1, ErrGreCaptcha.Error()})
-	}
+	log.Println("start...")
+	//if !verifyGCAP(gcaptcha, remoteIP) {
+	//	log.Println(ErrGreCaptcha.Error())
+	//	return c.JSON(http.StatusOK, &CommOutput{1, ErrGreCaptcha.Error()})
+	//}
+	log.Println("end...")
 
 	if !checkIPFreq(remoteIP) {
 		log.Println(ErrApplyFreq.Error())
 		return c.JSON(http.StatusOK, &CommOutput{2, ErrApplyFreq.Error()})
 	}
 
-	if err := createAccount(accountPubKey, accountName); err != nil {
+	txHash, err := createAccount(accountPubKey, accountName)
+	if err != nil {
 		log.Println("createAccount err: ", err.Error())
 		return c.JSON(http.StatusOK, &CommOutput{2, err.Error()})
 	}
 
-	db.AddApply(accountPubKey, accountName, email, remoteIP)
+	db.AddApply(txHash, accountPubKey, accountName, email, remoteIP)
 
-	return c.JSON(http.StatusOK, FormatResponse("create success"))
+	return c.JSON(http.StatusOK, &CommOutput{0, txHash})
 }
 
 // 简单的check逻辑，不落盘数据库，也就是说如果重启，单ip可以再申请ApplyAccountPerIPPerDay次。
@@ -114,9 +131,9 @@ func cronUpdateIPFreqMap() {
 	}
 }
 
-func createAccount(pubKey, name string) error {
+func createAccount(pubKey, name string) (string, error) {
 	reqUrl := fmt.Sprintf(
-		"http://%s/register?ID=%s&Name=%s&Net=%s&mk=%s",
+		"http://%s/register?PubKey=%s&Name=%s&Net=%s&mk=%s",
 		ApplyHost,
 		pubKey,
 		name,
@@ -125,31 +142,32 @@ func createAccount(pubKey, name string) error {
 	)
 	req, err := http.NewRequest("IOST_BOOT", reqUrl, nil)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	resp, err := applyHttpClient.Do(req)
+	resp, err := ApplyHTTPClient.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	bodyStr := string(body)
-	if !strings.Contains(bodyStr, "Uncaught exception") {
-		return nil
+	var applyResp *applyAccountResp
+	err = json.Unmarshal(body, &applyResp)
+
+	if err != nil {
+		return "", err
 	}
 
-	errFound := applyErrReg.FindStringSubmatch(bodyStr)
-	if len(errFound) < 2 {
-		return errors.New(bodyStr)
+	if applyResp.Code == 200 {
+		return applyResp.Msg, nil
 	}
 
-	return errors.New(errFound[1])
+	return "", errors.New(applyResp.Msg)
 }
 
 type GCAPResponse struct {
@@ -167,7 +185,7 @@ func verifyGCAP(gcap, remoteIP string) bool {
 	req, _ := http.NewRequest("POST", GCAPVerifyUrl, strings.NewReader(postData.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := applyHttpClient.Do(req)
+	resp, err := GCAPHttpClient.Do(req)
 	if err != nil {
 		log.Println("verifyGCAP error:", err)
 		return false
