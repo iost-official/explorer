@@ -9,7 +9,14 @@ import (
 )
 
 func GetDb() (*mgo.Database, error) {
-	mongoClient, err := transport.GetMongoClient(MongoLink)
+	var err error
+	var mongoClient *mgo.Session
+
+	if MongoUser == "" && MongoPassWord == "" {
+		mongoClient, err = transport.GetMongoClient(MongoLink, Db)
+	} else {
+		mongoClient, err = transport.GetMongoClientWithAuth(MongoLink, MongoUser, MongoPassWord, Db)
+	}
 	if err != nil {
 		return nil, err
 	}

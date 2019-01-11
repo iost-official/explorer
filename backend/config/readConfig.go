@@ -3,17 +3,22 @@ package config
 import (
 	"fmt"
 
+	"github.com/iost-official/explorer/backend/model/blockchain"
+	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/spf13/viper"
 )
 
-func ReadConfig() {
-	viper.SetConfigName("config.json.sample")
-	viper.AddConfigPath("$GOPATH/src/github.com/iost-official/explorer/backend/config")
-	//viper.AddConfigPath("./config")
+func ReadConfig(configPath string) {
+	viper.SetConfigName("config")
+	if configPath == "" {
+		viper.AddConfigPath("$GOPATH/src/github.com/iost-official/explorer/backend/config")
+	} else {
+		viper.AddConfigPath(configPath)
+	}
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
-	// db.InitConfig()
-	// db.EnsureCapped()
+	db.InitConfig()
+	blockchain.InitConfig()
 }

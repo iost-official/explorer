@@ -1,0 +1,10 @@
+{
+  "rpcHost": "47.244.109.92:30002",
+  "mongodb": {
+    "host": "127.0.0.1",
+    "port": "27017",
+    "username": "api",
+    "password": "liushiqi9",
+    "db": "api"
+  }
+}
