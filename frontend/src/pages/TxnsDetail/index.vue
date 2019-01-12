@@ -26,7 +26,10 @@
       </div>
       <div class="txnsDetail-from">
         <h4>From:</h4>
-        <p><router-link :to="{path:`/account/${txnDetail.from}`}">{{txnDetail.from}}</router-link></p>
+        <p>
+          <router-link v-if="txnDetail.from !='_Block_Base'" :to="{path:`/account/${txnDetail.from}`}">{{txnDetail.from}}</router-link>
+          <a v-else href="javascript:void(0)">{{txnDetail.from}}</a>
+        </p>
       </div>
 
 

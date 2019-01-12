@@ -33,9 +33,14 @@ module.exports = {
         options: vueLoaderConfig
       },
       {
+        test: /base-x.*?js$/,
+        loader: 'babel-loader'
+      },
+      {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [resolve('src'), resolve('test')]
+        // include: [resolve('src'), resolve('test'), resolve('node_modules/iost/')]
       },
 
       {
