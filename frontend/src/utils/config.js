@@ -1,5 +1,5 @@
 
-// const APIV1 = 'http://47.75.223.44:8080/api/'
+// const APIV1 = 'http://47.244.109.92:8008/api/'
 const APIV1 = '/api/'
 
 const config = {

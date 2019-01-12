@@ -24,7 +24,7 @@
           if (type == "block") {
             if (response.data.data.text) {
               this.$router.push({
-                path: '/block/' + response.data.text
+                path: '/block/' + response.data.data.text
               })
             } else {
               this.$router.push({

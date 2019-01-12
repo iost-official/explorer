@@ -19,7 +19,8 @@
           </div>
           <div class="list-from">
             <p>From</p>
-            <router-link :to="{path:`/account/${txn.from}`}">{{txn.from}}</router-link>
+            <router-link v-if="txn.from !='_Block_Base'" :to="{path:`/account/${txn.from}`}">{{txn.from}}</router-link>
+            <a v-else href="javascript:void(0)">{{txn.from}}</a>
           </div>
           <div class="list-to">
             <p>To</p>

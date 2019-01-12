@@ -18,11 +18,11 @@
             <router-link to="/txs">TRANSACTION</router-link>
           </li>
 
-          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 3}">
+          <!-- <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 3}">
             <router-link to="/accounts">ACCOUNTS</router-link>
-          </li>
+          </li> -->
           <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 4}">
-            <router-link to="/applyIOST">REQUEST TEST IOST</router-link>
+            <router-link to="/applyIOST">Create MainNet Account</router-link>
           </li>
 
           <li class="my-nav-item searchActive" v-show="isShow">
@@ -48,11 +48,11 @@
               <router-link to="/txs">TRANSACTION</router-link>
             </li>
 
-            <li class="mobile-nav-item" :class="{active: currentColor == 3}">
+            <!-- <li class="mobile-nav-item" :class="{active: currentColor == 3}">
               <router-link to="/accounts">ACCOUNTS</router-link>
-            </li>
+            </li> -->
             <li class="mobile-nav-item" :class="{active: currentColor == 4}">
-              <router-link to="/applyIOST">REQUEST TEST IOST</router-link>
+              <router-link to="/applyIOST">Create MainNet Account</router-link>
             </li>
 
             <li class="mobile-nav-item">
@@ -165,7 +165,7 @@
           if (type == "block") {
             if (response.data.data.text) {
               this.$router.push({
-                path: '/block/' + response.data.text
+                path: '/block/' + response.data.data.text
               })
             } else {
               this.$router.push({
