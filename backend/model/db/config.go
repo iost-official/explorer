@@ -32,6 +32,7 @@ func InitConfig() {
 	Db = dbConfig["db"]
 	MongoUser = dbConfig["username"]
 	MongoPassWord = dbConfig["password"]
-	MongoLink = fmt.Sprintf("%s:%s", dbConfig["host"], dbConfig["port"])
+	//MongoLink = fmt.Sprintf("%s:%s", dbConfig["host"], dbConfig["port"])
+	MongoLink = dbConfig["mongoLink"]
 	fmt.Println("mongolink", Db, MongoLink)
 }
