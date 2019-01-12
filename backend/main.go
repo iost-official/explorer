@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/iost-official/explorer/backend/config"
 	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
 	"github.com/labstack/echo"
@@ -8,7 +9,7 @@ import (
 )
 
 func main() {
-	// config.ReadConfig()
+	config.ReadConfig("")
 	e := echo.New()
 	e.Debug = true
 	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
