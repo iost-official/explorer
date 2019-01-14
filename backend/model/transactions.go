@@ -104,11 +104,11 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 			txnOut.From = params[1]
 			txnOut.To = params[2]
 			f, _ := strconv.ParseFloat(params[3], 64)
-			txnOut.Amount = f
+			txnOut.Amount = f * 1e8
 		}
 	}
 
-	if tx.Tx.Actions[0].Contract == "system.iost" && tx.Tx.Actions[0].ActionName == "SetCode" {
+	if tx.Tx.Actions[0].Contract == "system.iost" && tx.Tx.Actions[0].ActionName == "setCode" {
 		var params []string
 		err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
 		if err == nil && len(params) > 0 {
