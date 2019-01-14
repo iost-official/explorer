@@ -1,12 +1,15 @@
 package model
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"log"
 	"strconv"
 
 	simplejson "github.com/bitly/go-simplejson"
+	"github.com/gogo/protobuf/proto"
 	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/model/pb"
 	"github.com/iost-official/explorer/backend/util"
 )
 
@@ -114,9 +117,20 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 		if err == nil && len(params) > 0 {
 			j, e := simplejson.NewJson([]byte(params[0]))
 			if e != nil {
-				log.Printf("json decode SetCode param failed. err=%v", err)
+				log.Printf("json decode setCode param failed. err=%v", err)
 			} else {
 				txnOut.Code, _ = j.Get("code").String()
+			}
+
+			if txnOut.Code == "" {
+				bytes, e := base64.StdEncoding.DecodeString(params[0])
+				if e != nil {
+					log.Printf("base64 decode setCode param failed. err=%v", err)
+				} else {
+					var con contract.Contract
+					proto.Unmarshal(bytes, &con)
+					txnOut.Code = con.Code
+				}
 			}
 		}
 
@@ -136,6 +150,7 @@ func GetDetailTxn(txHash string) (*TxnDetail, error) {
 	}
 
 	txnOut := ConvertTxOutput(tx)
+	txnOut.Amount /= 1e8
 
 	return txnOut, nil
 }
