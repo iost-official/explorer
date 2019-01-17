@@ -140,7 +140,7 @@ export default {
 				return false
 			}
 
-			if (this.accountName.length < 5 || this.accountName.length >= 11) {
+			if (this.accountName.length < 5 || this.accountName.length > 11) {
 				$('#errAlert').addClass('alert alert-danger')
 				this.errMsg = 'invalid account name, must 5-11 characters'
 				return false
