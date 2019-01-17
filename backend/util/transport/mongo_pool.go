@@ -57,12 +57,8 @@ func GetMongoClient(address, db string) (*mgo.Session, error) {
 	mongoSessionMapLock.Lock()
 	defer mongoSessionMapLock.Unlock()
 
-	dInfo := mgo.DialInfo{
-		Addrs:    []string{address},
-		Timeout:  time.Second * 5,
-		Database: db,
-	}
-	session, err := mgo.DialWithInfo(&dInfo)
+	//session, err := mgo.DialWithInfo(&dInfo)
+	session, err := mgo.DialWithTimeout(address, time.Second*5)
 	if err != nil {
 		return nil, err
 	}

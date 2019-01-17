@@ -11,6 +11,6 @@ var (
 )
 
 func InitConfig() {
-	RPCAddress := viper.GetString("rpcHost")
+	RPCAddress = viper.GetString("rpcHost")
 	fmt.Println("RPCHost:", RPCAddress)
 }

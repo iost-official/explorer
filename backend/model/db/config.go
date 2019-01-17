@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	MongoLink     = "mongodb://127.0.0.1:27017"
+	MongoLink     string
 	MongoUser     = ""
 	MongoPassWord = ""
 	Db            string
@@ -33,6 +33,6 @@ func InitConfig() {
 	MongoUser = dbConfig["username"]
 	MongoPassWord = dbConfig["password"]
 	//MongoLink = fmt.Sprintf("%s:%s", dbConfig["host"], dbConfig["port"])
-	MongoLink = dbConfig["mongoLink"]
+	MongoLink= dbConfig["mongolink"]
 	fmt.Println("mongolink", Db, MongoLink)
 }
