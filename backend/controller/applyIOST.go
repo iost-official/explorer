@@ -12,9 +12,10 @@ import (
 	"time"
 
 	"fmt"
+	"regexp"
+
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
-	"regexp"
 )
 
 type applyAccountResp struct {
@@ -54,7 +55,7 @@ func ApplyIOST(c echo.Context) error {
 	accountPubKey := c.FormValue("address")
 	accountName := c.FormValue("account")
 	email := c.FormValue("email")
-	//gcaptcha := c.FormValue("gcaptcha")
+	gcaptcha := c.FormValue("gcaptcha")
 
 	if accountPubKey == "" || email == "" {
 		log.Println("ApplyIOST nil params")
@@ -73,10 +74,10 @@ func ApplyIOST(c echo.Context) error {
 
 	remoteIP := c.Request().Header.Get("Iost_Remote_Addr")
 	log.Println("start...")
-	//if !verifyGCAP(gcaptcha, remoteIP) {
-	//	log.Println(ErrGreCaptcha.Error())
-	//	return c.JSON(http.StatusOK, &CommOutput{1, ErrGreCaptcha.Error()})
-	//}
+	if !verifyGCAP(gcaptcha, remoteIP) {
+		log.Println(ErrGreCaptcha.Error())
+		return c.JSON(http.StatusOK, &CommOutput{1, ErrGreCaptcha.Error()})
+	}
 	log.Println("end...")
 
 	if !checkIPFreq(remoteIP) {

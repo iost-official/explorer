@@ -25,9 +25,9 @@ const (
 	GCAPSecretKey   = "6Lc1vF8UAAAAAGv1XihAK4XygBMn3UobipWMqBym"
 
 	ApplyAccountPerIPPerDay = 5
-	ApplyHost               = "47.244.109.92:8005"
-	ApplyNet                = "localtest"
-	ApplyMK                 = "mk"
+	ApplyHost               = "127.0.0.1:8005"
+	ApplyNet                = "testnet"
+	ApplyMK                 = "createdByExplorer"
 )
 
 type Response struct {
