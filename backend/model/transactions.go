@@ -128,7 +128,7 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 				txnOut.From = tx.Tx.Publisher
 				txnOut.To = params[1]
 				f, _ := strconv.ParseFloat(params[2], 64)
-				txnOut.Amount = f
+				txnOut.Amount = f * 1e8
 			}
 		}
 	}
