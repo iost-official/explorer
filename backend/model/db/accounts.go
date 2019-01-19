@@ -403,7 +403,7 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 
 		}
 
-		if t.Publisher != "_Block_Base" && !accountToTx[t.Publisher+t.Hash] {
+		if t.Publisher != "base.iost" && !accountToTx[t.Publisher+t.Hash] {
 			accTxB.Insert(&AccountTx{t.Publisher, blockTime, t.Hash, ""})
 			accountToTx[t.Publisher+t.Hash] = true
 		}
