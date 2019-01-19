@@ -120,6 +120,17 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 			f, _ := strconv.ParseFloat(params[3], 64)
 			txnOut.Amount = f * 1e8
 		}
+	} else if tx.Tx.Actions[0].Contract == "exchange.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
+		var params []string
+		err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
+		if err == nil && len(params) == 4 && params[0] == "iost" {
+			if params[1] != "" {
+				txnOut.From = tx.Tx.Publisher
+				txnOut.To = params[1]
+				f, _ := strconv.ParseFloat(params[2], 64)
+				txnOut.Amount = f
+			}
+		}
 	}
 
 	if tx.Tx.Actions[0].Contract == "system.iost" && tx.Tx.Actions[0].ActionName == "setCode" {
