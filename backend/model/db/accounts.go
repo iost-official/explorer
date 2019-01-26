@@ -320,6 +320,7 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 
 		for _, r := range t.TxReceipt.Receipts {
 
+			// transfer
 			if r.FuncName == "token.iost/transfer" {
 				var params []string
 				err := json.Unmarshal([]byte(r.Content), &params)
@@ -341,11 +342,35 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 					}
 				}
 			}
+			// create user
+			if r.FuncName == "auth.iost/signUp" {
+				var params []string
+				err := json.Unmarshal([]byte(r.Content), &params)
+				if err == nil && len(params) == 3 {
+					account := NewAccount(params[0], blockTime, t.Publisher)
+					accountB.Insert(account)
+
+					accountPubB.Insert(&AccountPubkey{params[0], params[1]})
+					if params[1] != params[2] {
+						accountPubB.Insert(&AccountPubkey{params[0], params[2]})
+					}
+
+					if !accountToTx[params[0]+t.Hash] {
+						accTxB.Insert(&AccountTx{params[0], blockTime, t.Hash, ""})
+						accountToTx[params[0]+t.Hash] = true
+					}
+
+					//accountB.Upsert(bson.M{"name": params[0]}, bson.M{"$set": bson.M{"createTime": blockTime, "creator": t.Publisher}})
+
+					//gatherAccountTxs(accountTxs, params[0], t.Hash, blockTime, nil)
+					//updatePubkey[params[0]] = true
+				}
+			}
 		}
 
 		for _, a := range t.Actions {
 
-			// create account
+			/*// create account
 			if a.Contract == "auth.iost" && a.ActionName == "signUp" &&
 				t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
 				var params []string
@@ -364,7 +389,7 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 						accountToTx[params[0]+t.Hash] = true
 					}
 				}
-			}
+			}*/
 
 			if a.Contract == "system.iost" && a.ActionName == "initSetCode" &&
 				t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
