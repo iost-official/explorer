@@ -1,14 +1,66 @@
 package main
 
 import (
+	"context"
+	"log"
+
+	"github.com/fsnotify/fsnotify"
 	"github.com/iost-official/explorer/backend/config"
 	"github.com/iost-official/explorer/backend/controller"
 	"github.com/iost-official/explorer/backend/middleware"
+	"github.com/iost-official/explorer/backend/util/boot"
 	"github.com/labstack/echo"
 	echoMiddle "github.com/labstack/echo/middleware"
+	"github.com/spf13/viper"
 )
 
 func main() {
+
+	//
+	// boot service
+	//
+
+	v := viper.New()
+	v.SetConfigName("config")
+	v.AddConfigPath(".")
+	v.SetConfigType("yaml")
+
+	err := v.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	err = v.Unmarshal(&boot.C)
+	if err != nil {
+		panic(err)
+	}
+
+	// hot reload
+	ctx, _ := context.WithCancel(context.Background())
+	v.OnConfigChange(func(e fsnotify.Event) {
+		log.Println("Config change detected, updating config ...")
+
+		err := v.ReadInConfig()
+		if err != nil {
+			panic(err)
+		}
+
+		err = v.Unmarshal(&boot.C)
+		if err != nil {
+			panic(err)
+		}
+	})
+
+	go func() {
+		v.WatchConfig()
+		<-ctx.Done()
+	}()
+
+
+	//
+	// original explorer
+	//
+
 	config.ReadConfig("")
 	e := echo.New()
 	e.Debug = true

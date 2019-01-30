@@ -15,6 +15,7 @@ import (
 	"regexp"
 
 	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/util/boot"
 	"github.com/labstack/echo"
 )
 
@@ -133,6 +134,30 @@ func cronUpdateIPFreqMap() {
 }
 
 func createAccount(pubKey, name string) (string, error) {
+	r := &boot.Request{
+		Net: ApplyNet,
+		PubKey: pubKey,
+		Name: name,
+		MK: ApplyMK,
+	}
+	err := r.IsValid()
+	if err != nil {
+		return "", err
+	}
+
+	txHash, err := r.CreateAccount()
+	if err != nil {
+		errFound := applyErrReg.FindStringSubmatch(err.Error())
+			if len(errFound) < 2 {
+			return "", err
+		}
+		return "", errors.New(errFound[1])
+	}
+
+	return txHash, nil
+}
+
+func createAccount_deprecated(pubKey, name string) (string, error) {
 	reqUrl := fmt.Sprintf(
 		"http://%s/register?PubKey=%s&Name=%s&Net=%s&mk=%s",
 		ApplyHost,
