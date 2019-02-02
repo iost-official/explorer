@@ -24,8 +24,13 @@ type Request struct {
 	MK     string
 }
 
-func f(r rune) bool {
-	return (r < '0') || ((r > '9') && (r < 'A')) || ((r > 'Z') && (r < 'a')) || (r > 'z')
+func checkBase58(ch rune) bool {
+	return (ch <= '0') || ((ch > '9') && (ch < 'A')) || ((ch > 'Z') && (ch < 'a')) || (ch > 'z') ||
+		(ch == 'O') || (ch == 'I') || (ch == 'l')
+}
+
+func checkId(ch rune) bool {
+	return !(ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9' || ch == '_')
 }
 
 func (r *Request) IsValid() error {
@@ -45,10 +50,14 @@ func (r *Request) IsValid() error {
 	}
 
 	if len(r.Name) < 5 || len(r.Name) > 11 {
-		return errors.New("invalid account string")
+		return errors.New("invalid length of account string")
 	}
 
-	if strings.IndexFunc(r.PubKey, f) != -1 {
+	if strings.IndexFunc(r.Name, checkId) != -1 {
+		return errors.New("invalid character in account string")
+	}
+
+	if strings.IndexFunc(r.PubKey, checkBase58) != -1 {
 		return errors.New("invalid pubkey")
 	}
 
