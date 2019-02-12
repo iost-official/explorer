@@ -21,9 +21,9 @@
           <!-- <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 3}">
             <router-link to="/accounts">ACCOUNTS</router-link>
           </li> -->
-          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 4}">
+          <!-- <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 4}">
             <router-link to="/applyIOST">Create MainNet Account</router-link>
-          </li>
+          </li> -->
 
           <li class="my-nav-item searchActive" v-show="isShow">
             <input type="text" placeholder="Search..."
