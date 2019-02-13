@@ -45,7 +45,7 @@ func init() {
 		Transport: &http.Transport{
 			MaxIdleConns: 10,
 		},
-		Timeout: time.Second * 30,
+		Timeout: time.Second * 120,
 	}
 
 	go cronUpdateIPFreqMap()
