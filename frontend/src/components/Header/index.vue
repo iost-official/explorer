@@ -41,13 +41,6 @@
               <router-link to="/txs">TRANSACTION</router-link>
             </li>
 
-            <!-- <li class="mobile-nav-item" :class="{active: currentColor == 3}">
-              <router-link to="/accounts">ACCOUNTS</router-link>
-            </li> -->
-            <li class="mobile-nav-item" :class="{active: currentColor == 4}">
-              <router-link to="/applyIOST">Create MainNet Account</router-link>
-            </li>
-
             <li class="mobile-nav-item">
               <input type="text" placeholder="Search..."
                      @click.stop="" v-model.trim="searchInput" @keydown.enter="searchData">
