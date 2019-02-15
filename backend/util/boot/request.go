@@ -14,7 +14,7 @@ import (
 	"github.com/iost-official/go-iost/account"
 	"github.com/iost-official/go-iost/common"
 	"github.com/iost-official/go-iost/crypto"
-	"github.com/iost-official/go-iost/iwallet"
+	"github.com/iost-official/go-iost/sdk"
 )
 
 type Request struct {
@@ -70,13 +70,12 @@ func (r *Request) CreateAccount() (string, error) {
 		return "", err
 	}
 
-	var sdk = iwallet.SDK{}
-	sdk.SetServer(C.Net[r.Net].EndPoint)
+	var sdk = sdk.NewIOSTDevSDK()
 	sdk.SetAccount(C.Net[r.Net].AdminAccount, acc)
-	sdk.SetTxInfo(1000000, 1, 60, 0)
-	sdk.SetCheckResult(true, 3, 10)
-	sdk.SetAmountLimit("*:unlimited")
 	sdk.SetChainID(C.Net[r.Net].ChainID)
+	sdk.SetServer(C.Net[r.Net].EndPoint)
+	sdk.SetTxInfo(1000000, 1, 60, 0, nil)
+	sdk.SetCheckResult(true, 10, 10)
 
 	pubKey := r.PubKey
 	txHash, err := sdk.CreateNewAccount(r.Name, pubKey, pubKey,
