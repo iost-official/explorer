@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -57,7 +56,7 @@ var (
 
 func init() {
 	bpClient = &http.Client{
-		Timeout: time.Second * 2,
+		Timeout: time.Second * 5,
 		Transport: &http.Transport{
 			MaxIdleConns: 5,
 		},
@@ -79,6 +78,7 @@ func init() {
 				witnessMap[witness] = true
 			}
 
+			var accountToQuery []string
 			bpAccountListLock.Lock()
 			for account := range bpAccountList {
 				if _, ok := witnessMap[account]; !ok {
@@ -88,10 +88,14 @@ func init() {
 
 			for witness := range witnessMap {
 				if _, ok := bpAccountList[witness]; !ok {
-					accountInfoCh <- witness
+					accountToQuery = append(accountToQuery, witness)
 				}
 			}
 			bpAccountListLock.Unlock()
+
+			for _, account := range accountToQuery {
+				accountInfoCh <- account
+			}
 		}
 	}()
 
@@ -129,12 +133,12 @@ func init() {
 }
 
 func GetBPList(c echo.Context) error {
-	accountInfo, err := json.Marshal(bpAccountList)
-	if err != nil {
-		return err
+	var bpList []*BPAccountDetail
+	for _, bpAccount := range bpAccountList {
+		bpList = append(bpList, bpAccount)
 	}
 
-	return c.JSON(http.StatusOK, FormatResponse(string(accountInfo)))
+	return c.JSON(http.StatusOK, FormatResponse(bpList))
 }
 
 func getWitnessList() ([]string, error) {
@@ -210,7 +214,6 @@ func getBPAccountDetail(account string) (*BPAccountDetail, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("queryStr:", string(queryStr))
 
 	req, err := http.NewRequest("POST", chainStorageUrl, bytes.NewBuffer(queryStr))
 	if err != nil {
@@ -230,7 +233,6 @@ func getBPAccountDetail(account string) (*BPAccountDetail, error) {
 	}
 
 	var ai map[string]interface{}
-	fmt.Println("body: ", string(body))
 	err = json.Unmarshal(body, &ai)
 	if err != nil {
 		return nil, err
@@ -250,10 +252,6 @@ func getBPAccountDetail(account string) (*BPAccountDetail, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("data: ", dataStr)
-	fmt.Println("ad: ", ad)
-	fmt.Println("err: ", err)
 
 	ad.Name = account
 
