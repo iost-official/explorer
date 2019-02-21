@@ -52,7 +52,7 @@ var (
 	errAccountNotExist = errors.New("account not exists")
 
 	bpAccountList     = make(map[string]*BPAccountDetail)
-	bpAccountListLock sync.RWMutex
+	bpAccountListLock sync.Mutex
 )
 
 func init() {
@@ -67,20 +67,31 @@ func init() {
 	accountDetailCh := make(chan *accountInfo)
 
 	go func() {
-		ticker := time.NewTicker(time.Second * 1)
+		ticker := time.NewTicker(time.Second * 10)
 		for _ = range ticker.C {
 			witnessList, err := getWitnessList()
 			if err != nil {
 				log.Println("getWitnessList error:", err)
 				continue
 			}
-			bpAccountListLock.RLock()
+			witnessMap := make(map[string]bool)
 			for _, witness := range witnessList {
+				witnessMap[witness] = true
+			}
+
+			bpAccountListLock.Lock()
+			for account := range bpAccountList {
+				if _, ok := witnessMap[account]; !ok {
+					delete(bpAccountList, account)
+				}
+			}
+
+			for witness := range witnessMap {
 				if _, ok := bpAccountList[witness]; !ok {
 					accountInfoCh <- witness
 				}
 			}
-			bpAccountListLock.RUnlock()
+			bpAccountListLock.Unlock()
 		}
 	}()
 
