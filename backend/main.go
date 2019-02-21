@@ -44,5 +44,8 @@ func main() {
 	// applyIOST
 	e.POST("/api/applyIOST", controller.ApplyIOST)
 
+	// bp list
+	e.GET("/api/BPList", controller.GetBPList)
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
