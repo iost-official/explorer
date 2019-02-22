@@ -16,6 +16,7 @@ import ApplyIOST from '../pages/ApplyIOST'
 import ApplyIOSTSuccess from '../pages/ApplyIOSTSuccess'
 import NotFound404 from '../pages/404'
 import Feedback from '../pages/Feedback'
+import BPList from '../pages/BPList'
 
 Vue.use(Router)
 
@@ -126,6 +127,15 @@ export default new Router({
       components: {
         Head: Head,
         Main: Feedback,
+        Foot: Foot
+      }
+    },
+    {
+      path: '/BPList',
+      name: 'BPList',
+      components: {
+        Head: Head,
+        Main: BPList,
         Foot: Foot
       }
     },
