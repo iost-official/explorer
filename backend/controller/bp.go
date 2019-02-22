@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -137,6 +138,10 @@ func GetBPList(c echo.Context) error {
 	for _, bpAccount := range bpAccountList {
 		bpList = append(bpList, bpAccount)
 	}
+
+	sort.Slice(bpList, func(i, j int) bool {
+		return bpList[i].Name < bpList[j].Name
+	})
 
 	return c.JSON(http.StatusOK, FormatResponse(bpList))
 }
