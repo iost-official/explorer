@@ -17,9 +17,6 @@
           <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 2}">
             <router-link to="/txs">TRANSACTION</router-link>
           </li>
-          <li class="my-nav-item" v-show="!isShow" :class="{active: currentColor == 3}">
-            <router-link to="/BPList">BPList</router-link>
-          </li>
 
           <li class="my-nav-item searchActive" v-show="isShow">
             <input type="text" placeholder="Search..."
@@ -42,9 +39,6 @@
             </li>
             <li class="mobile-nav-item" :class="{active: currentColor == 2}">
               <router-link to="/txs">TRANSACTION</router-link>
-            </li>
-            <li class="mobile-nav-item" :class="{active: currentColor == 3}">
-              <router-link to="/BPList">BPList</router-link>
             </li>
 
             <li class="mobile-nav-item">
