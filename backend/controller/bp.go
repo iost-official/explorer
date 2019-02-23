@@ -7,16 +7,16 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"reflect"
-
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -69,9 +69,13 @@ func init() {
 			MaxIdleConns: 5,
 		},
 	}
+}
 
+func SyncBP() {
 	accountInfoCh := make(chan string)
 	accountDetailCh := make(chan *accountInfo)
+
+	syncBP := viper.GetBool("syncBP")
 
 	go func() {
 		ticker := time.NewTicker(time.Second * 20)
@@ -82,7 +86,7 @@ func init() {
 				continue
 			}
 
-			if !reflect.DeepEqual(libWitnessList, bpLibAccountList) {
+			if !reflect.DeepEqual(libWitnessList, bpLibAccountList) && syncBP {
 				if len(bpLibAccountList) == 0 {
 					bpLibStartTime = time.Now()
 					bpLibAccountList = libWitnessList

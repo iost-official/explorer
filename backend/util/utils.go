@@ -23,19 +23,10 @@ func ModifyIntToTimeStr(intTime int64) string {
 	}
 }
 
-func ModifyBlockIntToTimeStr(intTime int64) string {
+func ModifyBlockIntToTimeStr(intTime, pos int64) string {
 	currentUnixSec := time.Now().Unix()
-	secSub := currentUnixSec - intTime/1e9
-
-	if secSub-12 > 0 {
-		secSub = secSub - 12
-	} else if secSub-9 > 0 {
-		secSub = secSub - 9
-	} else if secSub-6 > 0 {
-		secSub = secSub - 6
-	} else if secSub-3 > 0 {
-		secSub = secSub - 3
-	}
+	fixPos := currentUnixSec - pos/1e9
+	secSub := currentUnixSec - intTime/1e9 - fixPos + 1
 
 	switch {
 	case 0 <= secSub && secSub < 60:

@@ -38,9 +38,15 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 
 		payMap, _ := db.GetBlockPayListByHeight(blkHeightList)
 	*/
-	var blockOutputList []*BlockOutput
-	for _, v := range blkInfoList {
-		output := GenerateBlockOutput(v)
+	var (
+		blockOutputList []*BlockOutput
+		pos             int64
+	)
+	for k, v := range blkInfoList {
+		if k == 0 {
+			pos = v.Time
+		}
+		output := GenerateBlockOutput(v, pos)
 		/*      if pay, ok := payMap[v.BlockNumber]; ok { */
 		// output.TotalGasLimit = pay.TotalGasLimit
 		// output.AvgGasPrice = pay.AvgGasPrice
@@ -52,7 +58,7 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 	return blockOutputList, nil
 }
 
-func GenerateBlockOutput(bInfo *rpcpb.Block) *BlockOutput {
+func GenerateBlockOutput(bInfo *rpcpb.Block, pos int64) *BlockOutput {
 	//todo when rpc fix this, change it to normal
 	txCount, err := db.GetTxCountByNumber(bInfo.Number)
 	if err != nil {
@@ -64,7 +70,7 @@ func GenerateBlockOutput(bInfo *rpcpb.Block) *BlockOutput {
 		BlockHash:  bInfo.Hash,
 		Witness:    bInfo.Witness,
 		Txn:        int64(txCount),
-		Age:        util.ModifyBlockIntToTimeStr(bInfo.Time),
+		Age:        util.ModifyBlockIntToTimeStr(bInfo.Time, pos),
 		UTCTime:    util.FormatUTCTime(bInfo.Time),
 		Timestamp:  bInfo.Time,
 	}

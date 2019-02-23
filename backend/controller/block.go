@@ -79,7 +79,7 @@ func GetBlockDetail(c echo.Context) error {
 		return err
 	}
 
-	blkOutput := model.GenerateBlockOutput(blkInfo)
+	blkOutput := model.GenerateBlockOutput(blkInfo, blkInfo.Time)
 
 	return c.JSON(http.StatusOK, FormatResponse(blkOutput))
 }
