@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetChainInfo(t *testing.T) {
-	witnessList, err := getChainInfo()
+	witnessList, err := getWitnessList()
 	fmt.Println(witnessList)
 	fmt.Println(err)
 }

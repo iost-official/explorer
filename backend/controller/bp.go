@@ -12,7 +12,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
+	"reflect"
 )
 
 const (
@@ -21,7 +23,8 @@ const (
 )
 
 type chainInfo struct {
-	WitnessList []string `json:"witness_list"`
+	WitnessList    []string `json:"witness_list"`
+	LibWitnessList []string `json:"lib_witness_list"`
 }
 
 type accountInfo struct {
@@ -52,7 +55,9 @@ var (
 	errAccountNotExist = errors.New("account not exists")
 
 	bpAccountList     = make(map[string]*BPAccountDetail)
-	bpAccountListLock sync.Mutex
+	bpLibAccountList  []string
+	bpLibStartTime    = time.Now()
+	bpAccountListLock sync.RWMutex
 )
 
 func init() {
@@ -67,13 +72,31 @@ func init() {
 	accountDetailCh := make(chan *accountInfo)
 
 	go func() {
-		ticker := time.NewTicker(time.Second * 10)
+		ticker := time.NewTicker(time.Second * 20)
 		for _ = range ticker.C {
-			witnessList, err := getWitnessList()
+			witnessList, libWitnessList, err := getWitnessList()
 			if err != nil {
 				log.Println("getWitnessList error:", err)
 				continue
 			}
+
+			if !reflect.DeepEqual(libWitnessList, bpLibAccountList) {
+				if len(bpLibAccountList) == 0 {
+					bpLibStartTime = time.Now()
+					bpLibAccountList = libWitnessList
+				} else {
+					go func(libWitnessList []string) {
+						endTime := time.Now()
+						_, err := db.GetBPProduce(bpLibAccountList, bpLibStartTime, endTime)
+						if err != nil {
+							log.Println("GetBPProduce error: ", err)
+						}
+						bpLibAccountList = libWitnessList
+						bpLibStartTime = endTime
+					}(libWitnessList)
+				}
+			}
+
 			witnessMap := make(map[string]bool)
 			for _, witness := range witnessList {
 				witnessMap[witness] = true
@@ -81,6 +104,7 @@ func init() {
 
 			var accountToQuery []string
 			bpAccountListLock.Lock()
+
 			for account := range bpAccountList {
 				if _, ok := witnessMap[account]; !ok {
 					delete(bpAccountList, account)
@@ -135,9 +159,12 @@ func init() {
 
 func GetBPList(c echo.Context) error {
 	var bpList []*BPAccountDetail
+
+	bpAccountListLock.RLock()
 	for _, bpAccount := range bpAccountList {
 		bpList = append(bpList, bpAccount)
 	}
+	bpAccountListLock.RUnlock()
 
 	sort.Slice(bpList, func(i, j int) bool {
 		return bpList[i].Name < bpList[j].Name
@@ -146,25 +173,25 @@ func GetBPList(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse(bpList))
 }
 
-func getWitnessList() ([]string, error) {
+func getWitnessList() (witnessList, libWitnessList []string, err error) {
 	resp, err := bpClient.Get(chainInfoUrl)
 	if err != nil {
-		return nil, err
+		return
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	var ci *chainInfo
 	err = json.Unmarshal(body, &ci)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return ci.WitnessList, nil
+	return ci.WitnessList, ci.LibWitnessList, nil
 }
 
 func getBPAccount(pubKey string) (*accountInfo, error) {
