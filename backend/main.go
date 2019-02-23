@@ -10,6 +10,8 @@ import (
 
 func main() {
 	config.ReadConfig("")
+	controller.SyncBP()
+
 	e := echo.New()
 	e.Debug = true
 	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
