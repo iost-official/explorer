@@ -14,7 +14,12 @@ func TestGetBPAccount(t *testing.T) {
 	fmt.Println(witnessList)
 	fmt.Println(err)
 }
-
+func TestGetLastBPProduce(t *testing.T) {
+	config.ReadConfig("")
+	witnessList, err := db.GetLastBPProduce()
+	fmt.Println(witnessList)
+	fmt.Println(err)
+}
 func TestGetBPProduce(t *testing.T) {
 	config.ReadConfig("")
 	witnessList, err := db.GetBPProduce([]string{"6sNQa7PV2SFzqCBtQUcQYJGGoU7XaB6R4xuCQVXNZe6b"}, time.Now(), time.Now())
