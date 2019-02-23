@@ -7,12 +7,38 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
-type bpStore struct {
+type BPStore struct {
 	Id    string `bson:"_id" json:"_id"`
 	Count int64  `bson:"count" json:"count"`
 }
+type BPProduce struct {
+	Witness   string `bson:"witness" json:"witness"`
+	StartTime int64  `bson:"startTime" json:"startTime"`
+	EndTime   int64  `bson:"endTime" json:"endTime"`
+	Count     int64  `bson:"count" json:"count"`
+}
 
-func GetBPProduce(pubkeys []string, startTime time.Time, endTime time.Time) ([]bpStore, error) {
+func GetBPProduceByStartTime(startTime int64) ([]BPProduce, error) {
+	BPC := GetCollection(CollectionBP)
+	query := bson.M{
+		"startTime": startTime,
+	}
+	var bpProduces []BPProduce
+	err := BPC.Find(query).All(&bpProduces)
+	return bpProduces, err
+}
+
+func GetLastBPProduce() ([]BPProduce, error) {
+	BPC := GetCollection(CollectionBP)
+	var bpProduce BPProduce
+	err := BPC.Find(nil).Sort("-startTime").One(&bpProduce)
+	if err != nil {
+		return nil, err
+	}
+	return GetBPProduceByStartTime(bpProduce.StartTime)
+}
+
+func GetBPProduce(pubkeys []string, startTime time.Time, endTime time.Time) ([]BPStore, error) {
 	blockC := GetCollection(CollectionBlocks)
 	query := []bson.M{
 		bson.M{
@@ -33,7 +59,7 @@ func GetBPProduce(pubkeys []string, startTime time.Time, endTime time.Time) ([]b
 			},
 		},
 	}
-	var results []bpStore
+	var results []BPStore
 	err := blockC.Pipe(query).All(&results)
 	fmt.Println(results)
 	if err != nil {

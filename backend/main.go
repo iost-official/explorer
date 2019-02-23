@@ -46,6 +46,7 @@ func main() {
 
 	// bp list
 	e.GET("/api/BPList", controller.GetBPList)
+	e.GET("/api/BPLastProducer", controller.GetBPLastProducer)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -8,13 +8,15 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"reflect"
+
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
-	"reflect"
 )
 
 const (
@@ -155,6 +157,24 @@ func init() {
 			}
 		}
 	}()
+}
+
+func GetBPLastProducer(c echo.Context) (err error) {
+	startTimeS := c.QueryParam("startTime")
+	var bp []db.BPProduce
+
+	if startTimeS != "" {
+		startTime, _ := strconv.ParseInt(startTimeS, 10, 64)
+		bp, err = db.GetBPProduceByStartTime(startTime)
+	} else {
+		bp, err = db.GetLastBPProduce()
+	}
+
+	sort.Slice(bp, func(i, j int) bool {
+		return bp[i].Witness < bp[j].Witness
+	})
+
+	return c.JSON(http.StatusOK, FormatResponse(bp))
 }
 
 func GetBPList(c echo.Context) error {
