@@ -1,15 +1,16 @@
 package db
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
 )
 
 type BPStore struct {
-	Id    string `bson:"_id" json:"_id"`
-	Count int64  `bson:"count" json:"count"`
+	Id             string `bson:"_id" json:"_id"`
+	Count          int64  `bson:"count" json:"count"`
+	MaxBlockNumber int    `bson:"maxBlockNumber" json:"maxBlockNumber"`
+	MinBlockNumber int    `bson:"minBlockNumber" json:"minBlockNumber"`
 }
 type BPProduce struct {
 	Witness   string `bson:"witness" json:"witness"`
@@ -54,24 +55,38 @@ func GetBPProduce(pubkeys []string, startTime time.Time, endTime time.Time) ([]B
 		},
 		bson.M{
 			"$group": bson.M{
-				"_id":   "$witness",
-				"count": bson.M{"$sum": 1},
+				"_id":            "$witness",
+				"count":          bson.M{"$sum": 1},
+				"maxBlockNumber": bson.M{"$max": "$number"},
+				"minBlockNumber": bson.M{"$min": "$number"},
 			},
 		},
 	}
 	var results []BPStore
 	err := blockC.Pipe(query).All(&results)
-	fmt.Println(results)
 	if err != nil {
 		return results, err
 	}
 	BPC := GetCollection(CollectionBP)
-	for _, result := range results {
+	for _, pubkey := range pubkeys {
+		count := int64(0)
+		maxBLockNumber := 0
+		minBLockNumber := 0
+		for _, result := range results {
+			if result.Id == pubkey {
+				count = result.Count
+				maxBLockNumber = result.MaxBlockNumber
+				minBLockNumber = result.MinBlockNumber
+			}
+		}
+
 		bp := bson.M{
-			"witness":   result.Id,
-			"startTime": startTime.UnixNano(),
-			"endTime":   endTime.UnixNano(),
-			"count":     result.Count,
+			"witness":        pubkey,
+			"startTime":      startTime.UnixNano(),
+			"endTime":        endTime.UnixNano(),
+			"maxBlockNumber": maxBLockNumber,
+			"minBlockNumber": minBLockNumber,
+			"count":          count,
 		}
 		err = BPC.Insert(bp)
 	}
