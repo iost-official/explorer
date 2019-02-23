@@ -15,6 +15,7 @@ var (
 
 const (
 	CollectionBlocks        = "blocks"
+	CollectionBP        = "blockproducer"
 	CollectionTxs           = "txs"
 	CollectionFlatTx        = "flatxs"
 	CollectionAccount       = "accounts"

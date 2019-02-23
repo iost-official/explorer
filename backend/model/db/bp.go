@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
@@ -20,8 +21,8 @@ func GetBPProduce(pubkeys []string, startTime time.Time, endTime time.Time) ([]b
 					"$in": pubkeys,
 				},
 				"time": bson.M{
-					"$lt": endTime.Nanosecond(),
-					"$gt": startTime.Nanosecond(),
+					"$lt": endTime.UnixNano(),
+					"$gt": startTime.UnixNano(),
 				},
 			},
 		},
@@ -34,6 +35,20 @@ func GetBPProduce(pubkeys []string, startTime time.Time, endTime time.Time) ([]b
 	}
 	var results []bpStore
 	err := blockC.Pipe(query).All(&results)
+	fmt.Println(results)
+	if err != nil {
+		return results, err
+	}
+	BPC := GetCollection(CollectionBP)
+	for _, result := range results {
+		bp := bson.M{
+			"witness":   result.Id,
+			"startTime": startTime.UnixNano(),
+			"endTime":   endTime.UnixNano(),
+			"count":     result.Count,
+		}
+		err = BPC.Insert(bp)
+	}
 
 	return results, err
 }
