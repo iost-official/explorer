@@ -52,6 +52,11 @@
         <p><router-link :to="{path:`/account/${txnDetail.to}`}">{{txnDetail.to}}</router-link></p>
       </div>
 
+      <div class="txnsDetail-to" v-if="txnDetail.memo != ''">
+        <h4>Memo:</h4>
+        <p>{{txnDetail.memo}}</p>
+      </div>
+
 
       <div class="txnsDetail-value-gas">
         <div class="txnsDetail-value">
