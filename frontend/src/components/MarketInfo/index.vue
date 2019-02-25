@@ -13,13 +13,13 @@
 
       <div class="marketInfo-time" v-if="marketInfo.volume24h && marketInfo.marketCap && marketInfo.lastUpdate">
         <div class="time-name">
-          <p>24h Change:</p>
+          <!-- <p>24h Change:</p> -->
           <p>24h Volume:</p>
           <p>Market Cap:</p>
           <p>update:</p>
         </div>
         <div class="time-value">
-          <p :class="[marketInfo.percentChange24h > 0 ? 'up': 'down']">{{ marketInfo.percentChange24h }}%</p>
+          <!-- <p :class="[marketInfo.percentChange24h > 0 ? 'up': 'down']">{{ marketInfo.percentChange24h }}%</p> -->
           <p>$ {{ marketInfo.volume24h }}</p>
           <p>$ {{ marketInfo.marketCap }}</p>
           <p>{{ marketInfo.lastUpdate }}</p>

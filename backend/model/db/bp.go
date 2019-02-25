@@ -13,10 +13,12 @@ type BPStore struct {
 	MinBlockNumber int    `bson:"minBlockNumber" json:"minBlockNumber"`
 }
 type BPProduce struct {
-	Witness   string `bson:"witness" json:"witness"`
-	StartTime int64  `bson:"startTime" json:"startTime"`
-	EndTime   int64  `bson:"endTime" json:"endTime"`
-	Count     int64  `bson:"count" json:"count"`
+	Witness        string `bson:"witness" json:"witness"`
+	StartTime      int64  `bson:"startTime" json:"startTime"`
+	EndTime        int64  `bson:"endTime" json:"endTime"`
+	Count          int64  `bson:"count" json:"count"`
+	MaxBlockNumber int    `bson:"maxBlockNumber" json:"maxBlockNumber"`
+	MinBlockNumber int    `bson:"minBlockNumber" json:"minBlockNumber"`
 }
 
 func GetBPProduceByStartTime(startTime int64) ([]BPProduce, error) {
