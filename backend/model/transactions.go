@@ -9,7 +9,7 @@ import (
 	simplejson "github.com/bitly/go-simplejson"
 	"github.com/gogo/protobuf/proto"
 	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/explorer/backend/model/pb"
+	contract "github.com/iost-official/explorer/backend/model/pb"
 	"github.com/iost-official/explorer/backend/util"
 )
 
@@ -30,6 +30,7 @@ type TxnDetail struct {
 	Contract      string  `json:"contract"`
 	ActionName    string  `json:"actionName"`
 	Data          string  `json:"data"`
+	Memo          string  `json:"memo"`
 }
 
 type TxJson struct {
@@ -119,6 +120,7 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 			txnOut.To = params[2]
 			f, _ := strconv.ParseFloat(params[3], 64)
 			txnOut.Amount = f * 1e8
+			txnOut.Memo = params[4]
 		}
 	} else if tx.Tx.Actions[0].Contract == "exchange.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
 		var params []string
