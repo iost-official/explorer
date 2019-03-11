@@ -17,6 +17,7 @@ import ApplyIOSTSuccess from '../pages/ApplyIOSTSuccess'
 import NotFound404 from '../pages/404'
 import Feedback from '../pages/Feedback'
 import BPList from '../pages/BPList'
+import Bonus from '../pages/Bonus'
 
 Vue.use(Router)
 
@@ -136,6 +137,15 @@ export default new Router({
       components: {
         Head: Head,
         Main: BPList,
+        Foot: Foot
+      }
+    },
+    {
+      path: '/bonusWithdraw',
+      name: 'bonusWithdraw',
+      components: {
+        Head: Head,
+        Main: Bonus,
         Foot: Foot
       }
     },
