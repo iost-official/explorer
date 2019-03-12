@@ -47,6 +47,7 @@
 				const iost = IWalletJS.newIOST(IOST);
 
 				const tx = iost.callABI("vote_producer.iost", "candidateWithdraw", [this.account]);
+				tx.setGas(1, 2000000);
 
 				self = this;
 				var txHash;
