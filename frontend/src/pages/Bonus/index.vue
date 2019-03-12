@@ -7,6 +7,7 @@
       </div>
     </div>
   	<div class="my-container">
+  		<h3>投票奖励：</h3>
 		<table class="table bonus-table">
 	        <tbody>
 	          <tr>
@@ -14,7 +15,7 @@
 	            <td>{{account}}</td>
 	          </tr>
 	          <tr>
-	            <td>分红：</td>
+	            <td>奖励：</td>
 	            <td>{{bonusVal}}</td>
 	          </tr>
 	          <tr>
@@ -28,6 +29,7 @@
 </template>
 
 <script type="text/javascript">
+	const IOST = require('iost');
 	import Swal from 'sweetalert2';
 	import axios from 'axios';
 
@@ -36,28 +38,75 @@
 		data() {
 			return {
 				account: '-',
-				bonusVal: '-',
+				bonusVal: '-'
 			}
 		},
 
 		methods: {
 			withdraw: function() {
+				const iost = IWalletJS.newIOST(IOST);
 
+				const tx = iost.callABI("vote_producer.iost", "candidateWithdraw", [this.account]);
+
+				self = this;
+				var txHash;
+          		iost.signAndSend(tx)
+            		.on('pending', function(txid) {
+              			txHash = txid;
+              			Swal.fire({
+                			title: '正在发送',
+			                html: `txid: <a target=_blank href="https://www.iostabc.com/tx/${txid}">${txid}</a>`,
+			                onBeforeOpen: () => {
+                  				Swal.showLoading() 
+                			},
+                			allowOutsideClick: () => !Swal.isLoading()
+              			})
+              			console.log("txid:", txid)
+            		})
+            		.on('success', function(result) {
+              			Swal.close()
+              			Swal.fire({
+                			type: 'success',
+                			title: '领取成功',
+                			html: `txid: <a target=_blank href="https://www.iostabc.com/tx/${txHash}">${txHash}</a>`,
+              			})
+              			self.bonusVal = 0;
+              			console.log("res:", result, txHash)
+            		})
+            		.on('failed', function(failed) {
+              			Swal.close()
+              			Swal.fire({
+                			type: 'error',
+                			title: '领取失败',
+                			html: `txid: <a target=_blank href="https://www.iostabc.com/tx/${txHash}">${txHash}</a>`
+              			})
+              			console.log(failed)
+            		})
             }
 		},
 
 		mounted() {
+			if (typeof IWalletJS === 'undefined') {
+				Swal.fire({
+					type: 'error',
+					text: '无法加载钱包，请确认Chrome插件已正确安装',
+				})
+			}
 			self = this;
 
 			IWalletJS.enable().then(function (account) {
 				if(!account) {
+					Swal.fire({
+						type: 'error',
+						text: '无法加载钱包，请确认私钥已正确导入'
+					})
 					return;
 				}
 				self.account = account;
 
 				axios.get(`http://api.iost.io/getCandidateBonus/${account}/1`)
 		        	.then((response) => {
-		        		self.bonus = response.data.bonus;
+		        		self.bonusVal = response.data.bonus / 2;
 		          })
 		    })
 		}
@@ -89,7 +138,7 @@
 			margin: 24px auto 0;
 			text-align: left;
 			background: #FFFFFF;
-			padding: 56px 120px 86px 80px;
+			padding: 26px 120px 86px 80px;
 			position: relative;
 			box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 			.err-msg {
