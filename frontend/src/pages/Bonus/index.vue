@@ -72,6 +72,7 @@
 			},
 
 			withdrawVote: function() {
+				if (this.bonusVal <= 0) return;
 				const tx = this.iost.callABI("vote_producer.iost", "candidateWithdraw", [this.account]);
 				tx.setGas(1, 2000000);
 
@@ -112,6 +113,7 @@
             },
 
             withdrawBp: function() {
+            	if (this.bpVal <= 0) return;
             	const tx = this.iost.callABI("bonus.iost", "exchangeIOST", [this.account, '0']);
 				tx.setGas(1, 2000000);
 
