@@ -163,7 +163,6 @@
 
 		async mounted() {
 			await this.delay(600);
-			console.log("fuck it");
 			if (typeof IWalletJS === 'undefined') {
 				Swal.fire({
 					type: 'error',
