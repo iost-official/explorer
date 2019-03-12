@@ -111,7 +111,7 @@
 				}
 				self.account = account;
 
-				axios.get(`http://api.iost.io/getCandidateBonus/${account}/1`)
+				axios.get(`https://api.iost.io/getCandidateBonus/${account}/1`)
 		        	.then((response) => {
 		        		self.bonusVal = response.data.bonus / 2;
 		          })
