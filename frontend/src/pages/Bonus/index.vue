@@ -29,7 +29,7 @@
 </template>
 
 <script type="text/javascript">
-	const IOST = require('iost');
+	// const IOST = require('iost');
 	import Swal from 'sweetalert2';
 	import axios from 'axios';
 
@@ -83,6 +83,13 @@
               			console.log(failed)
             		})
             }
+		},
+
+		created() {
+			const s = document.createElement('script');
+			s.type = 'text/javascript';
+			s.src = 'https://cdn.jsdelivr.net/npm/iost@0.1.2/iost.min.js';
+			document.body.appendChild(s)
 		},
 
 		mounted() {
