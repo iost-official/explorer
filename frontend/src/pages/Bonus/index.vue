@@ -188,7 +188,7 @@
 		        		self.bonusVal = response.data.bonus / 2;
 		          })
 
-		       	axios.get(`http://api.iost.io/getTokenBalance/${account}/contribute/1`)
+		       	axios.get(`https://api.iost.io/getTokenBalance/${account}/contribute/1`)
 		       		.then((response) => {
 		       			self.bpVal = response.data.balance;
 		       		})
