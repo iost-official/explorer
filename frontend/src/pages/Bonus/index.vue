@@ -11,7 +11,7 @@
 		<table class="table bonus-table">
 	        <tbody>
 	          <tr>
-	            <td>节点名：</td>
+	            <td style="width: 300px;">节点名：</td>
 	            <td>{{account}}</td>
 	          </tr>
 	          <tr>
@@ -20,7 +20,25 @@
 	          </tr>
 	          <tr>
 	            <td></td>
-	            <td><a href="javascript:void(0)" class="btn btn-success" @click="withdraw">领取</a></td>
+	            <td><a href="javascript:void(0)" class="btn btn-success" @click="withdrawVote">领取</a></td>
+	          </tr>
+	        </tbody>
+	      </table>
+
+	    <h3>造块奖励：</h3>
+		<table class="table bonus-table">
+	        <tbody>
+	          <tr>
+	            <td style="width: 300px;">节点名：</td>
+	            <td>{{account}}</td>
+	          </tr>
+	          <tr>
+	            <td>奖励：</td>
+	            <td>{{bpVal}}</td>
+	          </tr>
+	          <tr>
+	            <td></td>
+	            <td><a href="javascript:void(0)" class="btn btn-success" @click="withdrawBp">领取</a></td>
 	          </tr>
 	        </tbody>
 	      </table>
@@ -29,7 +47,6 @@
 </template>
 
 <script type="text/javascript">
-	// const IOST = require('iost');
 	import Swal from 'sweetalert2';
 	import axios from 'axios';
 
@@ -38,20 +55,69 @@
 		data() {
 			return {
 				account: '-',
-				bonusVal: '-'
+				bonusVal: '-',
+				bpVal: '-',
+				iost: null
 			}
 		},
 
 		methods: {
-			withdraw: function() {
-				const iost = IWalletJS.newIOST(IOST);
+			delay(n) {
+				n = n || 500;
+				return new Promise(done => {
+					setTimeout(() => {
+						done();
+					}, n);
+				});
+			},
 
-				const tx = iost.callABI("vote_producer.iost", "candidateWithdraw", [this.account]);
+			withdrawVote: function() {
+				const tx = this.iost.callABI("vote_producer.iost", "candidateWithdraw", [this.account]);
 				tx.setGas(1, 2000000);
 
 				self = this;
 				var txHash;
-          		iost.signAndSend(tx)
+          		this.iost.signAndSend(tx)
+            		.on('pending', function(txid) {
+              			txHash = txid;
+              			Swal.fire({
+                			title: '正在发送',
+			                html: `txid: <a target=_blank href="https://www.iostabc.com/tx/${txid}">${txid}</a>`,
+			                onBeforeOpen: () => {
+                  				Swal.showLoading() 
+                			},
+                			allowOutsideClick: () => !Swal.isLoading()
+              			})
+              			console.log("txid:", txid)
+            		})
+            		.on('success', function(result) {
+              			Swal.close()
+              			Swal.fire({
+                			type: 'success',
+                			title: '领取成功',
+                			html: `txid: <a target=_blank href="https://www.iostabc.com/tx/${txHash}">${txHash}</a>`,
+              			})
+              			self.bonusVal = 0;
+              			console.log("res:", result, txHash)
+            		})
+            		.on('failed', function(failed) {
+              			Swal.close()
+              			Swal.fire({
+                			type: 'error',
+                			title: '领取失败',
+                			html: `txid: <a target=_blank href="https://www.iostabc.com/tx/${txHash}">${txHash}</a>`
+              			})
+              			console.log(failed)
+            		})
+            },
+
+            withdrawBp: function() {
+            	const tx = this.iost.callABI("bonus.iost", "exchangeIOST", [this.account, '0']);
+				tx.setGas(1, 2000000);
+
+				self = this;
+				var txHash;
+          		this.iost.signAndSend(tx)
             		.on('pending', function(txid) {
               			txHash = txid;
               			Swal.fire({
@@ -93,7 +159,9 @@
 			document.body.appendChild(s)
 		},
 
-		mounted() {
+		async mounted() {
+			await this.delay(600);
+			console.log("fuck it");
 			if (typeof IWalletJS === 'undefined') {
 				Swal.fire({
 					type: 'error',
@@ -103,6 +171,7 @@
 			self = this;
 
 			IWalletJS.enable().then(function (account) {
+				console.log(account)
 				if(!account) {
 					Swal.fire({
 						type: 'error',
@@ -116,6 +185,13 @@
 		        	.then((response) => {
 		        		self.bonusVal = response.data.bonus / 2;
 		          })
+
+		       	axios.get(`http://api.iost.io/getTokenBalance/${account}/contribute/1`)
+		       		.then((response) => {
+		       			self.bpVal = response.data.balance;
+		       		})
+
+		       	self.iost = IWalletJS.newIOST(IOST);
 		    })
 		}
 	}
