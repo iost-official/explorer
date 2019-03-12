@@ -7,38 +7,44 @@
       </div>
     </div>
   	<div class="my-container">
-  		<h3>投票奖励：</h3>
+  		<div class="bonus-info">
+	  		<p>投票奖励 - 系统每隔24小时会发放一次投票奖励，节点（BP和合伙人）触发领取奖励后，投票者才能领取到奖励,奖励需要手动触发领取</p>
+			<p>Voting reward - The system will issue a voting reward every 24 hours. After the node（BP、partner） claim the reward, the voter can claim the reward. The reward needs to be manually claimed.</p>
+			<p style="margin-top: 20px">造块奖励 - 造块节点每造一个块大概可以获得3.3个Token奖励，每隔24小时可以领取一次，奖励需要手动触发领取</p>
+			<p>Block reward - The BP can get 3.3 Token rewards for each block, and can be claimed once every 24 hours. The reward needs to be manually claimed.</p>
+		</div>
+  		<h3>Voting reward</h3>
 		<table class="table bonus-table">
 	        <tbody>
 	          <tr>
-	            <td style="width: 300px;">节点名：</td>
+	            <td style="width: 300px;">node name:</td>
 	            <td>{{account}}</td>
 	          </tr>
 	          <tr>
-	            <td>奖励：</td>
+	            <td>reward:</td>
 	            <td>{{bonusVal}}</td>
 	          </tr>
 	          <tr>
 	            <td></td>
-	            <td><a href="javascript:void(0)" class="btn btn-success" @click="withdrawVote">领取</a></td>
+	            <td><a href="javascript:void(0)" class="btn btn-success" @click="withdrawVote">claim</a></td>
 	          </tr>
 	        </tbody>
 	      </table>
 
-	    <h3>造块奖励：</h3>
+	    <h3>Block reward</h3>
 		<table class="table bonus-table">
 	        <tbody>
 	          <tr>
-	            <td style="width: 300px;">节点名：</td>
+	            <td style="width: 300px;">node name:</td>
 	            <td>{{account}}</td>
 	          </tr>
 	          <tr>
-	            <td>奖励：</td>
+	            <td>reward:</td>
 	            <td>{{bpVal}}</td>
 	          </tr>
 	          <tr>
 	            <td></td>
-	            <td><a href="javascript:void(0)" class="btn btn-success" @click="withdrawBp">领取</a></td>
+	            <td><a href="javascript:void(0)" class="btn btn-success" @click="withdrawBp">claim</a></td>
 	          </tr>
 	        </tbody>
 	      </table>
@@ -252,6 +258,20 @@
 				&.active {
 					background-color: rgba(44,46,49,1);
 				}
+			}
+		}
+
+		.bonus-info {
+			background: #f2dede;
+			padding: 15px 20px;
+			border: 1px solid #ebccd1;
+			font-weight: 600;
+			margin-bottom: 40px;
+
+			p {
+				font-size: 14px;
+				line-height: 22px;
+				color: #a94442;
 			}
 		}
 	}
