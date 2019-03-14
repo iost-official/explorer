@@ -40,6 +40,13 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
+func FormatResponseFailed(data interface{}) Response {
+	return Response{
+		Code: 1,
+		Data: data,
+	}
+}
+
 func FormatResponse(data interface{}) Response {
 	return Response{
 		Code: 0,

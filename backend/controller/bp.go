@@ -4,15 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"os/exec"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/iost-official/explorer/backend/model/blockchain"
 
 	"github.com/iost-official/explorer/backend/model/db"
 	"github.com/labstack/echo"
@@ -161,6 +166,28 @@ func SyncBP() {
 			}
 		}
 	}()
+}
+
+func RegistBP(c echo.Context) (err error) {
+	accountName := c.QueryParam("accountName")
+	bpURL := c.QueryParam("bpURL")
+	region := c.QueryParam("region")
+	usingAccount := "wtf123"
+	targetIP := blockchain.RPCAddress
+
+	cmd := exec.Command("bash", "-c", "iwallet -s "+targetIP+" sys producer-register "+accountName+" --target "+accountName+" --url "+bpURL+" --location "+region+" --partner --account "+usingAccount)
+	fmt.Println(cmd.Args)
+
+	var b bytes.Buffer
+	b.Write(blockchain.PasswordKey)
+	cmd.Stdin = &b
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err!=nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed(err))
+	}
+	return c.JSON(http.StatusOK, FormatResponse(err))
 }
 
 func GetBPLastProducer(c echo.Context) (err error) {

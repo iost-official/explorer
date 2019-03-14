@@ -50,5 +50,8 @@ func main() {
 	e.GET("/api/BPList", controller.GetBPList)
 	e.GET("/api/BPLastProducer", controller.GetBPLastProducer)
 
+	// register BP
+	e.GET("/api/BPRegister", controller.RegistBP)
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
