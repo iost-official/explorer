@@ -1,6 +1,5 @@
 <template>
   <div class="txnsDetail-box">
-    <LuckyBet/>
 
     <div class="txnsDetail-header">
       <div class="my-header-container">
@@ -27,7 +26,10 @@
       </div>
       <div class="txnsDetail-from">
         <h4>From:</h4>
-        <p><router-link :to="{path:`/account/${txnDetail.from}`}">{{txnDetail.from}}</router-link></p>
+        <p>
+          <router-link v-if="txnDetail.from !='_Block_Base'" :to="{path:`/account/${txnDetail.from}`}">{{txnDetail.from}}</router-link>
+          <a v-else href="javascript:void(0)">{{txnDetail.from}}</a>
+        </p>
       </div>
 
 
@@ -48,6 +50,11 @@
       <div class="txnsDetail-to" v-else>
         <h4>To:</h4>
         <p><router-link :to="{path:`/account/${txnDetail.to}`}">{{txnDetail.to}}</router-link></p>
+      </div>
+
+      <div class="txnsDetail-to" v-if="txnDetail.memo != ''">
+        <h4>Memo:</h4>
+        <p>{{txnDetail.memo}}</p>
       </div>
 
 
@@ -75,7 +82,6 @@
 </template>
 
 <script>
-  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
 
   export default {
@@ -104,10 +110,6 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
-    },
-
-    components: {
-      LuckyBet
     }
   }
 </script>

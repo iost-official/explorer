@@ -1,6 +1,5 @@
 <template>
   <div class="success-box">
-		<LuckyBet/>
 
   	<div class="success-header">
 			<div class="my-header-container">
@@ -10,7 +9,7 @@
 
 		<div class="success-container1" v-if="privKey != ''">
 			<p class="success-title">Save your Account Info</p>
-			<p class="success-address"><span>Address:</span> {{address}}</p>
+			<p class="success-address"><span>Account Name:</span> {{accountName}}</p>
 			<p class="success-private"><span>Private Key:</span> {{privKey}}</p>
 			<p class="success-tips">**Do not lose it!** It cannot be recovered if you lose it.</p>
 			<p class="success-tips">**Do not share it!** Your funds will be stolen if you use this private key on a malicious/phishing site.</p>
@@ -22,20 +21,12 @@
 				<p><router-link :to="{path:`/tx/${txHash}`}" target="_blank">{{txHash}}</router-link></p>
 			</div>
 			<div class="container2-address">
-				<h4>Address:</h4>
-				<p>{{address}}</p>
-			</div>
-			<div class="container2-amount">
-				<h4>Amount:</h4>
-				<p>10.1 IOST</p>
+				<h4>Account Name:</h4>
+				<p>{{accountName}}</p>
 			</div>
 			<div class="container2-email">
 				<h4>Email:</h4>
 				<p>{{email}}</p>
-			</div>
-			<div class="container2-mobile">
-				<h4>Mobile:</h4>
-				<p>{{mobile}}</p>
 			</div>
 
     </div>
@@ -43,15 +34,13 @@
 </template>
 
 <script>
-  import LuckyBet from '../../components/LuckyBet'
-
   export default {
 		name: 'ApplyIOSTSuccess',
 		data() {
 			return {
 				address: this.$route.params.address,
+				accountName: this.$route.params.accountName,
 				email: this.$route.params.email,
-				mobile: this.$route.params.mobile.replace(' ', '+'),
 				txHash: this.$route.params.txHash,
 				privKey: this.$route.params.privKey,
 			}
@@ -62,13 +51,7 @@
 			// 		path: '/applyIOST',
 			// 	})
 			// }
-		},
-
-    components: {
-      LuckyBet
-
-
-    }
+		}
   }
 </script>
 

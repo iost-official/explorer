@@ -1,44 +1,106 @@
 package db
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
+	"strings"
+	"sync"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
+	"github.com/iost-official/explorer/backend/model/blockchain"
+	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
 )
 
+type AccountTx struct {
+	Name          string `bson:"name"`
+	Time          int64  `bson:"time"`
+	TxHash        string `bson:"txHash"`
+	TransferToken string `bson:"token"`
+}
+
+type AccountPubkey struct {
+	Name   string `bson:"name"`
+	Pubkey string `bson:"pubkey"`
+}
+
 type Account struct {
-	Address string  `json:"address"`
-	Balance float64 `json:"balance"`
-	Percent float64 `json:"percent"`
-	TxCount int     `json:"tx_count"`
+	Name        string         `bson:"name" json:"name"`
+	CreateTime  int64          `bson:"createTime" json:"create_time"`
+	Creator     string         `bson:"creator" json:"creator"`
+	AccountInfo *rpcpb.Account `bson:"accountInfo" json:"account_info"`
+	// AccountPb   []byte         `bson:"accountPb"`
 }
 
-type ApplyTestIOST struct {
-	Address   string  `json:"address"`
-	Amount    float64 `json:"amount"`
-	Email     string  `json:"email"`
-	Mobile    string  `json:"mobile"`
-	ApplyTime int64   `json:"apply_time"`
+type PledgeInfo struct {
+	MyPledge    map[string]float64 `json:"my_pledge"`
+	PledgeForMe map[string]float64 `json:"pledge_for_me"`
 }
 
-type AddressNonce struct {
-	Address string `json:"address"`
-	Nonce   int64  `json:"nonce"`
+func NewAccount(name string, time int64, creator string) *Account {
+	return &Account{
+		Name:       name,
+		CreateTime: time,
+		Creator:    creator,
+	}
+}
+
+func GetAccountTxByName(name string, start, limit int) ([]*AccountTx, error) {
+	accountTxC := GetCollection(CollectionAccountTx)
+	query := bson.M{
+		"name": name,
+	}
+
+	var accountTxList []*AccountTx
+	err := accountTxC.Find(query).Sort("-time").Skip(start).Limit(limit).All(&accountTxList)
+	if err != nil {
+		return nil, err
+	}
+	return accountTxList, nil
+}
+
+func GetAccountTxNumber(name string) (int, error) {
+	accountTxC := GetCollection(CollectionAccountTx)
+
+	query := bson.M{
+		"name": name,
+	}
+	return accountTxC.Find(query).Count()
+}
+
+func GetAccountPubkeyByName(name string) ([]*AccountPubkey, error) {
+	accountPubC := GetCollection(CollectionAccountPubkey)
+	query := bson.M{
+		"name": name,
+	}
+	var accountPubkeyList []*AccountPubkey
+	err := accountPubC.Find(query).All(&accountPubkeyList)
+	if err != nil {
+		return nil, err
+	}
+	return accountPubkeyList, nil
+}
+
+func GetAccountPubkeyByPubkey(pubkey string) ([]*AccountPubkey, error) {
+	accountPubC := GetCollection(CollectionAccountPubkey)
+	query := bson.M{
+		"pubkey": pubkey,
+	}
+	var accountPubkeyList []*AccountPubkey
+	err := accountPubC.Find(query).All(&accountPubkeyList)
+	if err != nil {
+		return nil, err
+	}
+	return accountPubkeyList, nil
 }
 
 func GetAccounts(start, limit int) ([]*Account, error) {
-	accountC, err := GetCollection("accounts")
-	if err != nil {
-		log.Println("GetAccounts get collection error:", err)
-		return nil, err
-	}
-
-	query := bson.M{
-		"balance": bson.M{"$ne": 0},
-	}
+	accountC := GetCollection(CollectionAccount)
+	query := bson.M{}
 	var accountList []*Account
-	err = accountC.Find(query).Sort("-balance").Skip(start).Limit(limit).All(&accountList)
+	err := accountC.Find(query).Sort("-accountInfo.balance").Skip(start).Limit(limit).All(&accountList)
 	if err != nil {
 		return nil, err
 	}
@@ -46,18 +108,52 @@ func GetAccounts(start, limit int) ([]*Account, error) {
 	return accountList, nil
 }
 
-func GetAccountByAddress(address string) (*Account, error) {
-	accountC, err := GetCollection("accounts")
+func GetAccountPledge(name string) (*PledgeInfo, error) {
+	result := &PledgeInfo{
+		MyPledge:    make(map[string]float64),
+		PledgeForMe: make(map[string]float64),
+	}
+	accountC := GetCollection(CollectionAccount)
+	query := bson.M{
+		"name": name,
+	}
+	var accountList []*Account
+	err := accountC.Find(query).All(&accountList)
 	if err != nil {
-		log.Println("GetAccountByAddress get collection error:", err)
 		return nil, err
 	}
+	if len(accountList) == 0 {
+		return nil, fmt.Errorf("account name %v not exist", name)
+	}
+	for _, item := range accountList[0].AccountInfo.GasInfo.PledgedInfo {
+		result.MyPledge[item.Pledger] = item.Amount
+	}
+	query2 := bson.M{
+		"accountInfo.gasinfo.pledgedinfo.pledger": name,
+	}
+	accountList = make([]*Account, 0)
+	err = accountC.Find(query2).All(&accountList)
+	if err != nil {
+		return nil, err
+	}
+	for _, acc := range accountList {
+		for _, item := range acc.AccountInfo.GasInfo.PledgedInfo {
+			if item.Pledger == name {
+				result.PledgeForMe[acc.Name] = item.Amount
+			}
+		}
+	}
+	return result, nil
+}
+
+func GetAccountByName(name string) (*Account, error) {
+	accountC := GetCollection(CollectionAccount)
 
 	query := bson.M{
-		"address": address,
+		"name": name,
 	}
 	var account *Account
-	err = accountC.Find(query).One(&account)
+	err := accountC.Find(query).One(&account)
 
 	if err != nil {
 		return nil, err
@@ -66,27 +162,35 @@ func GetAccountByAddress(address string) (*Account, error) {
 	return account, nil
 }
 
-func GetAccountsTotalLen() (int, error) {
-	accountC, err := GetCollection("accounts")
-	if err != nil {
-		log.Println("GetAccounts get collection error:", err)
-		return 0, err
-	}
-
+func GetAccountsByNames(names []string) ([]*Account, error) {
+	accountC := GetCollection(CollectionAccount)
 	query := bson.M{
-		"balance": bson.M{"$ne": 0},
+		"name": bson.M{
+			"$in": names,
+		},
 	}
-	totalLen, err := accountC.Find(query).Count()
 
-	return totalLen, err
+	var accounts []*Account
+	err := accountC.Find(query).All(&accounts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
+}
+
+func GetAccountsTotalLen() (int, error) {
+	accountC := GetCollection(CollectionAccount)
+	//query := bson.M{
+	//	"balance": bson.M{"$ne": 0},
+	//}
+	query := bson.M{}
+	return accountC.Find(query).Count()
 }
 
 func GetAccountLastPage(eachPage int64) (int64, error) {
-	accountC, err := GetCollection("accounts")
-	if err != nil {
-		log.Println("GetAccounts get collection error:", err)
-		return 0, err
-	}
+	accountC := GetCollection(CollectionAccount)
 
 	query := bson.M{
 		"balance": bson.M{"$ne": 0},
@@ -108,86 +212,253 @@ func GetAccountLastPage(eachPage int64) (int64, error) {
 	return pageLast, nil
 }
 
-func GetAccountTxnLastPage(address string, eachPage int64) (int64, error) {
-	txnLen, err := GetTxnDetailLenByAccount(address)
-	if err != nil {
-		return 0, err
-	}
-	txnLenInt64 := int64(txnLen)
-
-	var pageLast int64
-	if txnLenInt64%eachPage == 0 {
-		pageLast = txnLenInt64 / eachPage
-	} else {
-		pageLast = txnLenInt64/eachPage + 1
-	}
-
-	if pageLast == 0 {
-		pageLast = 1
-	}
-
-	return pageLast, nil
+func isContract(name string) bool {
+	return strings.HasPrefix(name, "Contract") || strings.Index(name, ".") > -1
 }
 
-func SaveApplyTestIOST(at *ApplyTestIOST) error {
-	applyC, err := GetCollection("applyTestIOST")
-	if err != nil {
-		log.Println("SaveApplyTestIost get collection error:", err)
-		return err
+func getAccountsByRPC(accounts map[string]struct{}) []*rpcpb.Account {
+	if len(accounts) == 0 {
+		return nil
+	}
+	accCh := make(chan *rpcpb.Account, len(accounts))
+	for name := range accounts {
+		go func(name string) {
+			accountInfo, err := blockchain.GetAccount(name, false)
+			if err != nil {
+				accCh <- nil
+			} else {
+				accCh <- accountInfo
+			}
+		}(name)
 	}
 
-	return applyC.Insert(at)
+	var i int
+	var ret []*rpcpb.Account
+	for accountInfo := range accCh {
+		i++
+		if accountInfo != nil {
+			ret = append(ret, accountInfo)
+		}
+		if i == len(accounts) {
+			break
+		}
+	}
+	return ret
 }
 
-func GetApplyNumTodayByMobile(mobile string) (int, error) {
-	applyC, err := GetCollection("applyTestIOST")
-	if err != nil {
-		log.Println("SaveApplyTestIost get collection error:", err)
-		return 0, err
+func getContractsByRPC(contracts map[string]struct{}) []*rpcpb.Contract {
+	if len(contracts) == 0 {
+		return nil
+	}
+	contCh := make(chan *rpcpb.Contract, len(contracts))
+	for id := range contracts {
+		go func(id string) {
+			contractInfo, err := blockchain.GetContract(id, false)
+			if err != nil {
+				contCh <- nil
+			} else {
+				contCh <- contractInfo
+			}
+		}(id)
 	}
 
-	t := time.Now()
-	dayBegin := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()).Unix()
-	dayEnd := dayBegin + 24*3600
-
-	query := bson.M{
-		"mobile": mobile,
-		"applytime": bson.M{
-			"$gte": dayBegin,
-			"$lt":  dayEnd,
-		},
+	var i int
+	var ret []*rpcpb.Contract
+	for contractInfo := range contCh {
+		i++
+		if contractInfo != nil {
+			ret = append(ret, contractInfo)
+		}
+		if i == len(contracts) {
+			break
+		}
 	}
-	return applyC.Find(query).Count()
+	return ret
 }
 
-func IncAddressNonce(address string) error {
-	anc, err := GetCollection("addressNonce")
-	if err != nil {
-		log.Println("IncAddressNonce get collection error:", err)
-		return err
+func retryWriteMgo(b *mgo.Bulk, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	var retryTime int
+	for {
+		if _, err := b.Run(); err != nil {
+			log.Println("fail to write data to mongo ", err)
+			time.Sleep(time.Second)
+			retryTime++
+			if retryTime > 10 {
+				log.Fatalln("fail to write data to mongo, retry time exceeds")
+			}
+			continue
+		}
+		return
 	}
-
-	query := bson.M{"address": address}
-	inc := bson.M{"$inc": bson.M{"nonce": 1}}
-
-	_, err = anc.Upsert(query, inc)
-	return err
 }
 
-func GetAddressNonce(address string) (int64, error) {
-	anc, err := GetCollection("addressNonce")
-	if err != nil {
-		log.Println("GetAddressNonce get collection error:", err)
-		return 0, err
+func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
+
+	accTxC := GetCollection(CollectionAccountTx)
+	accTxB := accTxC.Bulk()
+
+	accountPubC := GetCollection(CollectionAccountPubkey)
+	accountPubB := accountPubC.Bulk()
+
+	accountC := GetCollection(CollectionAccount)
+	accountB := accountC.Bulk()
+
+	contractC := GetCollection(CollectionContract)
+	contractB := contractC.Bulk()
+
+	contractTxC := GetCollection(CollectionContractTx)
+	contractTxB := contractTxC.Bulk()
+
+	updatedAccounts := make(map[string]struct{})
+	updatedContracts := make(map[string]struct{})
+
+	accountToTx := make(map[string]bool)
+
+	for _, t := range txs {
+
+		for _, r := range t.TxReceipt.Receipts {
+
+			// transfer
+			if r.FuncName == "token.iost/transfer" {
+				var params []string
+				err := json.Unmarshal([]byte(r.Content), &params)
+				if err == nil && len(params) == 5 {
+					if !accountToTx[params[1]+t.Hash] {
+						accTxB.Insert(&AccountTx{params[1], blockTime, t.Hash, params[0]})
+						accountToTx[params[1]+t.Hash] = true
+					}
+					if !accountToTx[params[2]+t.Hash] {
+						accTxB.Insert(&AccountTx{params[2], blockTime, t.Hash, params[0]})
+						accountToTx[params[2]+t.Hash] = true
+					}
+
+					if !isContract(params[1]) {
+						updatedAccounts[params[1]] = struct{}{}
+					}
+					if !isContract(params[2]) {
+						updatedAccounts[params[2]] = struct{}{}
+					}
+				}
+			}
+			// create user
+			if r.FuncName == "auth.iost/signUp" {
+				var params []string
+				err := json.Unmarshal([]byte(r.Content), &params)
+				if err == nil && len(params) == 3 {
+					account := NewAccount(params[0], blockTime, t.Publisher)
+					accountB.Insert(account)
+
+					accountPubB.Insert(&AccountPubkey{params[0], params[1]})
+					if params[1] != params[2] {
+						accountPubB.Insert(&AccountPubkey{params[0], params[2]})
+					}
+
+					if !accountToTx[params[0]+t.Hash] {
+						accTxB.Insert(&AccountTx{params[0], blockTime, t.Hash, ""})
+						accountToTx[params[0]+t.Hash] = true
+					}
+
+					//accountB.Upsert(bson.M{"name": params[0]}, bson.M{"$set": bson.M{"createTime": blockTime, "creator": t.Publisher}})
+
+					//gatherAccountTxs(accountTxs, params[0], t.Hash, blockTime, nil)
+					//updatePubkey[params[0]] = true
+				}
+			}
+		}
+
+		for _, a := range t.Actions {
+
+			/*// create account
+			if a.Contract == "auth.iost" && a.ActionName == "signUp" &&
+				t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
+				var params []string
+				err := json.Unmarshal([]byte(a.Data), &params)
+				if err == nil && len(params) == 3 {
+					account := NewAccount(params[0], blockTime, t.Publisher)
+					accountB.Insert(account)
+
+					accountPubB.Insert(&AccountPubkey{params[0], params[1]})
+					if params[1] != params[2] {
+						accountPubB.Insert(&AccountPubkey{params[0], params[2]})
+					}
+
+					if !accountToTx[params[0]+t.Hash] {
+						accTxB.Insert(&AccountTx{params[0], blockTime, t.Hash, ""})
+						accountToTx[params[0]+t.Hash] = true
+					}
+				}
+			}*/
+
+			if a.Contract == "system.iost" && a.ActionName == "initSetCode" &&
+				t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
+				var params []string
+				err := json.Unmarshal([]byte(a.Data), &params)
+				if err == nil && len(params) == 2 {
+					contractB.Insert(NewContract(params[0], blockTime, t.Publisher))
+					contractTxB.Insert(&ContractTx{params[0], blockTime, t.Hash})
+
+					updatedContracts[params[0]] = struct{}{}
+				}
+			}
+
+			if a.Contract == "system.iost" && a.ActionName == "setCode" &&
+				t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
+
+				contractID := "Contract" + t.Hash
+				contractB.Insert(NewContract(contractID, blockTime, t.Publisher))
+				contractTxB.Insert(&ContractTx{contractID, blockTime, t.Hash})
+
+				updatedContracts[contractID] = struct{}{}
+			}
+
+			if a.Contract == "gas.iost" && (a.ActionName == "pledge" || a.ActionName == "unpledge") &&
+				t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
+				var params []string
+				err := json.Unmarshal([]byte(a.Data), &params)
+				if err == nil && len(params) == 3 {
+					if !isContract(params[0]) {
+						updatedAccounts[params[0]] = struct{}{}
+					}
+				}
+			}
+
+			contractTxB.Insert(&ContractTx{a.Contract, blockTime, t.Hash})
+
+		}
+
+		if t.Publisher != "base.iost" && !accountToTx[t.Publisher+t.Hash] {
+			accTxB.Insert(&AccountTx{t.Publisher, blockTime, t.Hash, ""})
+			accountToTx[t.Publisher+t.Hash] = true
+		}
+
 	}
 
-	query := bson.M{"address": address}
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
+	go func() {
+		accountInfos := getAccountsByRPC(updatedAccounts)
+		for _, acc := range accountInfos {
+			accountB.Update(bson.M{"name": acc.Name}, bson.M{"$set": bson.M{"accountInfo": acc}})
+		}
+		wg.Done()
+	}()
 
-	var addressNonce *AddressNonce
-	err = anc.Find(query).One(&addressNonce)
-	if err != nil {
-		return 0, err
-	}
+	go func() {
+		contractInfos := getContractsByRPC(updatedContracts)
+		for _, cont := range contractInfos {
+			contractB.Update(bson.M{"id": cont.Id}, bson.M{"$set": bson.M{"contractInfo": cont}})
+		}
+		wg.Done()
+	}()
+	wg.Wait()
 
-	return addressNonce.Nonce, nil
+	wg.Add(5)
+	go retryWriteMgo(accTxB, wg)
+	go retryWriteMgo(accountPubB, wg)
+	go retryWriteMgo(accountB, wg)
+	go retryWriteMgo(contractB, wg)
+	go retryWriteMgo(contractTxB, wg)
+	wg.Wait()
 }

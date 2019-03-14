@@ -1,26 +1,25 @@
 package model
 
 import (
-	"encoding/hex"
+	"log"
 
-	"explorer/model/db"
-
-	"github.com/iost-official/prototype/rpc"
+	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/util"
 )
 
 type BlockOutput struct {
-	Height        int64                 `json:"height"`
-	ParentHash    string                `json:"parent_hash"`
-	BlockHash     string                `json:"block_hash"`
-	Signature     string                `json:"signature"`
-	Witness       string                `json:"witness"`
-	Age           string                `json:"age"`
-	UTCTime       string                `json:"utc_time"`
-	Timestamp     int64                 `json:"timestamp"`
-	Txn           int64                 `json:"txn"`
-	TxList        []*rpc.TransactionKey `json:"tx_list"`
-	TotalGasLimit int64                 `json:"total_gas_limit"`
-	AvgGasPrice   float64               `json:"avg_gas_price"`
+	Height        int64    `json:"height"`
+	ParentHash    string   `json:"parentHash"`
+	BlockHash     string   `json:"blockHash"`
+	Witness       string   `json:"witness"`
+	Age           string   `json:"age"`
+	UTCTime       string   `json:"utcTime"`
+	Timestamp     int64    `json:"timestamp"`
+	TxList        []string `json:"txList"`
+	Txn           int64    `json:"txn"`
+	TotalGasLimit int64    `json:"totalGasLimit"`
+	AvgGasPrice   float64  `json:"avgGasPrice"`
 }
 
 func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
@@ -30,40 +29,49 @@ func GetBlock(page, eachPageNum int64) ([]*BlockOutput, error) {
 	if err != nil {
 		return nil, err
 	}
+	/*
+		var blkHeightList []int64
 
-	var blkHeightList []int64
-
-	for _, v := range blkInfoList {
-		blkHeightList = append(blkHeightList, v.Head.Number)
-	}
-
-	payMap, _ := db.GetBlockPayListByHeight(blkHeightList)
-
-	var blockOutputList []*BlockOutput
-	for _, v := range blkInfoList {
-		output := GenerateBlockOutput(v)
-		if pay, ok := payMap[v.Head.Number]; ok {
-			output.TotalGasLimit = pay.TotalGasLimit
-			output.AvgGasPrice = pay.AvgGasPrice
+		for _, v := range blkInfoList {
+			blkHeightList = append(blkHeightList, v.Number)
 		}
+
+		payMap, _ := db.GetBlockPayListByHeight(blkHeightList)
+	*/
+	var (
+		blockOutputList []*BlockOutput
+		pos             int64
+	)
+	for k, v := range blkInfoList {
+		if k == 0 {
+			pos = v.Time
+		}
+		output := GenerateBlockOutput(v, pos)
+		/*      if pay, ok := payMap[v.BlockNumber]; ok { */
+		// output.TotalGasLimit = pay.TotalGasLimit
+		// output.AvgGasPrice = pay.AvgGasPrice
+		/* } */
+
 		blockOutputList = append(blockOutputList, output)
 	}
 
 	return blockOutputList, nil
 }
 
-func GenerateBlockOutput(bInfo *rpc.BlockInfo) *BlockOutput {
-	timestamp := ConvertSlotTimeToTimeStamp(bInfo.Head.Time)
+func GenerateBlockOutput(bInfo *rpcpb.Block, pos int64) *BlockOutput {
+	//todo when rpc fix this, change it to normal
+	txCount, err := db.GetTxCountByNumber(bInfo.Number)
+	if err != nil {
+		log.Printf("get txcount failed. number:%d, err=%v", bInfo.Number, err)
+	}
 	return &BlockOutput{
-		Height:     bInfo.Head.Number,
-		ParentHash: hex.EncodeToString(bInfo.Head.ParentHash),
-		BlockHash:  hex.EncodeToString(bInfo.Head.BlockHash),
-		Signature:  hex.EncodeToString(bInfo.Head.Signature),
-		Witness:    bInfo.Head.Witness,
-		Age:        modifyBlockIntToTimeStr(timestamp),
-		UTCTime:    formatUTCTime(timestamp),
-		Timestamp:  timestamp,
-		Txn:        bInfo.Txcnt,
-		TxList:     bInfo.TxList,
+		Height:     bInfo.Number,
+		ParentHash: bInfo.ParentHash,
+		BlockHash:  bInfo.Hash,
+		Witness:    bInfo.Witness,
+		Txn:        int64(txCount),
+		Age:        util.ModifyBlockIntToTimeStr(bInfo.Time, pos),
+		UTCTime:    util.FormatUTCTime(bInfo.Time),
+		Timestamp:  bInfo.Time,
 	}
 }

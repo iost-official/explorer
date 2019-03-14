@@ -3,8 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"explorer/model"
-
+	"github.com/iost-official/explorer/backend/model"
 	"github.com/labstack/echo"
 )
 
@@ -14,6 +13,5 @@ func GetMarket(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, marketInfo)
+	return c.JSON(http.StatusOK, FormatResponse(marketInfo))
 }

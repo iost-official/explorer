@@ -1,6 +1,5 @@
 <template>
   <div class="blocks-box">
-    <LuckyBet/>
 
     <div class="blocks-header">
       <div class="my-header-container">
@@ -68,7 +67,6 @@
 </template>
 
 <script>
-  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
 
   export default {
@@ -101,10 +99,6 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
-    },
-
-    components: {
-      LuckyBet
     }
   }
 </script>

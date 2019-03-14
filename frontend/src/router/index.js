@@ -14,9 +14,10 @@ import AccountDetail from '../pages/AccountDetail'
 import Search from '../pages/Search'
 import ApplyIOST from '../pages/ApplyIOST'
 import ApplyIOSTSuccess from '../pages/ApplyIOSTSuccess'
-import LuckyBet from '../pages/LuckyBet'
 import NotFound404 from '../pages/404'
 import Feedback from '../pages/Feedback'
+import BPList from '../pages/BPList'
+import Bonus from '../pages/Bonus'
 
 Vue.use(Router)
 
@@ -122,20 +123,29 @@ export default new Router({
       }
     },
     {
-      path: '/luckyBet',
-      name: 'LuckyBet',
-      components: {
-        Head: Head,
-        Main: LuckyBet,
-        Foot: Foot
-      }
-    },
-    {
       path: '/feedback',
       name: 'Feedback',
       components: {
         Head: Head,
         Main: Feedback,
+        Foot: Foot
+      }
+    },
+    {
+      path: '/BPList',
+      name: 'BPList',
+      components: {
+        Head: Head,
+        Main: BPList,
+        Foot: Foot
+      }
+    },
+    {
+      path: '/bonusWithdraw',
+      name: 'bonusWithdraw',
+      components: {
+        Head: Head,
+        Main: Bonus,
         Foot: Foot
       }
     },

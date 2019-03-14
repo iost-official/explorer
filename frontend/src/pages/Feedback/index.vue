@@ -1,6 +1,5 @@
 <template>
   <div class="feedBack-box">
-		<LuckyBet/>
 
   	<div class="feedBack-header">
       <div class="my-header-container">
@@ -25,7 +24,6 @@
 <script>
 import swal from 'sweetalert2'
 import axios from 'axios';
-import LuckyBet from '../../components/LuckyBet'
 import { config } from '../../utils/config'
 const { apis } = config
 
@@ -78,11 +76,7 @@ export default {
 				})
 			})
 		}
-	},
-
-  components: {
-    LuckyBet
-  }
+	}
 }
 </script>
 

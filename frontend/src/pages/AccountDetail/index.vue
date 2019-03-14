@@ -1,6 +1,5 @@
 <template>
   <div class="accountDetail-box">
-    <LuckyBet/>
 
     <div class="accountDetail-header">
       <div class="my-header-container">
@@ -62,7 +61,10 @@
                 <ul class="my-list-body">
                   <li><router-link :to="{path:`/block/${tx.blockNumber}`}">{{tx.blockNumber}}</router-link></li>
                   <li><router-link :to="{path:`/tx/${tx.hash}`}">{{tx.hash}}...</router-link></li>
-                  <li><router-link :to="{path:`/account/${tx.from}`}">{{tx.from}}</router-link></li>
+                  <li>
+                    <router-link v-if="tx.from !='_Block_Base'" :to="{path:`/account/${tx.from}`}">{{tx.from}}</router-link>
+                    <a v-else href="javascript:void(0)">{{tx.from}}</a>
+                  </li>
                   <li><router-link :to="{path:`/account/${tx.to}`}">{{tx.to}}</router-link></li>
                   <li>{{tx.age}}</li>
                   <li>{{tx.amount}}</li>
@@ -98,7 +100,6 @@
 
 <script>
   import axios from 'axios';
-  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
   import { config } from '../../utils/config'
   const { apis } = config
@@ -194,10 +195,6 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
-    },
-
-    components: {
-      LuckyBet
     }
   }
 </script>

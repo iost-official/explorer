@@ -5,125 +5,82 @@ import (
 	"sync"
 	"time"
 
-	"explorer/model/blockchain"
-	"explorer/model/db"
-
-	"gopkg.in/mgo.v2/bson"
+	"github.com/iost-official/explorer/backend/model/blockchain"
+	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+	"github.com/iost-official/explorer/backend/model/db"
 )
 
-func UpdateBlocks(wg *sync.WaitGroup) {
-	defer wg.Done()
+func UpdateBlocks(ws *sync.WaitGroup) {
+	defer ws.Done()
 
-	collection, err := db.GetCollection("blocks")
-	if err != nil {
-		log.Println("updateBlock get collection error:", err)
-		return
-	}
+	blockChannel := make(chan *rpcpb.Block, 10)
+	go insertBlock(blockChannel)
 
-	ticker := time.NewTicker(time.Second * 2)
-	for _ = range ticker.C {
-		var topHeightInChain int64 = 0
-		var topHeightInMongo int64 = 0
+	ticker := time.NewTicker(time.Second)
 
-		topBlkInChain, err := blockchain.GetTopBlock()
-		if err != nil {
-			log.Println("updateBlock get topBlk in chain error:", err)
-			continue
-		}
-		topHeightInChain = topBlkInChain.Head.Number
-
+	var topHeightInMongo int64
+	for range ticker.C {
 		topBlkInMongo, err := db.GetTopBlock()
 		if err != nil {
 			log.Println("updateBlock get topBlk in mongo error:", err)
 			if err.Error() != "not found" {
 				continue
+			} else {
+				topHeightInMongo = 0
+				break
 			}
-		} else {
-			topHeightInMongo = topBlkInMongo.Head.Number + 1
 		}
+		topHeightInMongo = topBlkInMongo.Number + 1
+		log.Println("Got Top Block From Mongo With Number: ", topHeightInMongo)
+		break
+	}
 
-		var insertLen int
-		for ; topHeightInMongo <= topHeightInChain; topHeightInMongo++ {
-			bInfo, err := blockchain.GetBlockByHeight(topHeightInMongo)
-			if err != nil {
-				log.Println("updateBlock getBlockByHeight error:", err)
-				continue
-			}
-
-			err = collection.Insert(bInfo)
-			if err != nil {
-				log.Println("updateBlock insert mongo error:", err)
-				continue
-			}
-			insertLen++
-			log.Println("updateBlock insert mongo height:", topHeightInMongo)
+	for {
+		blockRspn, err := blockchain.GetBlockByNum(topHeightInMongo, true)
+		if err != nil {
+			log.Println("Download block", topHeightInMongo, "error:", err)
+			time.Sleep(time.Second)
+			continue
 		}
-
-		log.Println("updateBlock inserted len:", insertLen)
+		if blockRspn.Status == rpcpb.BlockResponse_PENDING {
+			log.Println("Download block", topHeightInMongo, "Pending")
+			time.Sleep(time.Second)
+			continue
+		}
+		blockChannel <- blockRspn.Block
+		log.Println("Download block", topHeightInMongo, " Succ!")
+		topHeightInMongo++
 	}
 }
 
-func UpdateBlockPay(wg *sync.WaitGroup)  {
-	defer wg.Done()
+func insertBlock(blockChannel chan *rpcpb.Block) {
+	collection := db.GetCollection(db.CollectionBlocks)
 
-	txnDC, err := db.GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("UpdateBlockCost get collection error:", err)
-		return
-	}
+	for {
+		select {
+		case b := <-blockChannel:
+			txs := b.Transactions
 
-	blkPC, err := db.GetCollection("blockpay")
-	if err != nil {
-		log.Println("UpdateBlockCost get collection error:", err)
-		return
-	}
+			wg := new(sync.WaitGroup)
+			wg.Add(2)
+			go func() {
+				db.ProcessTxs(txs, b.Number)
+				wg.Done()
+			}()
+			go func() {
+				db.ProcessTxsForAccount(txs, b.Time)
+				wg.Done()
+			}()
+			wg.Wait()
 
-	ticker := time.NewTicker(time.Second * 2)
-	for _ = range ticker.C {
-		var topHeightInPay int64 = 0
-		topPay, err := db.GetTopBlockPay()
-		if err != nil {
-			if err.Error() != "not found" {
-				continue
+			b.Transactions = make([]*rpcpb.Transaction, 0)
+			err := collection.Insert(*b)
+
+			if err != nil {
+				log.Println("updateBlock insert mongo error:", err)
 			}
-		} else {
-			topHeightInPay = topPay.Height
-		}
+		default:
 
-		queryPip := []bson.M{
-			bson.M{
-				"$match": bson.M{
-					"blockheight": bson.M{
-						"$gte": topHeightInPay,
-					},
-				},
-			},
-			bson.M{
-				"$group": bson.M{
-					"_id": "$blockheight",
-					"avggasprice": bson.M{
-						"$avg": "$price",
-					},
-					"totalgaslimit": bson.M{
-						"$sum": "$gaslimit",
-					},
-				},
-			},
-		}
-
-		var payList []*db.BlockPay
-		err = txnDC.Pipe(queryPip).All(&payList)
-		if err != nil {
-			log.Println("UpdateBlockPay pipline error:", err)
-			continue
-		}
-
-		for _, pay := range payList {
-			selector := bson.M{
-				"_id": pay.Height,
-			}
-			blkPC.Upsert(selector, pay)
-			log.Println("UpdateBlockPay block:", pay.Height, "inserted")
 		}
 	}
 }

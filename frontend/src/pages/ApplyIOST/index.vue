@@ -1,10 +1,9 @@
 <template>
   <div class="applyIost-box">
-		<LuckyBet/>
 
 		<div class="applyIost-header">
       <div class="my-header-container">
-				<h1>Request</h1>
+				<h1>Create</h1>
       </div>
     </div>
 
@@ -12,30 +11,29 @@
 			<div class="" id="luckyBetIntro">
 				<p>Lucky Bet is operating on the v1.0 Everest testnet of the IOST Blockchain. It provides a way for users to participate and try out the IOST testnet. Everest is still in its early testing phase. In order to launch a stable Mainnet, IOST engineers will be constantly pressure testing, adjusting, fixing and upgrading the testnet. This may result in instability, periods where the testnet is offline, and other abnormalities.</p>
 				<p>If you encounter any issues or bugs, please email team@iost.io or report your issue via the following link:</p>
-				<!--<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>-->
-				<router-link to="/feedback">https://explorer.iost.io/#/feedback</router-link>
-				<p class="cn">Lucky Bet是基于IOST测试网络开发，目的是为了让大家体验IOST阶段性进展。IOST目前正在早期测试阶段，为了保证将来的主网功能能够如期稳定上线，IOST开发团队随时可能对测试网络进行升级、调整、修复问题和压力测试，可能在某些时刻会造成网络下线、不稳定和其他异常情况发生。</p>
+				<router-link to="/feedback">https://explorer.iost.io/feedback</router-link>
+				<p class="cn">此页面用于创建IOST主网账号，单IP每天最多创建5个账号。</p>
 				<p>如果你发现了测试网络的任何Bug，欢迎发邮件给team@iost.io，或在以下网址提交给我们改进：</p>
 				<!--<a href="https://explorer.iost.io/#/feedback">https://explorer.iost.io/#/feedback</a>-->
-				<router-link to="/feedback">https://explorer.iost.io/#/feedback</router-link>
+				<router-link to="/feedback">https://explorer.iost.io/feedback</router-link>
 			</div>
 		</div>
 
 		<div class="my-container">
 			<div class="my-err-msg" role="alert" id="errAlert">{{errMsg}}</div>
 			<div class="my-group">
-				<p class="">Address</p>
-				<input class="my-input" placeholder="Address" id="applyAddress" v-model.trim()="address">
+				<p class="">Account PubKey</p>
+				<input class="my-input col-sm-8" placeholder="Account PubKey" id="applyAddress" v-model.trim()="address">
 			</div>
 			
 			<div class="my-group my-check">
 				<input type="checkbox" id="generateAddressCheck" v-model="checked">
-				<p>Generate Address</p>
+				<p>Generate KeyPair for me</p>
 			</div>
-			
+
 			<div class="my-group">
-				<p class="">Amount</p>
-				<input class="my-input" readonly value="10.1 Test IOST">
+				<p class="">Account Name</p>
+				<input class="my-input col-sm-8" placeholder="Account Name" id="applyName" v-model.trim()="accountName">
 			</div>
 
 			<div class="my-group">
@@ -43,24 +41,11 @@
 				<input type="email" class="my-input" placeholder="Email" v-model.trim()="email">
 			</div>
 
-			<div class="my-group my-mobile">
-				<p class="">Mobile</p>
-				<input type="tel" id="phone" class="my-input" v-model.trim()="mobile">
-			</div>
-
 			<div class="my-group my-recaptcha">
 				<div class="g-recaptcha" id="recap" data-sitekey="6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"></div>
 			</div>
 
-			<div class="my-group my-verify">
-				<p class="">Verification Code</p>
-				<div class="input-btn">
-					<input class="my-input" placeholder="Verification code" v-model.trim()="verify">
-					<button type="button" id="sendSmS" class="btn btn-default" @click="sendSmS">{{mobileButtonMsg}}</button>
-				</div>
-			</div>
-
-			<button type="button" :class="{active: isOK}" id="RequestBuuton" @click="apply">Request</button>
+			<button type="button" :class="{active: isOK}" id="RequestBuuton" @click="apply">Create</button>
 		</div>
 
 		<div class="modal fade bs-example-modal-sm" id="applyIOSTModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
@@ -68,7 +53,7 @@
 	    <div class="modal-content">
 	      <div class="modal-body">
 	      	<p></p>
-        	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sending IOST to Your Address<span> {{dott}}</span></p>
+        	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creating Account<span> {{dott}}</span></p>
         	<p></p>
      	  </div>
 	    </div>
@@ -79,10 +64,8 @@
 
 <script>
 import axios from 'axios';
-import LuckyBet from '../../components/LuckyBet'
-import secp256k1 from 'secp256k1'
-import base58 from 'bs58'
 import swal from 'sweetalert2'
+import base58 from 'bs58'
 import elliptic from 'elliptic'
 import { config } from '../../utils/config'
 
@@ -106,84 +89,36 @@ export default {
 			errMsg: '',
 			checked: false,
 			dott: '',
+			accountName: '',
 		}
 	},
 
-  computed: {
-    isOK () {
-      if (this.address != '' && this.email != '' && this.verify != '' && this.mobile != '') {
-        return true
-      } else {
-        return false
-      }
-    }
-  },
+	computed: {
+		isOK () {
+			if (this.address != '' && this.email != '' && this.verify != '' && this.mobile != '') {
+				return true
+			} else {
+				return false
+			}
+		}
+	},
 
 	methods: {
-    // 替换后的
-    randomBytes: function(size) {
-      let rawBytes = new Uint8Array(size)
-      let bytes
+	    // 替换后的
+	    randomBytes: function(size) {
+			let rawBytes = new Uint8Array(size)
+			let bytes
 
-      crypto.getRandomValues(rawBytes)
-      bytes = Buffer.from(rawBytes.buffer)
+			crypto.getRandomValues(rawBytes)
+			bytes = Buffer.from(rawBytes.buffer)
 
-      return bytes
-    },
-		// randomBytes: function(size) {
-		// 	let rawBytes = new Uint8Array(size)
-		// 	let bytes
-    //
-		// 	do {
-		// 		crypto.getRandomValues(rawBytes)
-		// 		bytes = Buffer.from(rawBytes.buffer)
-		// 	} while (!secp256k1.privateKeyVerify(bytes))
-    //
-		// 	return bytes
-		// },
+			return bytes
+	    },
+
 		bytesToHex: function(bytes) {
 			return bytes.toString('hex')
 		},
 
-		sendSmS: function() {
-			if (this.ltime > 0) {
-				return false
-			}
-
-			var grecap = grecaptcha.getResponse()
-			if (grecap.length == 0) {
-				$('#errAlert').addClass('alert alert-danger')
-				this.errMsg = 'invalid google reCAPTCHA check'
-				return false
-			}
-
-			let code = $("#phone").intlTelInput("getSelectedCountryData").dialCode
-			var params = new URLSearchParams();
-			params.append('mobile', '+' + code + this.mobile)
-			params.append('gcaptcha', grecap)
-
-			// axios.post('https://explorer.iost.io/api/sendSMS', params).then((response) => {
-			axios.post(`${apis.sendSMS}`, params).then((response) => {
-				var retCode = response.data.code
-				if (retCode != 0) {
-					$('#errAlert').addClass('alert alert-danger')
-					this.errMsg = response.data.message
-				}
-			})
-
-			this.ltime = 120
-			this.mobileButtonMsg = 'retry in ' + this.ltime + 's.'
-			$("#sendSmS").attr('disabled', true)
-			let interval = window.setInterval(() => {
-				if (--this.ltime <=0) {
-					this.mobileButtonMsg = 'Send'
-					window.clearInterval(interval)
-					$("#sendSmS").attr('disabled', false)
-				} else {
-					this.mobileButtonMsg = 'retry in ' + this.ltime + 's.'
-				}
-			}, 1000)
-		},
 		getApplyParam(grecap) {
 			var params = new URLSearchParams();
 			if (this.auto == 1) {
@@ -192,17 +127,22 @@ export default {
 			} else {
 				params.append('address', this.address)
 			}
-			let code = $("#phone").intlTelInput("getSelectedCountryData").dialCode
+			params.append('account', this.accountName)
 			params.append('email', this.email)
-			params.append('mobile', '+' + code + this.mobile)
-			params.append('verify', this.verify)
 			params.append('gcaptcha', grecap)
 			return params
 		},
+
 		apply: function() {
-			if (this.address.length < 45) {
+			if (this.address.length < 35) {
 				$('#errAlert').addClass('alert alert-danger')
-				this.errMsg = 'invalid IOST address'
+				this.errMsg = 'invalid account pubKey'
+				return false
+			}
+
+			if (this.accountName.length < 5 || this.accountName.length > 11) {
+				$('#errAlert').addClass('alert alert-danger')
+				this.errMsg = 'invalid account name, must 5-11 characters'
 				return false
 			}
 
@@ -210,17 +150,6 @@ export default {
 			if (this.email.length == 0 || !regExp.test(this.email)) {
 				$('#errAlert').addClass('alert alert-danger')
 				this.errMsg = 'invalid email address'
-				return false
-			}
-
-			if (this.mobile.length < 10) {
-				$('#errAlert').addClass('alert alert-danger')
-				this.errMsg = 'invalid mobile number'
-				return false
-			}
-			if (this.verify.length != 6) {
-				$('#errAlert').addClass('alert alert-danger')
-				this.errMsg = 'invalid verification code'
 				return false
 			}
 
@@ -232,12 +161,12 @@ export default {
 			}
 
 			swal({
-			  html: '',
-			  title: 'Sending IOST to Your Address...',
-			  onOpen: () => {
-			  	swal.showLoading()
-			  },
-			  allowOutsideClick: () => !swal.isLoading()
+				html: '',
+				title: 'Creating Account...',
+				onOpen: () => {
+					swal.showLoading()
+				},
+				allowOutsideClick: () => !swal.isLoading()
 			})
 			let dotNum = 1
 			let interval = window.setInterval(() => {
@@ -262,61 +191,13 @@ export default {
 			}, 1000)
 
 			axios.post(`${apis.applyIOST}`, this.getApplyParam(grecap)).then((response) => {
-				let retCode = response.data.code
-				let txHash = response.data.data
+				let retCode = response.data.ret
+				let txHash = response.data.msg
 				if (retCode != 0) {
-					axios.post(`${apis.applyIOST}`, this.getApplyParam()).then((response) => {
-						let retCode = response.data.code
-						let txHash = response.data.data
-						if (retCode != 0) {
-							axios.post(`${apis.applyIOST}`, this.getApplyParam()).then((response) => {
-								let retCode = response.data.code
-								let txHash = response.data.data
-								if (retCode != 0) {
-									swal.close()
-									$('#applyIOSTModal').modal('hide')
-									$('#errAlert').addClass('alert alert-danger')
-									this.errMsg = response.data.msg
-								} else {
-									swal.close()
-									$('#applyIOSTModal').modal('hide')
-									let pushParams = {}
-									if (this.address.length > 0) {
-										pushParams.address = this.address
-									} else {
-										// pushParams.address = this.addressx
-										pushParams.address = this.address
-									}
-									pushParams.email = this.email
-									pushParams.mobile = this.mobile
-									pushParams.privKey = this.privKey
-									pushParams.txHash = txHash
-									this.$router.push({
-										name: 'ApplyIOSTSuccess',
-										params: pushParams
-									})
-								}
-							})
-						} else {
-							swal.close()
-							$('#applyIOSTModal').modal('hide')
-							let pushParams = {}
-							if (this.address.length > 0) {
-								pushParams.address = this.address
-							} else {
-								// pushParams.address = this.addressx
-								pushParams.address = this.address
-							}
-							pushParams.email = this.email
-							pushParams.mobile = this.mobile
-							pushParams.privKey = this.privKey
-							pushParams.txHash = txHash
-							this.$router.push({
-								name: 'ApplyIOSTSuccess',
-								params: pushParams
-							})
-						}
-					})
+					swal.close()
+					$('#applyIOSTModal').modal('hide')
+					$('#errAlert').addClass('alert alert-danger')
+					this.errMsg = response.data.msg
 				} else {
 					swal.close()
 					$('#applyIOSTModal').modal('hide')
@@ -328,7 +209,7 @@ export default {
 						pushParams.address = this.address
 					}
 					pushParams.email = this.email
-					pushParams.mobile = this.mobile
+					pushParams.accountName = this.accountName
 					pushParams.privKey = this.privKey
 					pushParams.txHash = txHash
 					this.$router.push({
@@ -339,6 +220,7 @@ export default {
 			})
 		}
 	},
+
 	watch: {
 		checked: function() {
 			if (this.checked == false) {
@@ -348,59 +230,46 @@ export default {
 				$('#applyAddress').attr('disabled', false)
 			} else {
 				$('#applyAddress').attr('disabled', true)
-				// let bytes = this.randomBytes(32)
-				// const pubKey = secp256k1.publicKeyCreate(bytes)
-        //
-				// this.privKey = base58.encode(bytes)
-				// // this.addressx = base58.encode(pubKey)
-				// this.address = base58.encode(pubKey)
 
+				let bytes = this.randomBytes(32)
+		        const EdDSA = elliptic.eddsa;
+		        const ec = new EdDSA('ed25519');
+		        const key = ec.keyFromSecret(bytes);
 
-        let bytes = this.randomBytes(32)
-        const EdDSA = elliptic.eddsa;
-        const ec = new EdDSA('ed25519');
-        const key = ec.keyFromSecret(bytes);
+		        let pubKey = key.pubBytes()
 
-        let pubKey = key.pubBytes()
-				let privKey = [...bytes]
-        privKey.push(...pubKey)
+		        let privKey = [...bytes]
+		        privKey.push(...pubKey)
 
-				this.privKey = base58.encode(privKey)
+				this.privKey = base58.encode(Buffer.from(privKey))
+				this.pubKey = base58.encode(Buffer.from(pubKey))
+				this.address = base58.encode(Buffer.from(pubKey))
 
-        const lastBytes = this.randomBytes(4)
-        let addressPubKeyCopy = [...pubKey]
-        addressPubKeyCopy.push(...lastBytes)
+				console.log(this.pubKey)
+				console.log(this.privKey)
+				console.log(privKey)
 
-        this.address = "IOST" + base58.encode(addressPubKeyCopy)
-
-        console.log("privKey: ", base58.encode(privKey))
-        console.log("pubKey: ", base58.encode(pubKey))
-        console.log("address: ", this.address)
-
-        this.auto = 1
+		        this.auto = 1
 			}
 		}
 	},
+
 	mounted: function() {
 		$("#phone").intlTelInput()
 		let rc = document.getElementsByClassName('g-recaptcha')[0].children
 		setTimeout(() => {
-      grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
-      if (rc.length == 0) {
-        swal({
-          title: 'Failed to load google reCaptcha !',
-          text: '',
-          confirmButtonText: 'try again'
-        }).then((result) => {
-          grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
-        })
-      }
+			grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
+			if (rc.length == 0) {
+				swal({
+					title: 'Failed to load google reCaptcha !',
+					text: '',
+					confirmButtonText: 'try again'
+				}).then((result) => {
+					grecaptcha.render('recap',{"sitekey": "6Lc1vF8UAAAAAMo-EsF4vRt6CWxM8s56lAeyHnBe"})
+				})
+			}
 		},2000)
-	},
-
-  components: {
-    LuckyBet
-  }
+	}
 }
 </script>
 
@@ -462,7 +331,7 @@ export default {
 				padding: 15px;
 				margin-bottom: 20px;
 				border-radius: 4px;
-				margin-left: 100px;
+				margin-left: 110px;
 				text-align: center;
 			}
 			.my-group{
@@ -503,7 +372,7 @@ export default {
 				}
 				&.my-recaptcha {
 					margin-bottom: 30px;
-					margin-left: 100px;
+					margin-left: 110px;
 				}
 				&.my-verify {
 					.input-btn {
@@ -525,7 +394,7 @@ export default {
 
 				}
 				.my-input {
-					width: 700px;
+					width: 690px;
 					background-color: #F6F7F8;
 					outline: none;
 					border: 0;
@@ -534,7 +403,7 @@ export default {
 				}
 				p {
 					margin-bottom: 0;
-					width: 100px;
+					width: 120px;
 					text-align: right;
 					margin-left: -20px;
 					font-size: 14px;
@@ -549,7 +418,7 @@ export default {
 			> button {
 				width: 700px;
 				height: 54px;
-				margin-left: 100px;
+				margin-left: 110px;
 				background-color: rgba(44,46,49,0.5);
 				border: none;
 				color: #FFFFFF;

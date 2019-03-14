@@ -1,0 +1,12 @@
+{
+  "rpcHost": "47.244.109.92:30002",
+  "syncBP": true,
+  "mongodb": {
+    "host": "127.0.0.1",
+    "port": "27017",
+    "username": "",
+    "password": "",
+    "db": "api",
+    "mongoLink": "mongodb://127.0.0.1:27017"
+  }
+}

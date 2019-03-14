@@ -1,35 +1,12 @@
 package db
 
 import (
-	"log"
-
-	"gopkg.in/mgo.v2/bson"
-
-	"github.com/iost-official/prototype/common"
-	"github.com/iost-official/prototype/rpc"
+	"github.com/globalsign/mgo/bson"
 )
 
-type MgoTx struct {
-	MgoSourceId bson.ObjectId    `json:"mgo_source_id"`
-	BlockHeight int64            `json:"block_height"`
-	TxHash      []byte           `json:"tx_hash"`
-	Time        int64            `json:"time"`
-	Nonce       int64            `json:"nonce"`
-	Publisher   common.Signature `json:"publisher"`
-	GasLimit    int64            `json:"gas_limit"`
-	Price       float64          `json:"price"`
-	From        string           `json:"from"`
-	To          string           `json:"to"`
-	Amount      float64          `json:"amount"`
-	Code        string           `json:"code"`
-}
-
-func GetTxnDetail(start, limit, block int, address string) ([]*MgoTx, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("UpdateTxns get txns collection error:", err)
-		return nil, err
-	}
+/// get at most `limit` flat txns from start using block and account address
+func GetFlatTxnSlice(start, limit, block int, address string) ([]*FlatTx, error) {
+	txnDC := GetCollection(CollectionFlatTx)
 
 	var pip []bson.M
 
@@ -40,6 +17,7 @@ func GetTxnDetail(start, limit, block int, address string) ([]*MgoTx, error) {
 					"$or": []bson.M{
 						bson.M{"from": address},
 						bson.M{"to": address},
+						bson.M{"publisher": address},
 					},
 				},
 			},
@@ -50,7 +28,7 @@ func GetTxnDetail(start, limit, block int, address string) ([]*MgoTx, error) {
 		pip = []bson.M{
 			bson.M{
 				"$match": bson.M{
-					"blockheight": block,
+					"blockNumber": block,
 				},
 			},
 		}
@@ -58,7 +36,7 @@ func GetTxnDetail(start, limit, block int, address string) ([]*MgoTx, error) {
 
 	pip = append(pip, []bson.M{
 		bson.M{
-			"$sort": bson.M{"blockheight": -1},
+			"$sort": bson.M{"blockNumber": -1},
 		},
 		bson.M{
 			"$skip": start,
@@ -68,235 +46,119 @@ func GetTxnDetail(start, limit, block int, address string) ([]*MgoTx, error) {
 		},
 	}...)
 
-	var txnsDetail []*MgoTx
-	err = txnDC.Pipe(pip).All(&txnsDetail)
+	var flatTx []*FlatTx
+
+	err := txnDC.Pipe(pip).All(&flatTx)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return txnsDetail, nil
+	return flatTx, nil
 }
 
-func GetTxnDetailListByHeight(height int64) ([]*MgoTx, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("UpdateTxns get txns collection error:", err)
-		return nil, err
-	}
-
-	listQuery := bson.M{
-		"blockheight": height,
-	}
-
-	var detailList []*MgoTx
-	err = txnDC.Find(listQuery).All(&detailList)
-	if err != nil {
-		return nil, err
-	}
-
-	return detailList, nil
-}
-
-func GetTxnDetailByHash(txHash string) (*MgoTx, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("UpdateTxns get txns collection error:", err)
-		return nil, err
-	}
-
-	txHashBytes := common.Base58Decode(txHash)
-	if err != nil {
-		return nil, err
-	}
-
-	query := bson.M{
-		"txhash": txHashBytes,
-	}
-	var txn *MgoTx
-	err = txnDC.Find(query).One(&txn)
-
-	return txn, err
-}
-
-func GetTxnDetailByKey(tkey *rpc.TransactionKey) (*MgoTx, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("GetTxnDetailByKey get txns collection error:", err)
-		return nil, err
-	}
-
-	txnQuery := bson.M{
-		"nonce":            tkey.Nonce,
-		"publisher.pubkey": tkey.Publisher,
-	}
-
-	var txnDetail *MgoTx
-	err = txnDC.Find(txnQuery).One(&txnDetail)
-	if err != nil {
-		return nil, err
-	}
-
-	return txnDetail, err
-}
-
-func GetTotalTxnDetailLen(address string, block int64) (int, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("UpdateTxns get txns collection error:", err)
-		return 0, err
-	}
+/// get length of transaction list using account and block number
+func GetTotalFlatTxnLen(address string, block int64) (int, error) {
+	txnDC := GetCollection(CollectionFlatTx)
 
 	var query bson.M
+
 	if address != "" {
 		query = bson.M{
 			"$or": []bson.M{
 				bson.M{"from": address},
 				bson.M{"to": address},
+				bson.M{"publisher": address},
 			},
 		}
-	}
-	if block >= 0 {
+		return 0, nil
+	} else if block >= 0 {
 		query = bson.M{
-			"blockheight": block,
+			"blockNumber": block,
 		}
 	}
 
 	return txnDC.Find(query).Count()
 }
 
-func GetTxDetailLastPage(eachPage int64) (int64, error) {
-	totalLen, err := GetTotalTxnDetailLen("", -1)
+func GetFlatTxTotalPageCnt(eachPage int64, account string, block int64) (int64, error) {
+	totalLen, err := GetTotalFlatTxnLen(account, block)
+
 	if err != nil {
 		return 0, err
 	}
+
 	txsInt64Len := int64(totalLen)
+	pageMax := txsInt64Len / eachPage
 
-	var pageLast int64
-	if txsInt64Len%eachPage == 0 {
-		pageLast = txsInt64Len / eachPage
-	} else {
-		pageLast = txsInt64Len / eachPage + 1
+	if txsInt64Len%eachPage != 0 {
+		pageMax++
 	}
 
-	return pageLast, nil
+	return pageMax, nil
 }
 
-func GetTopTxnDetail() (*MgoTx, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("GetTopTxnDetail get txnsdetail collection error:", err)
-		return nil, err
-	}
+/* func GetFlatTxPageCntWithAddress(eachPage int64, account string) (int64, error) { */
+// intLen, err := GetFlatTxnLenByAccount(account)
+// if err != nil {
+// return 0, err
+// }
 
-	var (
-		emptyQuery   interface{}
-		topTxnDetail *MgoTx
-	)
-	err = txnDC.Find(emptyQuery).Sort("-_id").Limit(1).One(&topTxnDetail)
-	if err != nil {
-		log.Println("GetTopTxnDetail error:", err)
-		return nil, err
-	}
+// txsInt64Len := int64(intLen)
 
-	return topTxnDetail, nil
-}
+// var pageMax = txsInt64Len / eachPage
 
-func GetTxnListByAccount(account string, start, limit int) ([]*MgoTx, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("GetTxnListByAccount get txnsdetail collection error:", err)
-		return nil, err
-	}
+// if txsInt64Len%eachPage != 0 {
+// pageMax++
+// }
 
-	var txnList []*MgoTx
-	pip := []bson.M{
-		bson.M{
-			"$match": bson.M{
-				"$or": []bson.M{
-					bson.M{"from": account},
-					bson.M{"to": account},
-				},
-			},
-		},
-		bson.M{
-			"$sort": bson.M{"blockheight": -1},
-		},
-		bson.M{
-			"$skip": start,
-		},
-		bson.M{
-			"$limit": limit,
-		},
-	}
+// return pageMax, nil
+/* } */
 
-	err = txnDC.Pipe(pip).All(&txnList)
-	if err != nil {
-		return nil, err
-	}
-
-	return txnList, nil
-}
-
-func GetTxnDetailLenByAccount(account string) (int, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("GetTopTxnDetail get txnsdetail collection error:", err)
-		return 0, err
-	}
-
-	fromLen, err := txnDC.Find(bson.M{"from": account}).Count()
-	if err != nil {
-		log.Println("GetTxnDetailLenByAccount get from len error:", err)
-	}
-	toLen, err := txnDC.Find(bson.M{"to": account}).Count()
-	if err != nil {
-		log.Println("GetTxnDetailLenByAccount get to len error:", err)
-	}
-	return fromLen + toLen, err
-}
-
-func GetTxDetailLastPageWithAddress(eachPage int64, address string) (int64, error) {
-	intLen, err := GetTxnDetailLenByAccount(address)
-	if err != nil {
-		return 0, err
-	}
-
-	txsInt64Len := int64(intLen)
-
-	var pageLast int64
-	if txsInt64Len%eachPage == 0 {
-		pageLast = txsInt64Len / eachPage
-	} else {
-		pageLast = txsInt64Len / eachPage
-	}
-
-	return pageLast, nil
-}
-
-func GetTxDetailLastPageWithBlk(eachPage int64, blk int64) (int64, error) {
-	txnDC, err := GetCollection("txnsdetail")
-	if err != nil {
-		log.Println("GetTxDetailLastPageWithAddress get collection error:", err)
-		return 0, err
-	}
+func GetFlatTxPageCntWithBlk(eachPage int64, blk int64) (int64, error) {
+	txnDC := GetCollection(CollectionFlatTx)
 
 	query := bson.M{
-		"blockheight": blk,
+		"blockNumber": blk,
 	}
 
 	intLen, err := txnDC.Find(query).Count()
+
 	if err != nil {
 		return 0, err
 	}
 
 	txsInt64Len := int64(intLen)
 
-	var pageLast int64
-	if txsInt64Len%eachPage == 0 {
-		pageLast = txsInt64Len / eachPage
-	} else {
-		pageLast = txsInt64Len / eachPage
+	var pageLast = txsInt64Len / eachPage
+
+	if txsInt64Len%eachPage != 0 {
+		pageLast++
 	}
 
 	return pageLast, nil
+}
+
+func GetTxnDetailByHash(txHash string) (*Tx, error) {
+	txnDC := GetCollection(CollectionTxs)
+
+	query := bson.M{
+		"hash": txHash,
+	}
+	var txn *Tx
+	err := txnDC.Find(query).One(&txn)
+
+	return txn, err
+}
+
+func GetFlatTxnDetailByHash(txHash string) (*FlatTx, error) {
+	txnDC := GetCollection(CollectionFlatTx)
+
+	query := bson.M{
+		"hash": txHash,
+	}
+	var txn *FlatTx
+	err := txnDC.Find(query).One(&txn)
+
+	return txn, err
 }

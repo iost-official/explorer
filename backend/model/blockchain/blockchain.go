@@ -1,84 +1,126 @@
 package blockchain
 
 import (
-	"errors"
+	"context"
 	"time"
 
-	"github.com/iost-official/prototype/transport"
-
-	"golang.org/x/net/context"
-
-	"github.com/iost-official/prototype/rpc"
+	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+	"github.com/iost-official/explorer/backend/util/transport"
 )
 
-var ErrEmptyBlock = errors.New("no block found.")
-
-func GetBlocks(start, limit int) ([]*rpc.BlockInfo, error) {
-	// wait implement...
-	return nil, nil
-}
-
-func GetBlockByLayer(layer int64) (*rpc.BlockInfo, error) {
+func GetBlockByNum(num int64, complete bool) (*rpcpb.BlockResponse, error) {
 	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	c := rpc.NewCliClient(conn)
+	client := rpcpb.NewApiServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	bInfo, err := c.GetBlock(ctx, &rpc.BlockKey{Layer: layer})
-	if err != nil {
-		return nil, err
-	}
-
-	return bInfo, nil
+	return client.GetBlockByNumber(ctx, &rpcpb.GetBlockByNumberRequest{
+		Number:   num,
+		Complete: complete,
+	})
 }
 
-func GetBlockByHeight(height int64) (*rpc.BlockInfo, error) {
+func GetBlockByHash(hash string, complete bool) (*rpcpb.BlockResponse, error) {
 	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	c := rpc.NewCliClient(conn)
+	client := rpcpb.NewApiServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	bkey := &rpc.BlockKey{Layer: height}
-	bInfo, err := c.GetBlockByHeight(ctx, bkey)
+	return client.GetBlockByHash(ctx, &rpcpb.GetBlockByHashRequest{
+		Hash:     hash,
+		Complete: complete,
+	})
+}
+
+func GetTxByHash(hash string) (*rpcpb.TransactionResponse, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	return bInfo, nil
+	client := rpcpb.NewApiServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return client.GetTxByHash(ctx, &rpcpb.TxHashRequest{
+		Hash: hash,
+	})
 }
 
-func GetTopBlock() (*rpc.BlockInfo, error) {
-	blk, err := GetBlockByLayer(0)
+func GetTxReceiptByTxHash(hash string) (*rpcpb.TxReceipt, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	if blk == nil {
-		return nil, ErrEmptyBlock
-	}
+	client := rpcpb.NewApiServiceClient(conn)
 
-	return blk, nil
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return client.GetTxReceiptByTxHash(ctx, &rpcpb.TxHashRequest{
+		Hash: hash,
+	})
 }
 
-func GetBlockLastPage(eachPage int64) int64 {
-	var pageLast int64
-	if topBlock, err := GetTopBlock(); err == nil {
-		if topBlock.Head.Number % eachPage == 0 {
-			pageLast = topBlock.Head.Number / eachPage
-		} else {
-			pageLast = topBlock.Head.Number / eachPage + 1
-		}
+func GetAccount(name string, byLongestChain bool) (*rpcpb.Account, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
+	if err != nil {
+		return nil, err
 	}
 
-	return pageLast
+	client := rpcpb.NewApiServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return client.GetAccount(ctx, &rpcpb.GetAccountRequest{
+		Name:           name,
+		ByLongestChain: byLongestChain,
+	})
+}
+
+func GetContract(id string, byLongestChain bool) (*rpcpb.Contract, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
+	if err != nil {
+		return nil, err
+	}
+	client := rpcpb.NewApiServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return client.GetContract(ctx, &rpcpb.GetContractRequest{
+		Id:             id,
+		ByLongestChain: byLongestChain,
+	})
+}
+
+func GetTokenBalance(account, token string, byLongestChain bool) (*rpcpb.GetTokenBalanceResponse, error) {
+	conn, err := transport.GetGRPCClient(RPCAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	client := rpcpb.NewApiServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	return client.GetTokenBalance(ctx, &rpcpb.GetTokenBalanceRequest{
+		Account:        account,
+		Token:          token,
+		ByLongestChain: byLongestChain,
+	})
 }

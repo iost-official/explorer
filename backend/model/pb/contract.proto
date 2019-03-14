@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package contract;
+
+message Info {
+    string lang = 1;
+    string version = 2;
+    repeated ABI abi = 3;
+}
+
+
+message ABI {
+    string name = 1;
+    repeated string args = 2;
+    repeated Amount amountLimit = 3;
+}
+
+message Amount {
+    string token = 1;
+    string val = 2;
+}
+
+message Contract {
+    string ID = 1;
+    Info info = 2;
+    string code =3 ;
+}

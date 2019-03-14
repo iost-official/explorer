@@ -1,27 +1,36 @@
 package main
 
 import (
-	"explorer/controller"
-
+	"github.com/iost-official/explorer/backend/config"
+	"github.com/iost-official/explorer/backend/controller"
+	"github.com/iost-official/explorer/backend/middleware"
 	"github.com/labstack/echo"
+	echoMiddle "github.com/labstack/echo/middleware"
 )
 
 func main() {
+	config.ReadConfig("")
+	controller.SyncBP()
+
 	e := echo.New()
 	e.Debug = true
+	e.HTTPErrorHandler = middleware.CustomHTTPErrorHandler
+	e.Use(middleware.CorsHeader)
+	e.Use(echoMiddle.Recover())
+	e.Use(echoMiddle.Logger())
 
 	// index
 	e.GET("/api/market", controller.GetMarket)
 	e.GET("/api/indexBlocks", controller.GetIndexBlocks)
 	e.GET("/api/indexTxns", controller.GetIndexTxns)
 
-	// blocks
+	/* // blocks */
 	e.GET("/api/blocks", controller.GetBlocks)
 	e.GET("/api/block/:id", controller.GetBlockDetail)
 
 	// transactions
 	e.GET("/api/txs", controller.GetTxs)
-	e.GET("/api/tx/:id", controller.GetTxsDetail)
+	e.GET("/api/tx/:id", controller.GetTxnDetail)
 
 	// accounts
 	e.GET("/api/accounts", controller.GetAccounts)
@@ -31,24 +40,18 @@ func main() {
 	// search
 	e.GET("/api/search/:id", controller.GetSearch)
 
-	// applyIOST
-	e.POST("/api/sendSMS", controller.SendSMS)
-	e.POST("/api/applyIOST", controller.ApplyIOST)
-
-	// lucky bet
-	e.GET("/api/luckyBetBlockInfo", controller.GetBetInfo)
-	e.POST("/api/luckyBet", controller.GetLuckyBet)
-	e.POST("/api/luckyBetBenchMark", controller.GetLuckyBetBenchMark)
-	e.GET("/api/luckyBet/round/:id", controller.GetBetRound)
-	e.GET("/api/luckyBet/addressBet/:id", controller.GetAddressBet)
-	e.GET("/api/luckyBet/latestBetInfo", controller.GetLatestBetInfo)
-	e.GET("/api/luckyBet/todayRanking", controller.GetTodayTop10Address)
-
-
-	e.POST("/api/applyIOSTBenchMark", controller.ApplyIOSTBenMark)
-
 	// mail
 	e.POST("/api/feedback", controller.SendMail)
+
+	// applyIOST
+	e.POST("/api/applyIOST", controller.ApplyIOST)
+
+	// bp list
+	e.GET("/api/BPList", controller.GetBPList)
+	e.GET("/api/BPLastProducer", controller.GetBPLastProducer)
+
+	// register BP
+	e.GET("/api/BPRegister", controller.RegistBP)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

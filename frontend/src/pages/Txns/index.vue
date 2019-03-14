@@ -1,6 +1,5 @@
 <template>
   <div class="txns-box">
-    <LuckyBet/>
 
     <div class="txns-header">
       <div class="my-header-container">
@@ -75,7 +74,8 @@
             </li>
             <li>
               <span v-if="address == tx.from">{{tx.from}}</span>
-              <router-link v-else :to="{path:`/account/${tx.from}`}">{{tx.from}}</router-link>
+              <router-link v-else-if="tx.from !='_Block_Base'" :to="{path:`/account/${tx.from}`}">{{tx.from}}</router-link>
+              <a v-else href="javascript:void(0)">{{tx.from}}</a>
             </li>
             <li>
               <img v-if="tx.state == 0" src="/static/img/failure.png" alt="">
@@ -95,7 +95,6 @@
 </template>
 
 <script>
-  import LuckyBet from '../../components/LuckyBet'
   import { mapState } from 'vuex'
 
   export default {
@@ -139,10 +138,6 @@
     },
     mounted: function () {
       this.fetchData(this.$route)
-    },
-
-    components: {
-      LuckyBet
     }
   }
 </script>

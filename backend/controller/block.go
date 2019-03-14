@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"explorer/model"
-	"github.com/labstack/echo"
 	"net/http"
 	"strconv"
-	"explorer/model/db"
+
+	"github.com/iost-official/explorer/backend/model"
+	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/labstack/echo"
 )
 
 const (
@@ -13,14 +14,26 @@ const (
 )
 
 type BlockListOutput struct {
-	BlockList []*model.BlockOutput `json:"block_list"`
+	BlockList []*model.BlockOutput `json:"blockList"`
 	Page      int64                `json:"page"`
-	PagePrev  int64                `json:"page_prev"`
-	PageNext  int64                `json:"page_next"`
-	PageLast  int64                `json:"page_last"`
+	PagePrev  int64                `json:"pagePrev"`
+	PageNext  int64                `json:"pageNext"`
+	PageLast  int64                `json:"pageLast"`
 }
 
-// e.GET("/blocks", getBlock)
+func GetIndexBlocks(c echo.Context) error {
+	top10Blks, err := model.GetBlock(1, 10)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range top10Blks {
+		v.TxList = nil
+	}
+
+	return c.JSON(http.StatusOK, FormatResponse(top10Blks))
+}
+
 func GetBlocks(c echo.Context) error {
 	page := c.QueryParam("p")
 
@@ -35,7 +48,7 @@ func GetBlocks(c echo.Context) error {
 
 	blkList, err := model.GetBlock(pageInt64, 30)
 	if err != nil {
-		return c.String(http.StatusOK, "error: " + err.Error())
+		return err
 	}
 
 	for _, v := range blkList {
@@ -50,8 +63,7 @@ func GetBlocks(c echo.Context) error {
 		db.GetBlockLastPage(BlockEachPageNum),
 	}
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, output)
+	return c.JSON(http.StatusOK, FormatResponse(output))
 }
 
 func GetBlockDetail(c echo.Context) error {
@@ -62,8 +74,12 @@ func GetBlockDetail(c echo.Context) error {
 	}
 
 	blkInfo, err := db.GetBlockByHeight(int64(blkIdInt))
-	blkInfo.TxList = nil
 
-	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	return c.JSON(http.StatusOK, model.GenerateBlockOutput(blkInfo))
+	if nil != err {
+		return err
+	}
+
+	blkOutput := model.GenerateBlockOutput(blkInfo, blkInfo.Time)
+
+	return c.JSON(http.StatusOK, FormatResponse(blkOutput))
 }
