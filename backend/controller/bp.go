@@ -8,9 +8,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -49,7 +49,12 @@ type BPAccountDetail struct {
 	Status     int    `json:"status"`
 	Online     bool   `json:"online"`
 }
-
+type bpRegist struct {
+	Id             string `json:"id"`
+	Key            string `json:"key"`
+	Field          string `json:"field"`
+	ByLongestChain bool   `json:"by_longest_chain"`
+}
 type bpAccountQuery struct {
 	Id             string `json:"id"`
 	Key            string `json:"key"`
@@ -179,15 +184,30 @@ func RegistBP(c echo.Context) (err error) {
 	fmt.Println(cmd.Args)
 
 	var b bytes.Buffer
+	var outputB []byte
 	b.Write(blockchain.PasswordKey)
 	cmd.Stdin = &b
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	if err!=nil {
-		return c.JSON(http.StatusOK, FormatResponseFailed(err))
+	outputB, err = cmd.Output()
+	txHashReg := regexp.MustCompile(`The transaction hash is: (.*)`)
+	errorReg := regexp.MustCompile(`(?ms)throw new Error(.*)`)
+	txHash := txHashReg.FindStringSubmatch(string(outputB))
+	errorString := errorReg.FindString(string(outputB))
+	if err != nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed(struct {
+			Message string
+			TxHash  string
+		}{
+			errorString,
+			txHash[1],
+		}))
 	}
-	return c.JSON(http.StatusOK, FormatResponse(err))
+	return c.JSON(http.StatusOK, FormatResponse(struct {
+		Message string
+		TxHash  string
+	}{
+		errorString,
+		txHash[1],
+	}))
 }
 
 func GetBPLastProducer(c echo.Context) (err error) {
