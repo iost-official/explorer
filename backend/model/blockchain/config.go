@@ -13,6 +13,7 @@ import (
 var (
 	RPCAddress  = "127.0.0.1:30002"
 	PasswordKey = []byte("temp")
+	BPRegisterPassword = "temp"
 )
 
 func readPassword(prompt string) (pw []byte, err error) {
@@ -51,6 +52,7 @@ func readPassword(prompt string) (pw []byte, err error) {
 
 func InitConfig() {
 	RPCAddress = viper.GetString("rpcHost")
+	BPRegisterPassword = viper.GetString("BPRegisterPassword")
 	fmt.Println("RPCHost:", RPCAddress)
 	bytePassword, err := readPassword("Enter Password:  ")
 	if err != nil {
