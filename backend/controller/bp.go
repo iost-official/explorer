@@ -177,8 +177,18 @@ func RegistBP(c echo.Context) (err error) {
 	accountName := c.QueryParam("accountName")
 	bpURL := c.QueryParam("bpURL")
 	region := c.QueryParam("region")
+	password := c.QueryParam("password")
 	usingAccount := "wtf123"
 	targetIP := blockchain.RPCAddress
+	if password != blockchain.BPRegisterPassword {
+		return c.JSON(http.StatusOK, FormatResponseFailed(struct {
+			Message string
+			TxHash  string
+		}{
+			"Password Incorrect!",
+			"",
+		}))
+	}
 
 	cmd := exec.Command("bash", "-c", "iwallet -s "+targetIP+" sys producer-register "+accountName+" --target "+accountName+" --url "+bpURL+" --location "+region+" --partner --account "+usingAccount)
 	fmt.Println(cmd.Args)
