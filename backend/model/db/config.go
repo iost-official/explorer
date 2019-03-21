@@ -15,7 +15,7 @@ var (
 
 const (
 	CollectionBlocks        = "blocks"
-	CollectionBP        = "blockproducer"
+	CollectionBP            = "blockproducer"
 	CollectionTxs           = "txs"
 	CollectionFlatTx        = "flatxs"
 	CollectionAccount       = "accounts"
@@ -26,6 +26,10 @@ const (
 	CollectionTaskCursor    = "taskCursors"
 	CollectionBlockPay      = "blockPays"
 	CollectionApplyIOST     = "applyIOST"
+	CollectionVoteTx        = "voteTx"
+	CollectionProducerAward = "producerAward"
+	CollectionUserAward     = "userAward"
+	CollectionAwardInfo 	= "awardInfo"
 )
 
 func InitConfig() {
@@ -34,6 +38,6 @@ func InitConfig() {
 	MongoUser = dbConfig["username"]
 	MongoPassWord = dbConfig["password"]
 	//MongoLink = fmt.Sprintf("%s:%s", dbConfig["host"], dbConfig["port"])
-	MongoLink= dbConfig["mongolink"]
+	MongoLink = dbConfig["mongolink"]
 	fmt.Println("mongolink", Db, MongoLink)
 }
