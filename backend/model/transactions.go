@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
+	"strings"
 
 	simplejson "github.com/bitly/go-simplejson"
 	"github.com/gogo/protobuf/proto"
@@ -65,7 +66,7 @@ func ConvertTxJsons(txs []*db.TxStore) []*TxJson {
 			if err == nil && len(params) == 5 && params[0] == "iost" {
 				txnOut.From = params[1]
 				txnOut.To = params[2]
-				f, _ := strconv.ParseFloat(params[3], 64)
+				f := getIOSTAmount(params[3])
 				txnOut.Amount = f
 			}
 		} else if tx.Tx.Actions[0].Contract == "exchange.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
@@ -75,7 +76,7 @@ func ConvertTxJsons(txs []*db.TxStore) []*TxJson {
 				if params[1] != "" {
 					txnOut.From = tx.Tx.Publisher
 					txnOut.To = params[1]
-					f, _ := strconv.ParseFloat(params[2], 64)
+					f := getIOSTAmount(params[2])
 					txnOut.Amount = f
 				}
 			}
@@ -91,6 +92,15 @@ func ConvertTxsOutputs(tx []*db.TxStore) []*TxnDetail {
 		ret = append(ret, ConvertTxOutput(t))
 	}
 	return ret
+}
+
+func getIOSTAmount(s string) float64 {
+	point := strings.Index(s, ".")
+	if point > 0 && point+9 <= len(s) {
+		s = s[:point+9]
+	}
+	f, _ := strconv.ParseFloat(s, 64)
+	return f
 }
 
 /// convert FlatTx to TxnDetail
@@ -118,7 +128,7 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 		if err == nil && len(params) == 5 && params[0] == "iost" {
 			txnOut.From = params[1]
 			txnOut.To = params[2]
-			f, _ := strconv.ParseFloat(params[3], 64)
+			f := getIOSTAmount(params[3])
 			txnOut.Amount = f * 1e8
 			txnOut.Memo = params[4]
 		}
@@ -129,7 +139,7 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 			if params[1] != "" {
 				txnOut.From = tx.Tx.Publisher
 				txnOut.To = params[1]
-				f, _ := strconv.ParseFloat(params[2], 64)
+				f := getIOSTAmount(params[2])
 				txnOut.Amount = f * 1e8
 			}
 		}
