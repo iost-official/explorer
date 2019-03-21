@@ -5,6 +5,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/iost-official/explorer/backend/config"
 	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/iost-official/explorer/backend/util"
 	"github.com/iost-official/go-iost/account"
 	"github.com/iost-official/go-iost/common"
 	"github.com/iost-official/go-iost/crypto"
@@ -28,7 +29,11 @@ type UserAwardFailed struct {
 func award() error {
 	// config and constants
 	acc := "admin"
-	privKey := "2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1"
+	byteKey, err := util.ReadPassword("Enter Password:  ")
+	if err != nil {
+		return err
+	}
+	privKey := string(byteKey)
 	actionsNumPerTx := 500
 	//gasPledgeAmount := 1000
 
@@ -123,8 +128,6 @@ func initFakeData() {
 }
 
 func main() {
-	fmt.Println("hahaha")
-	return
 	initFakeData()
 	err := award()
 	fmt.Println(err)

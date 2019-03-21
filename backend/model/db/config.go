@@ -29,6 +29,7 @@ const (
 	CollectionVoteTx        = "voteTx"
 	CollectionProducerAward = "producerAward"
 	CollectionUserAward     = "userAward"
+	CollectionFailedAward   = "failedUserAward"
 	CollectionAwardInfo 	= "awardInfo"
 )
 
