@@ -14,6 +14,11 @@ import (
 	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
 )
 
+type VoteTx struct {
+	Actions   []*rpcpb.Action  `bson:"action" json:"action"`
+	TxReceipt *rpcpb.TxReceipt `bson:"txReceipt" json:"txReceipt"`
+}
+
 type AccountTx struct {
 	Name          string `bson:"name"`
 	Time          int64  `bson:"time"`
@@ -311,15 +316,23 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 	contractTxC := GetCollection(CollectionContractTx)
 	contractTxB := contractTxC.Bulk()
 
+	voteTxC := GetCollection(CollectionVoteTx)
+	voteTxB := voteTxC.Bulk()
+
 	updatedAccounts := make(map[string]struct{})
 	updatedContracts := make(map[string]struct{})
 
 	accountToTx := make(map[string]bool)
 
 	for _, t := range txs {
+		isVote := false
 
 		for _, r := range t.TxReceipt.Receipts {
 
+			// vote
+			if strings.Contains(r.FuncName, "vote_producer.iost") {
+				isVote = true
+			}
 			// transfer
 			if r.FuncName == "token.iost/transfer" {
 				var params []string
@@ -390,7 +403,9 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 					}
 				}
 			}*/
-
+			if a.Contract == "vote_producer.iost" {
+				isVote = true
+			}
 			if a.Contract == "system.iost" && a.ActionName == "initSetCode" &&
 				t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
 				var params []string
@@ -433,6 +448,10 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 			accountToTx[t.Publisher+t.Hash] = true
 		}
 
+		if isVote {
+			voteTxB.Insert(&VoteTx{t.Actions, t.TxReceipt})
+		}
+
 	}
 
 	wg := new(sync.WaitGroup)
@@ -454,11 +473,12 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 	}()
 	wg.Wait()
 
-	wg.Add(5)
+	wg.Add(6)
 	go retryWriteMgo(accTxB, wg)
 	go retryWriteMgo(accountPubB, wg)
 	go retryWriteMgo(accountB, wg)
 	go retryWriteMgo(contractB, wg)
 	go retryWriteMgo(contractTxB, wg)
+	go retryWriteMgo(voteTxB, wg)
 	wg.Wait()
 }
