@@ -176,14 +176,41 @@ func SyncBP() {
 func SetVoteAwardInfo(c echo.Context) (err error) {
 	aInfo := new(db.AwardInfo)
 	if err = c.Bind(aInfo); err != nil {
-		return
+		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
+	aInfo.Aid = strconv.FormatInt(aInfo.StartTime, 10) + strconv.FormatInt(aInfo.EndTime, 10) + strconv.FormatInt(aInfo.TotalAmount, 10)
 
 	if err = db.SaveAwardInfo(*aInfo); err != nil {
-		return
+		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
 
-	return nil
+	return c.JSON(http.StatusOK, FormatResponse(aInfo.Aid))
+}
+
+func GetUserAward(c echo.Context) error {
+	var id string
+	if err := c.Bind(&id); err != nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed("Failed to get aid"))
+	}
+	fmt.Println(id)
+
+	userAward, err := db.GetUserAward(id)
+	if err != nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed(nil))
+	}
+	return c.JSON(http.StatusOK, FormatResponse(userAward))
+}
+
+func GetProducerAward(c echo.Context) (err error) {
+	var id string
+	if err := c.Bind(&id); err != nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed("Failed to get aid"))
+	}
+	producerAward, err := db.GetProducerAward(id)
+	if err != nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed(nil))
+	}
+	return c.JSON(http.StatusOK, FormatResponse(producerAward))
 }
 
 func CalculateAward(c echo.Context) (err error) {

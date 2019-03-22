@@ -54,7 +54,9 @@ func main() {
 	e.GET("/api/BPRegister", controller.RegistBP)
 
 	// voteAward
-	e.GET("/api/SetVoteAwardInfo", controller.SetVoteAwardInfo)
+	e.POST("/api/SetVoteAwardInfo", controller.SetVoteAwardInfo)
+	e.POST("/api/GetUserAward", controller.GetUserAward)
+	e.POST("/api/GetProducerAward", controller.GetProducerAward)
 	e.GET("/api/CalculateAward", controller.CalculateAward)
 	e.GET("/api/BPRegister", controller.RegistBP)
 
