@@ -173,6 +173,24 @@ func SyncBP() {
 	}()
 }
 
+func SetVoteAwardInfo(c echo.Context) (err error) {
+	aInfo := new(db.AwardInfo)
+	if err = c.Bind(aInfo); err != nil {
+		return
+	}
+
+	if err = db.SaveAwardInfo(*aInfo); err != nil {
+		return
+	}
+
+	return nil
+}
+
+func CalculateAward(c echo.Context) (err error) {
+
+	return
+}
+
 func RegistBP(c echo.Context) (err error) {
 	accountName := c.QueryParam("accountName")
 	bpURL := c.QueryParam("bpURL")

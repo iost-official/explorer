@@ -17,6 +17,7 @@ import (
 type VoteTx struct {
 	Actions   []*rpcpb.Action  `bson:"action" json:"action"`
 	TxReceipt *rpcpb.TxReceipt `bson:"txReceipt" json:"txReceipt"`
+	Time      int64            `bson:"time"`
 }
 
 type AccountTx struct {
@@ -449,7 +450,9 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 		}
 
 		if isVote {
-			voteTxB.Insert(&VoteTx{t.Actions, t.TxReceipt})
+			if t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
+				voteTxB.Insert(&VoteTx{t.Actions, t.TxReceipt, t.Time})
+			}
 		}
 
 	}

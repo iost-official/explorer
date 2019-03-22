@@ -53,5 +53,10 @@ func main() {
 	// register BP
 	e.GET("/api/BPRegister", controller.RegistBP)
 
+	// voteAward
+	e.GET("/api/SetVoteAwardInfo", controller.SetVoteAwardInfo)
+	e.GET("/api/CalculateAward", controller.CalculateAward)
+	e.GET("/api/BPRegister", controller.RegistBP)
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
