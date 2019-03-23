@@ -36,31 +36,21 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 	}
 
 	for {
-		wg := new(sync.WaitGroup)
-		wg.Add(10)
-		for i := 0; i < 10; i++ {
-			go func(topHeightInMongo int64) {
-				for {
-					blockRspn, err := blockchain.GetBlockByNum(topHeightInMongo, true)
-					if err != nil {
-						log.Println("Download block", topHeightInMongo, "error:", err)
-						time.Sleep(time.Second)
-						continue
-					}
-					if blockRspn.Status == rpcpb.BlockResponse_PENDING {
-						log.Println("Download block", topHeightInMongo, "Pending")
-						time.Sleep(time.Second)
-						continue
-					}
-					blockChannel <- blockRspn.Block
-					log.Println("Download block", topHeightInMongo, " Succ!")
-					wg.Done()
-					return
-				}
-			}(topHeightInMongo + int64(i))
+		blockRspn, err := blockchain.GetBlockByNum(topHeightInMongo, true)
+		if err != nil {
+			log.Println("Download block", topHeightInMongo, "error:", err)
+			time.Sleep(time.Second)
+			continue
 		}
-		wg.Wait()
-		topHeightInMongo += 10
+		if blockRspn.Status == rpcpb.BlockResponse_PENDING {
+			log.Println("Download block", topHeightInMongo, "Pending")
+			time.Sleep(time.Second)
+			continue
+		}
+		blockChannel <- blockRspn.Block
+		log.Println("Download block", topHeightInMongo, " Succ!")
+		topHeightInMongo++
+		return
 	}
 }
 
