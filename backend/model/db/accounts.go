@@ -15,9 +15,9 @@ import (
 )
 
 type VoteTx struct {
-	Actions   []*rpcpb.Action  `bson:"action" json:"action"`
-	TxReceipt *rpcpb.TxReceipt `bson:"txReceipt" json:"txReceipt"`
-	Time      int64            `bson:"time"`
+	Actions     []*rpcpb.Action  `bson:"action" json:"action"`
+	TxReceipt   *rpcpb.TxReceipt `bson:"txReceipt" json:"txReceipt"`
+	BlockNumber int64            `bson:"blockNumber"`
 }
 
 type AccountTx struct {
@@ -300,7 +300,7 @@ func retryWriteMgo(b *mgo.Bulk, wg *sync.WaitGroup) {
 	}
 }
 
-func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
+func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64, blockNumber int64) {
 
 	accTxC := GetCollection(CollectionAccountTx)
 	accTxB := accTxC.Bulk()
@@ -451,7 +451,7 @@ func ProcessTxsForAccount(txs []*rpcpb.Transaction, blockTime int64) {
 
 		if isVote {
 			if t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
-				voteTxB.Insert(&VoteTx{t.Actions, t.TxReceipt, t.Time})
+				voteTxB.Insert(&VoteTx{t.Actions, t.TxReceipt, blockNumber})
 			}
 		}
 
