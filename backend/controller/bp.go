@@ -27,8 +27,18 @@ import (
 const (
 	chainInfoUrl    = "https://api.iost.io/getChainInfo"
 	chainStorageUrl = "http://api.iost.io/getContractStorage"
+	ActionVote      = iota
+	ActionUnvote
+	ActionRegister
+	ActionUnRegister
 )
 
+type VoteAction struct {
+	ActionType int
+	From       string
+	To         string
+	Amount     int64
+}
 type chainInfo struct {
 	WitnessList    []string `json:"witness_list"`
 	LibWitnessList []string `json:"lib_witness_list"`
@@ -224,6 +234,80 @@ func GetProducerAward(c echo.Context) (err error) {
 }
 
 func CalculateAward(c echo.Context) (err error) {
+	voteTxs, err := db.GetVoteTxs()
+	var producerTxs map[string][]VoteAction
+	for _, vTx := range voteTxs {
+		for _, receipt := range vTx.TxReceipt.Receipts {
+			switch receipt.FuncName {
+
+			}
+		}
+		for _, action := range vTx.Actions {
+			if action.Contract == "vote_producer.iost" {
+				switch action.ActionName {
+				case "vote":
+					var params []string
+					err := json.Unmarshal([]byte(action.Data), &params)
+					if err == nil && len(params) == 3 {
+						var amount int64
+						amount, err = strconv.ParseInt(params[2], 10, 64)
+						if err != nil {
+							break
+						}
+						vAction := VoteAction{
+							ActionType: ActionVote,
+							From:       params[0],
+							To:         params[1],
+							Amount:     amount,
+						}
+						producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					}
+					break
+				case "unvote":
+					var params []string
+					err := json.Unmarshal([]byte(action.Data), &params)
+					if err == nil && len(params) == 3 {
+						var amount int64
+						amount, err = strconv.ParseInt(params[2], 10, 64)
+						if err != nil {
+							break
+						}
+						vAction := VoteAction{
+							ActionType: ActionUnvote,
+							From:       params[0],
+							To:         params[1],
+							Amount:     amount,
+						}
+						producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					}
+					break
+				case "unregister":
+					var params []string
+					err := json.Unmarshal([]byte(action.Data), &params)
+					if err == nil && len(params) == 1 {
+						vAction := VoteAction{
+							ActionType: ActionUnRegister,
+						}
+						producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					}
+					break
+				case "applyRegister":
+					var params []string
+					err := json.Unmarshal([]byte(action.Data), &params)
+					if err == nil && len(params) == 1 {
+						vAction := VoteAction{
+							ActionType: ActionRegister,
+						}
+						producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					}
+					break
+				default:
+					break
+				}
+			}
+		}
+
+	}
 
 	return
 }
