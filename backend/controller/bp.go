@@ -188,11 +188,7 @@ func SetVoteAwardInfo(c echo.Context) (err error) {
 }
 
 func GetUserAward(c echo.Context) error {
-	var id string
-	if err := c.Bind(&id); err != nil {
-		return c.JSON(http.StatusOK, FormatResponseFailed("Failed to get aid"))
-	}
-	fmt.Println(id)
+	id := c.QueryParam("aid")
 
 	userAward, err := db.GetUserAward(id)
 	if err != nil {
@@ -201,11 +197,25 @@ func GetUserAward(c echo.Context) error {
 	return c.JSON(http.StatusOK, FormatResponse(userAward))
 }
 
-func GetProducerAward(c echo.Context) (err error) {
-	var id string
-	if err := c.Bind(&id); err != nil {
-		return c.JSON(http.StatusOK, FormatResponseFailed("Failed to get aid"))
+func GetVoteAwardList(c echo.Context) (err error) {
+	voteAwardList, err := db.GetVoteAwardList()
+	if err != nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed(nil))
 	}
+	return c.JSON(http.StatusOK, FormatResponse(voteAwardList))
+}
+
+func GetVoteAwardInfo(c echo.Context) (err error) {
+	id := c.QueryParam("aid")
+	voteAward, err := db.GetVoteAwardInfo(id)
+	if err != nil {
+		return c.JSON(http.StatusOK, FormatResponseFailed(nil))
+	}
+	return c.JSON(http.StatusOK, FormatResponse(voteAward))
+}
+
+func GetProducerAward(c echo.Context) (err error) {
+	id := c.QueryParam("aid")
 	producerAward, err := db.GetProducerAward(id)
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(nil))

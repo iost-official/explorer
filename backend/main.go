@@ -55,10 +55,11 @@ func main() {
 
 	// voteAward
 	e.POST("/api/SetVoteAwardInfo", controller.SetVoteAwardInfo)
-	e.POST("/api/GetUserAward", controller.GetUserAward)
-	e.POST("/api/GetProducerAward", controller.GetProducerAward)
+	e.GET("/api/GetUserAward", controller.GetUserAward)
+	e.GET("/api/GetProducerAward", controller.GetProducerAward)
 	e.GET("/api/CalculateAward", controller.CalculateAward)
-	e.GET("/api/BPRegister", controller.RegistBP)
+	e.GET("/api/GetVoteAwardList", controller.GetVoteAwardList)
+	e.GET("/api/GetVoteAwardInfo", controller.GetVoteAwardInfo)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
