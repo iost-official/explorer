@@ -239,6 +239,64 @@ func CalculateAward(c echo.Context) (err error) {
 	for _, vTx := range voteTxs {
 		for _, receipt := range vTx.TxReceipt.Receipts {
 			switch receipt.FuncName {
+			case "vote_producer.iost/vote":
+				var params []string
+				err := json.Unmarshal([]byte(receipt.Content), &params)
+				if err == nil && len(params) == 3 {
+					var amount int64
+					amount, err = strconv.ParseInt(params[2], 10, 64)
+					if err != nil {
+						break
+					}
+					vAction := VoteAction{
+						ActionType: ActionVote,
+						From:       params[0],
+						To:         params[1],
+						Amount:     amount,
+					}
+					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+				}
+				break
+			case "vote_producer.iost/unvote":
+				var params []string
+				err := json.Unmarshal([]byte(receipt.Content), &params)
+				if err == nil && len(params) == 3 {
+					var amount int64
+					amount, err = strconv.ParseInt(params[2], 10, 64)
+					if err != nil {
+						break
+					}
+					vAction := VoteAction{
+						ActionType: ActionUnvote,
+						From:       params[0],
+						To:         params[1],
+						Amount:     amount,
+					}
+					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+				}
+				break
+			case "vote_producer.iost/unregister":
+				var params []string
+				err := json.Unmarshal([]byte(receipt.Content), &params)
+				if err == nil && len(params) == 1 {
+					vAction := VoteAction{
+						ActionType: ActionUnRegister,
+					}
+					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+				}
+				break
+			case "vote_producer.iost/applyRegister":
+				var params []string
+				err := json.Unmarshal([]byte(receipt.Content), &params)
+				if err == nil && len(params) == 6 {
+					vAction := VoteAction{
+						ActionType: ActionRegister,
+					}
+					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+				}
+				break
+			default:
+				break
 
 			}
 		}
@@ -294,7 +352,7 @@ func CalculateAward(c echo.Context) (err error) {
 				case "applyRegister":
 					var params []string
 					err := json.Unmarshal([]byte(action.Data), &params)
-					if err == nil && len(params) == 1 {
+					if err == nil && len(params) == 6 {
 						vAction := VoteAction{
 							ActionType: ActionRegister,
 						}
