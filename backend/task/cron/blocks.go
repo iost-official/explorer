@@ -50,7 +50,6 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 		blockChannel <- blockRspn.Block
 		log.Println("Download block", topHeightInMongo, " Succ!")
 		topHeightInMongo++
-		return
 	}
 }
 
