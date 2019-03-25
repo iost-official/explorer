@@ -49,7 +49,7 @@ func retryWriteMongo(b *mgo.Bulk) {
 }
 
 func SaveUserAward(userAwards []UserAward) error {
-	UAC := GetCollection(CollectionProducerAward)
+	UAC := GetCollection(CollectionUserAward)
 	UAB := UAC.Bulk()
 	for _, ua := range userAwards {
 		UAB.Insert(&ua)

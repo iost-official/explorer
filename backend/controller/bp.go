@@ -290,7 +290,7 @@ func CalculateAward(c echo.Context) (err error) {
 						Amount:      amount,
 						BlockNumber: vTx.BlockNumber,
 					}
-					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 					aidPidPair := AidPidPair{aid: params[0], pid: params[1]}
 					userVote[aidPidPair] = append(userVote[aidPidPair], vAction)
 
@@ -313,7 +313,7 @@ func CalculateAward(c echo.Context) (err error) {
 						Amount:      amount,
 						BlockNumber: vTx.BlockNumber,
 					}
-					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 					aidPidPair := AidPidPair{aid: params[0], pid: params[1]}
 					userVote[aidPidPair] = append(userVote[aidPidPair], vAction)
 				}
@@ -326,7 +326,7 @@ func CalculateAward(c echo.Context) (err error) {
 					vAction := VoteAction{
 						ActionType: ActionUnRegister,
 					}
-					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
 				break
 			case "vote_producer.iost/applyRegister":
@@ -337,7 +337,7 @@ func CalculateAward(c echo.Context) (err error) {
 					vAction := VoteAction{
 						ActionType: ActionRegister,
 					}
-					producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
 				break
 			default:
@@ -365,7 +365,7 @@ func CalculateAward(c echo.Context) (err error) {
 								Amount:      amount,
 								BlockNumber: vTx.BlockNumber,
 							}
-							producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 							aidPidPair := AidPidPair{aid: params[0], pid: params[1]}
 							userVote[aidPidPair] = append(userVote[aidPidPair], vAction)
 						}
@@ -386,7 +386,7 @@ func CalculateAward(c echo.Context) (err error) {
 								Amount:      amount,
 								BlockNumber: vTx.BlockNumber,
 							}
-							producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 							aidPidPair := AidPidPair{aid: params[0], pid: params[1]}
 							userVote[aidPidPair] = append(userVote[aidPidPair], vAction)
 						}
@@ -398,7 +398,7 @@ func CalculateAward(c echo.Context) (err error) {
 							vAction := VoteAction{
 								ActionType: ActionUnRegister,
 							}
-							producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
 						break
 					case "applyRegister":
@@ -408,7 +408,7 @@ func CalculateAward(c echo.Context) (err error) {
 							vAction := VoteAction{
 								ActionType: ActionRegister,
 							}
-							producerTxs[params[0]] = append(producerTxs[params[0]], vAction)
+							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
 						break
 					default:
