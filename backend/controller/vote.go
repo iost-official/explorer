@@ -120,7 +120,6 @@ func CalculateAward(c echo.Context, currentAid string) (err error) {
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
-	lastBlockNumber = 7127092
 	var firstBlockNumber int64
 	firstBlockNumber, err = db.GetFirstBlockNumberAfter(ainfo.StartTime)
 	if err != nil {
