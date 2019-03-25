@@ -121,7 +121,6 @@ func CalculateAward(c echo.Context) (err error) {
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
-	lastBlockNumber = 7127092
 	var firstBlockNumber int64
 	firstBlockNumber, err = db.GetFirstBlockNumberAfter(ainfo.StartTime)
 	if err != nil {
@@ -309,15 +308,23 @@ func CalculateAward(c echo.Context) (err error) {
 				}
 
 			case ActionUnvote:
+				if producerRegistered && producerOnline {
+					currentBlockNumber := voteAction.BlockNumber
+					producerVoteTotal += (currentBlockNumber/awardInterval - producerVoteChangeLast/awardInterval) * producerVote
+					producerVoteChangeLast = currentBlockNumber
+				}
 				producerVote -= voteAction.Amount
 				if producerRegistered && producerOnline && producerVote < producerOnlineLimit {
 					producerOnlineList[pid] = append(producerOnlineList[pid], ProducerOnlineTime{Start: producerOnlineStart, End: voteAction.BlockNumber})
 					producerOnline = false
 				}
+
 			case ActionRegister:
 				producerRegistered = true
 				if producerVote > producerOnlineLimit {
 					producerOnline = true
+					producerOnlineStart = voteAction.BlockNumber
+					producerVoteChangeLast = voteAction.BlockNumber
 				}
 			case ActionUnRegister:
 				if producerRegistered && producerOnline {
@@ -431,6 +438,8 @@ func CalculateAward(c echo.Context) (err error) {
 						startBlock = voterLastVote
 					}
 					timeInter += currentBlock/awardInterval - startBlock/awardInterval
+				} else if o.Start > voterLastVote && o.End < currentBlock {
+					timeInter += o.End/awardInterval - o.Start/awardInterval
 				}
 			}
 			validVoteTime += voterLastVoteAmount * timeInter
@@ -451,8 +460,8 @@ func CalculateAward(c echo.Context) (err error) {
 		fmt.Println("userAward: ", userAward)
 		userAwards = append(userAwards, userAward)
 	}
-	//err = db.SaveProducerAward(producerAwards)
-	//err = db.SaveUserAward(userAwards)
+	err = db.SaveProducerAward(producerAwards)
+	err = db.SaveUserAward(userAwards)
 
 	return c.JSON(http.StatusOK, FormatResponse(""))
 }
