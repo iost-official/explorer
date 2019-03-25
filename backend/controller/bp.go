@@ -268,8 +268,8 @@ func CalculateAward(c echo.Context) (err error) {
 	fmt.Println("fristBlock: ", firstBlockNumber, " lastBlock: ", lastBlockNumber)
 
 	voteTxs, err := db.GetVoteTxs(firstBlockNumber, lastBlockNumber)
-	var producerTxs map[string][]VoteAction
-	var userVote map[AidPidPair][]VoteAction
+	producerTxs := map[string][]VoteAction{}
+	userVote := map[AidPidPair][]VoteAction{}
 	fmt.Println("fristBlock: ", firstBlockNumber, " lastBlock: ", lastBlockNumber)
 	for _, vTx := range voteTxs {
 		receiptSucc := false
@@ -420,8 +420,8 @@ func CalculateAward(c echo.Context) (err error) {
 			}
 		}
 	}
-	var producerOnlineList map[string][]ProducerOnlineTime
-	var producerVoteTotals map[string]int64
+	producerOnlineList := map[string][]ProducerOnlineTime{}
+	producerVoteTotals := map[string]int64{}
 	var totalVotes int64
 	//Calculate Producer award and ValidTime
 	for pid, voteActions := range producerTxs {
@@ -486,7 +486,7 @@ func CalculateAward(c echo.Context) (err error) {
 
 	}
 
-	var userVotes map[AidPidPair]int64
+	userVotes := map[AidPidPair]int64{}
 	for aidPidPair, voteActions := range userVote {
 		var validVoteTime int64
 		var voterLastVoteAmount int64
