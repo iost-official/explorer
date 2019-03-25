@@ -27,6 +27,26 @@ type FailBlock struct {
 	Processed   bool  `bson:"processed"`
 }
 
+func GetFirstBlockNumberAfter(time int64) (int64, error) {
+	collection := GetCollection(CollectionBlocks)
+	var block Block
+	err := collection.Find(bson.M{"time": bson.M{"$gt": time}}).Sort("blockNumber").One(&block)
+	if err != nil && err.Error() == "not found" {
+		return 0, nil
+	}
+	return block.BlockNumber, nil
+}
+
+func GetLastBlockNumberBefore(time int64) (int64, error) {
+	collection := GetCollection(CollectionBlocks)
+	var block Block
+	err := collection.Find(bson.M{"time": bson.M{"$lt": time}}).Sort("-blockNumber").One(&block)
+	if err != nil && err.Error() == "not found" {
+		return 0, nil
+	}
+	return block.BlockNumber, nil
+}
+
 func GetLastBlockNumber() (int64, error) {
 	collection := GetCollection("block")
 	var block Block
