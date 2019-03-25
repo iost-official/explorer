@@ -265,10 +265,12 @@ func CalculateAward(c echo.Context) (err error) {
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
+	fmt.Println("fristBlock: ", firstBlockNumber, " lastBlock: ", lastBlockNumber)
 
 	voteTxs, err := db.GetVoteTxs(firstBlockNumber, lastBlockNumber)
 	var producerTxs map[string][]VoteAction
 	var userVote map[AidPidPair][]VoteAction
+	fmt.Println("fristBlock: ", firstBlockNumber, " lastBlock: ", lastBlockNumber)
 	for _, vTx := range voteTxs {
 		receiptSucc := false
 		for _, receipt := range vTx.TxReceipt.Receipts {
@@ -471,12 +473,16 @@ func CalculateAward(c echo.Context) (err error) {
 	awardPerVote := float64(totalAward) / float64(totalVotes)
 	var producerAwards []db.ProducerAward
 	for k, v := range producerVoteTotals {
-		producerAwards = append(producerAwards, db.ProducerAward{
+		var producerAward db.ProducerAward
+		producerAward = db.ProducerAward{
 			Aid:   currentAid,
 			Pid:   k,
 			Vote:  v,
 			Award: float64(v) * awardPerVote,
-		})
+		}
+		fmt.Println("producerAward: ", producerAward)
+
+		producerAwards = append(producerAwards, producerAward)
 
 	}
 
@@ -543,13 +549,16 @@ func CalculateAward(c echo.Context) (err error) {
 	}
 	var userAwards []db.UserAward
 	for k, v := range userVotes {
-		userAwards = append(userAwards, db.UserAward{
+		var userAward db.UserAward
+		userAward = db.UserAward{
 			Aid:      currentAid,
 			Username: k.aid,
 			Pid:      k.pid,
 			Vote:     v,
 			Award:    float64(v) * awardPerVote,
-		})
+		}
+		fmt.Println("userAward: ", userAward)
+		userAwards = append(userAwards, userAward)
 	}
 	err = db.SaveProducerAward(producerAwards)
 	err = db.SaveUserAward(userAwards)
