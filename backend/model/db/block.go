@@ -30,7 +30,7 @@ type FailBlock struct {
 func GetFirstBlockNumberAfter(time int64) (int64, error) {
 	collection := GetCollection(CollectionBlocks)
 	var block Block
-	err := collection.Find(bson.M{"time": bson.M{"$gt": time}}).Sort("blockNumber").One(&block)
+	err := collection.Find(bson.M{"time": bson.M{"$gt": time}}).Sort("number").One(&block)
 	if err != nil && err.Error() == "not found" {
 		return 0, nil
 	}
@@ -39,22 +39,22 @@ func GetFirstBlockNumberAfter(time int64) (int64, error) {
 
 func GetLastBlockNumberBefore(time int64) (int64, error) {
 	collection := GetCollection(CollectionBlocks)
-	var block Block
-	err := collection.Find(bson.M{"time": bson.M{"$lt": time}}).Sort("-blockNumber").One(&block)
+	var block *rpcpb.Block
+	err := collection.Find(bson.M{"time": bson.M{"$lt": time}}).Sort("-number").One(&block)
 	if err != nil && err.Error() == "not found" {
 		return 0, nil
 	}
-	return block.BlockNumber, nil
+	return block.Number, nil
 }
 
 func GetLastBlockNumber() (int64, error) {
 	collection := GetCollection("block")
-	var block Block
-	err := collection.Find(bson.M{}).Sort("-blockNumber").One(&block)
+	var block *rpcpb.Block
+	err := collection.Find(bson.M{}).Sort("-number").Limit(1).One(&block)
 	if err != nil && err.Error() == "not found" {
 		return 0, nil
 	}
-	return block.BlockNumber, nil
+	return block.Number, nil
 }
 
 func GetBlockTxnHashes(blockNumber int64) (*[]string, error) {

@@ -70,7 +70,7 @@ func SaveProducerAward(producerAwards []ProducerAward) error {
 
 func GetAwardInfo(aid string) (ainfo AwardInfo, err error) {
 	BPC := GetCollection(CollectionAwardInfo)
-	err = BPC.Find(bson.M{"aid": aid}).All(&ainfo)
+	err = BPC.Find(bson.M{"aid": aid}).One(&ainfo)
 	return
 }
 
