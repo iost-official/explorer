@@ -121,6 +121,7 @@ func CalculateAward(c echo.Context) (err error) {
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
+	lastBlockNumber = 7127092
 	var firstBlockNumber int64
 	firstBlockNumber, err = db.GetFirstBlockNumberAfter(ainfo.StartTime)
 	if err != nil {
@@ -315,6 +316,9 @@ func CalculateAward(c echo.Context) (err error) {
 				}
 			case ActionRegister:
 				producerRegistered = true
+				if producerVote > producerOnlineLimit {
+					producerOnline = true
+				}
 			case ActionUnRegister:
 				if producerRegistered && producerOnline {
 					producerOnlineList[pid] = append(producerOnlineList[pid], ProducerOnlineTime{Start: producerOnlineStart, End: voteAction.BlockNumber})
@@ -406,6 +410,32 @@ func CalculateAward(c echo.Context) (err error) {
 				voterLastVoteAmount -= voteAction.Amount
 			}
 		}
+		// Add last part
+		{
+			currentBlock := lastBlockNumber
+			var timeInter int64
+			for _, o := range producerOnlineList[aidPidPair.pid] {
+				if o.Start < voterLastVote && o.End > voterLastVote {
+					var endBlock int64
+					if currentBlock > o.End {
+						endBlock = o.End
+					} else {
+						endBlock = currentBlock
+					}
+					timeInter += endBlock/awardInterval - voterLastVote/awardInterval
+				} else if o.Start < currentBlock && o.End > currentBlock {
+					var startBlock int64
+					if voterLastVote < o.Start {
+						startBlock = o.Start
+					} else {
+						startBlock = voterLastVote
+					}
+					timeInter += currentBlock/awardInterval - startBlock/awardInterval
+				}
+			}
+			validVoteTime += voterLastVoteAmount * timeInter
+			voterLastVote = currentBlock
+		}
 		userVotes[aidPidPair] = validVoteTime
 	}
 	var userAwards []db.UserAward
@@ -421,8 +451,8 @@ func CalculateAward(c echo.Context) (err error) {
 		fmt.Println("userAward: ", userAward)
 		userAwards = append(userAwards, userAward)
 	}
-	err = db.SaveProducerAward(producerAwards)
-	err = db.SaveUserAward(userAwards)
+	//err = db.SaveProducerAward(producerAwards)
+	//err = db.SaveUserAward(userAwards)
 
 	return c.JSON(http.StatusOK, FormatResponse(""))
 }
