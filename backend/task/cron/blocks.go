@@ -36,38 +36,20 @@ func UpdateBlocks(ws *sync.WaitGroup) {
 	}
 
 	for {
-		wg := new(sync.WaitGroup)
-		var blockMap map[int64]*rpcpb.Block
-		var l sync.RWMutex
-		wg.Add(10)
-		for i := 0; i < 10; i++ {
-			go func(topHeightInMongo int64) {
-				for {
-					blockRspn, err := blockchain.GetBlockByNum(topHeightInMongo, true)
-					if err != nil {
-						log.Println("Download block", topHeightInMongo, "error:", err)
-						time.Sleep(time.Second)
-						continue
-					}
-					if blockRspn.Status == rpcpb.BlockResponse_PENDING {
-						log.Println("Download block", topHeightInMongo, "Pending")
-						time.Sleep(time.Second)
-						continue
-					}
-					l.Lock()
-					blockMap[topHeightInMongo] = blockRspn.Block
-					l.Unlock()
-					log.Println("Download block", topHeightInMongo, " Succ!")
-				}
-				wg.Done()
-			}(topHeightInMongo + int64(i))
+		blockRspn, err := blockchain.GetBlockByNum(topHeightInMongo, true)
+		if err != nil {
+			log.Println("Download block", topHeightInMongo, "error:", err)
+			time.Sleep(time.Second)
+			continue
 		}
-		wg.Wait()
-		for i := 0; i < 10; i++ {
-			blockChannel <- blockMap[topHeightInMongo+int64(i)]
+		if blockRspn.Status == rpcpb.BlockResponse_PENDING {
+			log.Println("Download block", topHeightInMongo, "Pending")
+			time.Sleep(time.Second)
+			continue
 		}
-		topHeightInMongo += 10
-
+		blockChannel <- blockRspn.Block
+		topHeightInMongo++
+		log.Println("Download block", topHeightInMongo, " Succ!")
 	}
 
 }
