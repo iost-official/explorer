@@ -52,7 +52,7 @@ func SaveUserAward(userAwards []UserAward) error {
 	UAC := GetCollection(CollectionUserAward)
 	UAB := UAC.Bulk()
 	for _, ua := range userAwards {
-		UAB.Insert(&ua)
+		UAB.Insert(ua)
 	}
 	retryWriteMongo(UAB)
 	return nil
@@ -62,7 +62,7 @@ func SaveProducerAward(producerAwards []ProducerAward) error {
 	UAC := GetCollection(CollectionProducerAward)
 	UAB := UAC.Bulk()
 	for _, ua := range producerAwards {
-		UAB.Insert(&ua)
+		UAB.Insert(ua)
 	}
 	retryWriteMongo(UAB)
 	return nil
