@@ -51,7 +51,7 @@ func SetVoteAwardInfo(c echo.Context) (err error) {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
 
-	return c.JSON(http.StatusOK, FormatResponse(aInfo.Aid))
+	return CalculateAward(c, aInfo.Aid)
 }
 
 func GetUserAward(c echo.Context) error {
@@ -110,8 +110,7 @@ func GetProducerAward(c echo.Context) (err error) {
 	}
 }
 
-func CalculateAward(c echo.Context) (err error) {
-	currentAid := c.QueryParam("aid")
+func CalculateAward(c echo.Context, currentAid string) (err error) {
 	ainfo, err := db.GetAwardInfo(currentAid)
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
@@ -121,6 +120,7 @@ func CalculateAward(c echo.Context) (err error) {
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
+	lastBlockNumber = 7127092
 	var firstBlockNumber int64
 	firstBlockNumber, err = db.GetFirstBlockNumberAfter(ainfo.StartTime)
 	if err != nil {
@@ -463,5 +463,5 @@ func CalculateAward(c echo.Context) (err error) {
 	err = db.SaveProducerAward(producerAwards)
 	err = db.SaveUserAward(userAwards)
 
-	return c.JSON(http.StatusOK, FormatResponse(""))
+	return c.JSON(http.StatusOK, FormatResponse(currentAid))
 }
