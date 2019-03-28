@@ -124,7 +124,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 	}
 	fmt.Println("fristBlock: ", firstBlockNumber, " lastBlock: ", lastBlockNumber)
 
-	voteTxs, err := db.GetVoteTxs(firstBlockNumber, lastBlockNumber)
+	voteTxs, err := db.GetVoteTxs(lastBlockNumber)
 	producerTxs := map[string][]VoteAction{}
 	userVote := map[AidPidPair][]VoteAction{}
 	fmt.Println("fristBlock: ", firstBlockNumber, " lastBlock: ", lastBlockNumber)
@@ -293,7 +293,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 			case ActionVote:
 				if producerRegistered && producerOnline {
 					currentBlockNumber := voteAction.BlockNumber
-					producerVoteTotal += (currentBlockNumber/awardInterval - producerVoteChangeLast/awardInterval) * producerVote
+					producerVoteTotal += calculateVotes(producerVoteChangeLast, currentBlockNumber, producerVote, firstBlockNumber)
 					producerVoteChangeLast = currentBlockNumber
 				}
 				producerVote += voteAction.Amount
@@ -306,7 +306,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 			case ActionUnvote:
 				if producerRegistered && producerOnline {
 					currentBlockNumber := voteAction.BlockNumber
-					producerVoteTotal += (currentBlockNumber/awardInterval - producerVoteChangeLast/awardInterval) * producerVote
+					producerVoteTotal += calculateVotes(producerVoteChangeLast, currentBlockNumber, producerVote, firstBlockNumber)
 					producerVoteChangeLast = currentBlockNumber
 				}
 				producerVote -= voteAction.Amount
@@ -332,7 +332,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 		}
 		//Currently Still online
 		if producerRegistered && producerOnline {
-			producerVoteTotal += (lastBlockNumber/awardInterval - producerVoteChangeLast/awardInterval) * producerVote
+			producerVoteTotal += calculateVotes(producerVoteChangeLast, lastBlockNumber, producerVote, firstBlockNumber)
 			producerOnlineList[pid] = append(producerOnlineList[pid], ProducerOnlineTime{Start: producerOnlineStart, End: lastBlockNumber})
 		}
 		producerVoteTotals[pid] = producerVoteTotal
@@ -460,4 +460,14 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 	err = db.SaveUserAward(userAwards)
 
 	return c.JSON(http.StatusOK, FormatResponse(currentAid))
+}
+
+func calculateVotes(voteStart, voteEnd, voteAmount, blockStart int64) int64 {
+	if voteEnd < blockStart {
+		return 0
+	}
+	if voteStart < blockStart {
+		voteStart = blockStart
+	}
+	return (voteEnd/awardInterval - voteStart/awardInterval) * voteAmount
 }

@@ -126,9 +126,9 @@ func GetProducerAward(id string) ([]*ProducerAward, error) {
 	return awards, err
 }
 
-func GetVoteTxs(startBlock, endBlock int64) (voteTx []*VoteTx, err error) {
+func GetVoteTxs(endBlock int64) (voteTx []*VoteTx, err error) {
 	BPC := GetCollection(CollectionVoteTx)
-	err = BPC.Find(bson.M{"blockNumber": bson.M{"$gte": startBlock, "$lte": endBlock}}).All(&voteTx)
+	err = BPC.Find(bson.M{"blockNumber": bson.M{"$lte": endBlock}}).All(&voteTx)
 	if err != nil {
 		return nil, err
 	}
