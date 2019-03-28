@@ -311,7 +311,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				}
 				producerVote -= voteAction.Amount
 				if producerRegistered && producerOnline && producerVote < producerOnlineLimit {
-					producerOnlineList[pid] = append(producerOnlineList[pid], ProducerOnlineTime{Start: producerOnlineStart, End: voteAction.BlockNumber})
+					producerOnlineList[pid] = appendProducerOnline(producerOnlineList[pid], producerOnlineStart, voteAction.BlockNumber, firstBlockNumber)
 					producerOnline = false
 				}
 
@@ -324,7 +324,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				}
 			case ActionUnRegister:
 				if producerRegistered && producerOnline {
-					producerOnlineList[pid] = append(producerOnlineList[pid], ProducerOnlineTime{Start: producerOnlineStart, End: voteAction.BlockNumber})
+					producerOnlineList[pid] = appendProducerOnline(producerOnlineList[pid], producerOnlineStart, voteAction.BlockNumber, firstBlockNumber)
 				}
 				producerRegistered = false
 				producerOnline = false
@@ -333,7 +333,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 		//Currently Still online
 		if producerRegistered && producerOnline {
 			producerVoteTotal += calculateVotes(producerVoteChangeLast, lastBlockNumber, producerVote, firstBlockNumber)
-			producerOnlineList[pid] = append(producerOnlineList[pid], ProducerOnlineTime{Start: producerOnlineStart, End: lastBlockNumber})
+			producerOnlineList[pid] = appendProducerOnline(producerOnlineList[pid], producerOnlineStart, lastBlockNumber, firstBlockNumber)
 		}
 		producerVoteTotals[pid] = producerVoteTotal
 		totalVotes += producerVoteTotal
@@ -351,7 +351,6 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 		fmt.Println("producerAward: ", producerAward)
 
 		producerAwards = append(producerAwards, producerAward)
-
 	}
 
 	userVotes := map[AidPidPair]int64{}
@@ -470,4 +469,14 @@ func calculateVotes(voteStart, voteEnd, voteAmount, blockStart int64) int64 {
 		voteStart = blockStart
 	}
 	return (voteEnd/awardInterval - voteStart/awardInterval) * voteAmount
+}
+
+func appendProducerOnline(currentList []ProducerOnlineTime, onlineStart, onlineEnd, blockStart int64) []ProducerOnlineTime {
+	if onlineEnd < blockStart {
+		return currentList
+	}
+	if onlineStart < blockStart {
+		onlineStart = blockStart
+	}
+	return append(currentList, ProducerOnlineTime{Start: onlineStart, End: onlineEnd})
 }
