@@ -32,6 +32,11 @@
 			</div>
 
 			<div class="my-group">
+				<p class="">Private Key</p>
+				<input class="my-input col-sm-8" v-model.trim()="privKey" disabled>
+			</div>
+
+			<div class="my-group">
 				<p class="">Account Name</p>
 				<input class="my-input col-sm-8" placeholder="Account Name" id="applyName" v-model.trim()="accountName">
 			</div>
