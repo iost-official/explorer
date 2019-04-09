@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -44,10 +45,13 @@ type VoteAction struct {
 func SetProducerContributions(c echo.Context) (err error) {
 	aInfo := new(db.ProducerLevelInfo)
 
-	if err = c.Bind(aInfo); err != nil {
-		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
-	}
-	fmt.Println(aInfo)
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(c.Request().Body)
+	s := buf.String() // Does a complete copy of the bytes in the buffer.
+	fmt.Println(s)
+
+	json.Unmarshal([]byte(s), &aInfo)
+	fmt.Printf("haha %+v", aInfo)
 
 	if err = db.SaveProducerLevelInfo(*aInfo); err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
@@ -534,6 +538,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 		case 5:
 			levelProducerCount[4]++
 		default:
+			fmt.Println("haha:", v)
 			return c.JSON(http.StatusOK, FormatResponseFailed("ProducerLevel Error!"))
 		}
 	}
@@ -772,17 +777,19 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 
 		var pLevel int
 		var ok bool
+		var award float64
 		fmt.Println("producerName: ", k)
 		if pLevel, ok = producerLevels[k]; ok {
 			pLevel--
+			award = float64(levelAward[pLevel]) / float64(levelProducerCount[pLevel])
 		} else {
-			continue
+			award = 0
 		}
 		producerAward = db.ProducerAward{
 			Aid:   currentAid,
 			Pid:   k,
 			Vote:  v,
-			Award: float64(levelAward[pLevel]) / float64(levelProducerCount[pLevel]),
+			Award: award,
 		}
 		fmt.Println("producerAward: ", producerAward)
 
@@ -883,17 +890,22 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 		var userAward db.UserAward
 		var pLevel int
 		var ok bool
+		var award float64
 		if pLevel, ok = producerLevels[k.pid]; ok {
 			pLevel--
+			award = (float64(v) / float64(producerVoteTotals[k.pid])) * (float64(levelAward[pLevel]) / float64(levelProducerCount[pLevel]))
 		} else {
-			continue
+			award = 0
+		}
+		if producerVoteTotals[k.pid] == 0 {
+			award = 0
 		}
 		userAward = db.UserAward{
 			Aid:      currentAid,
 			Username: k.aid,
 			Pid:      k.pid,
 			Vote:     v,
-			Award:    (float64(v) / float64(producerVoteTotals[k.pid])) * (float64(levelAward[pLevel]) / float64(levelProducerCount[pLevel])),
+			Award:    award,
 		}
 		fmt.Println("userAward: ", userAward)
 		userAwards = append(userAwards, userAward)
