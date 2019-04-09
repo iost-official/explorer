@@ -9,6 +9,17 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
+type ProducerLevel struct {
+	Pid   string `json:"pid" form:"pid" query:"pid"`
+	Level int    `json:"level" form:"level" query:"level"`
+}
+
+type ProducerLevelInfo struct {
+	Aid            string           `json:"aid" form:"aid" query:"aid"`
+	//ProducerLevels []*ProducerLevel `json:"producerlevels" form:"producerlevels" query:"producerlevels"`
+	ProducerLevels []*ProducerLevel `json:"producerlevels" form:"producerlevels" query:"producerlevels"`
+}
+
 type AwardInfo struct {
 	Aid         string `json:"aid" form:"aid" query:"aid"`
 	StartTime   int64  `json:"start_time" form:"start_time" query:"start_time"`
@@ -48,6 +59,26 @@ func retryWriteMongo(b *mgo.Bulk) {
 	}
 }
 
+func SaveUserContributionAward(userAwards []UserAward) error {
+	UAC := GetCollection(CollectionUserContributionAward)
+	UAB := UAC.Bulk()
+	for _, ua := range userAwards {
+		UAB.Upsert(bson.M{"aid": ua.Aid, "pid": ua.Pid, "username": ua.Username}, ua)
+	}
+	retryWriteMongo(UAB)
+	return nil
+}
+
+func SaveProducerContributionAward(producerAwards []ProducerAward) error {
+	UAC := GetCollection(CollectionProducerContributionAward)
+	UAB := UAC.Bulk()
+	for _, ua := range producerAwards {
+		UAB.Upsert(bson.M{"aid": ua.Aid, "pid": ua.Pid}, ua)
+	}
+	retryWriteMongo(UAB)
+	return nil
+}
+
 func SaveUserAward(userAwards []UserAward) error {
 	UAC := GetCollection(CollectionUserAward)
 	UAB := UAC.Bulk()
@@ -72,6 +103,12 @@ func GetAwardInfo(aid string) (ainfo AwardInfo, err error) {
 	BPC := GetCollection(CollectionAwardInfo)
 	err = BPC.Find(bson.M{"aid": aid}).One(&ainfo)
 	return
+}
+
+func SaveProducerLevelInfo(aInfo ProducerLevelInfo) error {
+	BPC := GetCollection(CollectionProducerLevelInfo)
+	_, err := BPC.Upsert(bson.M{"aid": aInfo.Aid}, aInfo)
+	return err
 }
 
 func SaveAwardInfo(aInfo AwardInfo) error {
@@ -106,6 +143,27 @@ func GetVoteAwardInfo(id string) ([]*AwardInfo, error) {
 	}
 	return awards, err
 }
+
+func GetUserContributionAward(id string) ([]*UserAward, error) {
+	BPC := GetCollection(CollectionUserContributionAward)
+	var awards []*UserAward
+	err := BPC.Find(bson.M{"aid": id}).All(&awards)
+	if err != nil {
+		return nil, err
+	}
+	return awards, err
+}
+
+func GetProducerContributionAward(id string) ([]*ProducerAward, error) {
+	BPC := GetCollection(CollectionProducerContributionAward)
+	var awards []*ProducerAward
+	err := BPC.Find(bson.M{"aid": id}).All(&awards)
+	if err != nil {
+		return nil, err
+	}
+	return awards, err
+}
+
 func GetUserAward(id string) ([]*UserAward, error) {
 	BPC := GetCollection(CollectionUserAward)
 	var awards []*UserAward

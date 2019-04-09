@@ -55,7 +55,10 @@ func main() {
 
 	// voteAward
 	e.POST("/api/SetVoteAwardInfo", controller.SetVoteAwardInfo)
+	e.POST("/api/SetProducerContributions", controller.SetProducerContributions)
 	e.GET("/api/GetUserAward", controller.GetUserAward)
+	e.GET("/api/GetUserContributionAward", controller.GetUserContributionAward)
+	e.GET("/api/GetProducerContributionAward", controller.GetProducerContributionAward)
 	e.GET("/api/GetProducerAward", controller.GetProducerAward)
 	//e.GET("/api/CalculateAward", controller.CalculateAward)
 	e.GET("/api/GetVoteAwardList", controller.GetVoteAwardList)
