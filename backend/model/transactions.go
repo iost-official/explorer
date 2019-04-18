@@ -9,6 +9,7 @@ import (
 
 	simplejson "github.com/bitly/go-simplejson"
 	"github.com/gogo/protobuf/proto"
+	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
 	"github.com/iost-official/explorer/backend/model/db"
 	contract "github.com/iost-official/explorer/backend/model/pb"
 	"github.com/iost-official/explorer/backend/util"
@@ -60,7 +61,8 @@ func ConvertTxJsons(txs []*db.TxStore) []*TxJson {
 			UTCTime:     util.FormatUTCTime(tx.Tx.Time),
 		}
 
-		if tx.Tx.Actions[0].Contract == "token.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
+		if tx.Tx.Actions[0].Contract == "token.iost" && tx.Tx.Actions[0].ActionName == "transfer" &&
+			tx.Tx.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
 			var params []string
 			err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
 			if err == nil && len(params) == 5 && params[0] == "iost" {
@@ -69,7 +71,8 @@ func ConvertTxJsons(txs []*db.TxStore) []*TxJson {
 				f := getIOSTAmount(params[3])
 				txnOut.Amount = f
 			}
-		} else if tx.Tx.Actions[0].Contract == "exchange.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
+		} else if tx.Tx.Actions[0].Contract == "exchange.iost" && tx.Tx.Actions[0].ActionName == "transfer" &&
+			tx.Tx.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
 			var params []string
 			err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
 			if err == nil && len(params) == 4 && params[0] == "iost" {
@@ -122,7 +125,8 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 		Data:          tx.Tx.Actions[0].Data,
 	}
 
-	if tx.Tx.Actions[0].Contract == "token.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
+	if tx.Tx.Actions[0].Contract == "token.iost" && tx.Tx.Actions[0].ActionName == "transfer" &&
+		tx.Tx.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
 		var params []string
 		err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
 		if err == nil && len(params) == 5 && params[0] == "iost" {
@@ -132,7 +136,8 @@ func ConvertTxOutput(tx *db.TxStore) *TxnDetail {
 			txnOut.Amount = f * 1e8
 			txnOut.Memo = params[4]
 		}
-	} else if tx.Tx.Actions[0].Contract == "exchange.iost" && tx.Tx.Actions[0].ActionName == "transfer" {
+	} else if tx.Tx.Actions[0].Contract == "exchange.iost" && tx.Tx.Actions[0].ActionName == "transfer" &&
+		tx.Tx.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
 		var params []string
 		err := json.Unmarshal([]byte(tx.Tx.Actions[0].Data), &params)
 		if err == nil && len(params) == 4 && params[0] == "iost" {
