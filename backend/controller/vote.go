@@ -244,6 +244,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				if err == nil && len(params) == 1 {
 					vAction := VoteAction{
 						ActionType: ActionUnRegister,
+						To:         params[0],
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -255,6 +256,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				if err == nil && len(params) == 6 {
 					vAction := VoteAction{
 						ActionType: ActionRegister,
+						To:         params[0],
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -316,6 +318,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						if err == nil && len(params) == 1 {
 							vAction := VoteAction{
 								ActionType: ActionUnRegister,
+								To:         params[0],
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
@@ -326,6 +329,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						if err == nil && len(params) == 6 {
 							vAction := VoteAction{
 								ActionType: ActionRegister,
+								To:         params[0],
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
@@ -617,6 +621,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				if err == nil && len(params) == 1 {
 					vAction := VoteAction{
 						ActionType: ActionUnRegister,
+						To:         params[0],
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -628,6 +633,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				if err == nil && len(params) == 6 {
 					vAction := VoteAction{
 						ActionType: ActionRegister,
+						To:         params[0],
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -689,6 +695,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						if err == nil && len(params) == 1 {
 							vAction := VoteAction{
 								ActionType: ActionUnRegister,
+								To:         params[0],
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
@@ -699,6 +706,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						if err == nil && len(params) == 6 {
 							vAction := VoteAction{
 								ActionType: ActionRegister,
+								To:         params[0],
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
