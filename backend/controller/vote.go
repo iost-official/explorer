@@ -23,7 +23,7 @@ const (
 var (
 	totalAward      int64 = 10000
 	lastBlockNumber int64 = 2100000
-	levelAward            = []int{105000000, 52500000, 26250000, 15750000, 10500000}
+	levelAward            = []float64{6328767.12, 3164383.56, 1582191.78, 949315.07, 632876.71, 0}
 )
 
 type ProducerOnlineTime struct {
@@ -527,7 +527,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 
 func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) (err error) {
 	producerLevels := map[string]int{}
-	var levelProducerCount [5]int
+	var levelProducerCount [6]int
 	for _, v := range pInfo.ProducerLevels {
 		producerLevels[v.Pid] = v.Level
 		switch v.Level {
@@ -541,6 +541,8 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 			levelProducerCount[3]++
 		case 5:
 			levelProducerCount[4]++
+		case 6:
+			levelProducerCount[5]++
 		default:
 			fmt.Println("haha:", v)
 			return c.JSON(http.StatusOK, FormatResponseFailed("ProducerLevel Error!"))
