@@ -362,7 +362,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 					producerVoteChangeLast = currentBlockNumber
 				}
 				producerVote += voteAction.Amount
-				if producerRegistered && !producerOnline && producerVote > producerOnlineLimit {
+				if producerRegistered && !producerOnline && producerVote >= producerOnlineLimit {
 					producerOnline = true
 					producerOnlineStart = voteAction.BlockNumber
 					producerVoteChangeLast = voteAction.BlockNumber
@@ -382,7 +382,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 
 			case ActionRegister:
 				producerRegistered = true
-				if producerVote > producerOnlineLimit {
+				if producerVote >= producerOnlineLimit {
 					producerOnline = true
 					producerOnlineStart = voteAction.BlockNumber
 					producerVoteChangeLast = voteAction.BlockNumber
@@ -429,7 +429,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				currentBlock := voteAction.BlockNumber
 				var timeInter int64
 				for _, o := range producerOnlineList[aidPidPair.pid] {
-					if o.Start < voterLastVote && o.End > voterLastVote {
+					if o.Start <= voterLastVote && o.End >= voterLastVote {
 						var endBlock int64
 						if currentBlock > o.End {
 							endBlock = o.End
@@ -437,7 +437,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 							endBlock = currentBlock
 						}
 						timeInter += endBlock/awardInterval - voterLastVote/awardInterval
-					} else if o.Start < currentBlock && o.End > currentBlock {
+					} else if o.Start <= currentBlock && o.End >= currentBlock {
 						var startBlock int64
 						if voterLastVote < o.Start {
 							startBlock = o.Start
@@ -445,7 +445,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
-					} else if o.Start > voterLastVote && o.End < currentBlock {
+					} else if o.Start >= voterLastVote && o.End <= currentBlock {
 						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
 
@@ -457,7 +457,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				currentBlock := voteAction.BlockNumber
 				var timeInter int64
 				for _, o := range producerOnlineList[aidPidPair.pid] {
-					if o.Start < voterLastVote && o.End > voterLastVote {
+					if o.Start <= voterLastVote && o.End >= voterLastVote {
 						var endBlock int64
 						if currentBlock > o.End {
 							endBlock = o.End
@@ -465,7 +465,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 							endBlock = currentBlock
 						}
 						timeInter += endBlock/awardInterval - voterLastVote/awardInterval
-					} else if o.Start < currentBlock && o.End > currentBlock {
+					} else if o.Start <= currentBlock && o.End >= currentBlock {
 						var startBlock int64
 						if voterLastVote < o.Start {
 							startBlock = o.Start
@@ -473,7 +473,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
-					} else if o.Start > voterLastVote && o.End < currentBlock {
+					} else if o.Start >= voterLastVote && o.End <= currentBlock {
 						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
 
@@ -488,7 +488,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 			currentBlock := lastBlockNumber
 			var timeInter int64
 			for _, o := range producerOnlineList[aidPidPair.pid] {
-				if o.Start < voterLastVote && o.End > voterLastVote {
+				if o.Start <= voterLastVote && o.End >= voterLastVote {
 					var endBlock int64
 					if currentBlock > o.End {
 						endBlock = o.End
@@ -496,7 +496,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						endBlock = currentBlock
 					}
 					timeInter += endBlock/awardInterval - voterLastVote/awardInterval
-				} else if o.Start < currentBlock && o.End > currentBlock {
+				} else if o.Start <= currentBlock && o.End >= currentBlock {
 					var startBlock int64
 					if voterLastVote < o.Start {
 						startBlock = o.Start
@@ -504,7 +504,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						startBlock = voterLastVote
 					}
 					timeInter += currentBlock/awardInterval - startBlock/awardInterval
-				} else if o.Start > voterLastVote && o.End < currentBlock {
+				} else if o.Start >= voterLastVote && o.End <= currentBlock {
 					timeInter += o.End/awardInterval - o.Start/awardInterval
 				}
 			}
@@ -747,7 +747,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 					producerVoteChangeLast = currentBlockNumber
 				}
 				producerVote += voteAction.Amount
-				if producerRegistered && !producerOnline && producerVote > producerOnlineLimit {
+				if producerRegistered && !producerOnline && producerVote >= producerOnlineLimit {
 					producerOnline = true
 					producerOnlineStart = voteAction.BlockNumber
 					producerVoteChangeLast = voteAction.BlockNumber
@@ -767,7 +767,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 
 			case ActionRegister:
 				producerRegistered = true
-				if producerVote > producerOnlineLimit {
+				if producerVote >= producerOnlineLimit {
 					producerOnline = true
 					producerOnlineStart = voteAction.BlockNumber
 					producerVoteChangeLast = voteAction.BlockNumber
@@ -824,7 +824,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				currentBlock := voteAction.BlockNumber
 				var timeInter int64
 				for _, o := range producerOnlineList[aidPidPair.pid] {
-					if o.Start < voterLastVote && o.End > voterLastVote {
+					if o.Start <= voterLastVote && o.End >= voterLastVote {
 						var endBlock int64
 						if currentBlock > o.End {
 							endBlock = o.End
@@ -832,7 +832,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 							endBlock = currentBlock
 						}
 						timeInter += endBlock/awardInterval - voterLastVote/awardInterval
-					} else if o.Start < currentBlock && o.End > currentBlock {
+					} else if o.Start <= currentBlock && o.End >= currentBlock {
 						var startBlock int64
 						if voterLastVote < o.Start {
 							startBlock = o.Start
@@ -840,7 +840,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
-					} else if o.Start > voterLastVote && o.End < currentBlock {
+					} else if o.Start >= voterLastVote && o.End <= currentBlock {
 						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
 
@@ -852,7 +852,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				currentBlock := voteAction.BlockNumber
 				var timeInter int64
 				for _, o := range producerOnlineList[aidPidPair.pid] {
-					if o.Start < voterLastVote && o.End > voterLastVote {
+					if o.Start <= voterLastVote && o.End >= voterLastVote {
 						var endBlock int64
 						if currentBlock > o.End {
 							endBlock = o.End
@@ -860,7 +860,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 							endBlock = currentBlock
 						}
 						timeInter += endBlock/awardInterval - voterLastVote/awardInterval
-					} else if o.Start < currentBlock && o.End > currentBlock {
+					} else if o.Start <= currentBlock && o.End >= currentBlock {
 						var startBlock int64
 						if voterLastVote < o.Start {
 							startBlock = o.Start
@@ -868,7 +868,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
-					} else if o.Start > voterLastVote && o.End < currentBlock {
+					} else if o.Start >= voterLastVote && o.End <= currentBlock {
 						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
 
@@ -883,7 +883,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 			currentBlock := lastBlockNumber
 			var timeInter int64
 			for _, o := range producerOnlineList[aidPidPair.pid] {
-				if o.Start < voterLastVote && o.End > voterLastVote {
+				if o.Start <= voterLastVote && o.End >= voterLastVote {
 					var endBlock int64
 					if currentBlock > o.End {
 						endBlock = o.End
@@ -891,7 +891,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						endBlock = currentBlock
 					}
 					timeInter += endBlock/awardInterval - voterLastVote/awardInterval
-				} else if o.Start < currentBlock && o.End > currentBlock {
+				} else if o.Start <= currentBlock && o.End >= currentBlock {
 					var startBlock int64
 					if voterLastVote < o.Start {
 						startBlock = o.Start
@@ -899,7 +899,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						startBlock = voterLastVote
 					}
 					timeInter += currentBlock/awardInterval - startBlock/awardInterval
-				} else if o.Start > voterLastVote && o.End < currentBlock {
+				} else if o.Start >= voterLastVote && o.End <= currentBlock {
 					timeInter += o.End/awardInterval - o.Start/awardInterval
 				}
 			}
@@ -955,6 +955,9 @@ func appendProducerOnline(currentList []ProducerOnlineTime, onlineStart, onlineE
 	}
 	if onlineStart < blockStart {
 		onlineStart = blockStart
+	}
+	if (onlineStart > onlineEnd){
+		fmt.Println("Error: ShouldNotBeGreater!")
 	}
 	return append(currentList, ProducerOnlineTime{Start: onlineStart, End: onlineEnd})
 }
