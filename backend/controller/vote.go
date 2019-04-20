@@ -445,7 +445,10 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
+					} else if o.Start > voterLastVote && o.End < currentBlock {
+						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
+
 				}
 				validVoteTime += voterLastVoteAmount * timeInter
 				voterLastVote = currentBlock
@@ -470,7 +473,10 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
+					} else if o.Start > voterLastVote && o.End < currentBlock {
+						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
+
 				}
 				validVoteTime += voterLastVoteAmount * timeInter
 				voterLastVote = currentBlock
@@ -648,7 +654,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 		}
 		if !receiptSucc {
 			for _, action := range vTx.Actions {
-				if action.Contract == "vote_producer.iost" {
+				if action.Contract == "vote_producer.iost" || action.Contract == "ContractF3tLtxdXwYmKsDiUtTmaQztwJQLPVf9VyWDqufMZHP5p" {
 					switch action.ActionName {
 					case "vote":
 						var params []string
@@ -834,7 +840,10 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
+					} else if o.Start > voterLastVote && o.End < currentBlock {
+						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
+
 				}
 				validVoteTime += voterLastVoteAmount * timeInter
 				voterLastVote = currentBlock
@@ -859,7 +868,10 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 							startBlock = voterLastVote
 						}
 						timeInter += currentBlock/awardInterval - startBlock/awardInterval
+					} else if o.Start > voterLastVote && o.End < currentBlock {
+						timeInter += o.End/awardInterval - o.Start/awardInterval
 					}
+
 				}
 				validVoteTime += voterLastVoteAmount * timeInter
 				voterLastVote = currentBlock
