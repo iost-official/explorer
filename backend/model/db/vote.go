@@ -15,7 +15,7 @@ type ProducerLevel struct {
 }
 
 type ProducerLevelInfo struct {
-	Aid            string           `json:"aid" form:"aid" query:"aid"`
+	Aid string `json:"aid" form:"aid" query:"aid"`
 	//ProducerLevels []*ProducerLevel `json:"producerlevels" form:"producerlevels" query:"producerlevels"`
 	ProducerLevels []*ProducerLevel `json:"producerlevels" form:"producerlevels" query:"producerlevels"`
 }
@@ -186,7 +186,7 @@ func GetProducerAward(id string) ([]*ProducerAward, error) {
 
 func GetVoteTxs(endBlock int64) (voteTx []*VoteTx, err error) {
 	BPC := GetCollection(CollectionVoteTx)
-	err = BPC.Find(bson.M{"blockNumber": bson.M{"$lte": endBlock}}).All(&voteTx)
+	err = BPC.Find(bson.M{"blockNumber": bson.M{"$lte": endBlock}}).Sort("blockNumber").All(&voteTx)
 	if err != nil {
 		return nil, err
 	}
