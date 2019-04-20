@@ -243,8 +243,9 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 1 {
 					vAction := VoteAction{
-						ActionType: ActionUnRegister,
-						To:         params[0],
+						ActionType:  ActionUnRegister,
+						To:          params[0],
+						BlockNumber: vTx.BlockNumber,
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -255,8 +256,9 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 6 {
 					vAction := VoteAction{
-						ActionType: ActionRegister,
-						To:         params[0],
+						ActionType:  ActionRegister,
+						To:          params[0],
+						BlockNumber: vTx.BlockNumber,
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -318,8 +320,9 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 1 {
 							vAction := VoteAction{
-								ActionType: ActionUnRegister,
-								To:         params[0],
+								ActionType:  ActionUnRegister,
+								To:          params[0],
+								BlockNumber: vTx.BlockNumber,
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
@@ -329,8 +332,9 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 6 {
 							vAction := VoteAction{
-								ActionType: ActionRegister,
-								To:         params[0],
+								ActionType:  ActionRegister,
+								To:          params[0],
+								BlockNumber: vTx.BlockNumber,
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
@@ -629,8 +633,9 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 1 {
 					vAction := VoteAction{
-						ActionType: ActionUnRegister,
-						To:         params[0],
+						ActionType:  ActionUnRegister,
+						To:          params[0],
+						BlockNumber: vTx.BlockNumber,
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -641,8 +646,9 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 6 {
 					vAction := VoteAction{
-						ActionType: ActionRegister,
-						To:         params[0],
+						ActionType:  ActionRegister,
+						To:          params[0],
+						BlockNumber: vTx.BlockNumber,
 					}
 					producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 				}
@@ -703,8 +709,9 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 1 {
 							vAction := VoteAction{
-								ActionType: ActionUnRegister,
-								To:         params[0],
+								ActionType:  ActionUnRegister,
+								To:          params[0],
+								BlockNumber: vTx.BlockNumber,
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
@@ -714,8 +721,9 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 6 {
 							vAction := VoteAction{
-								ActionType: ActionRegister,
-								To:         params[0],
+								ActionType:  ActionRegister,
+								To:          params[0],
+								BlockNumber: vTx.BlockNumber,
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
 						}
@@ -956,7 +964,7 @@ func appendProducerOnline(currentList []ProducerOnlineTime, onlineStart, onlineE
 	if onlineStart < blockStart {
 		onlineStart = blockStart
 	}
-	if (onlineStart > onlineEnd){
+	if onlineStart > onlineEnd {
 		fmt.Println("Error: ShouldNotBeGreater!")
 	}
 	return append(currentList, ProducerOnlineTime{Start: onlineStart, End: onlineEnd})
