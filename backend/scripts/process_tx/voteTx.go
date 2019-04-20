@@ -71,7 +71,7 @@ func ProcessTxsForVote(txStore db.TxStore) {
 
 	if isVote {
 		if t.TxReceipt.StatusCode == rpcpb.TxReceipt_SUCCESS {
-			voteTxB.Insert(&db.VoteTx{t.Actions, t.TxReceipt, blockNumber})
+			voteTxB.Upsert(bson.M{"txReceipt.txhash": t.TxReceipt.TxHash}, &db.VoteTx{t.Actions, t.TxReceipt, blockNumber})
 		}
 	}
 

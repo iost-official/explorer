@@ -268,7 +268,8 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 		}
 		if !receiptSucc {
 			for _, action := range vTx.Actions {
-				if action.Contract == "vote_producer.iost" {
+				// ContractF3tLtxdXwYmKsDiUtTmaQztwJQLPVf9VyWDqufMZHP5p is LieBi VoteContract
+				if action.Contract == "vote_producer.iost" || action.Contract == "ContractF3tLtxdXwYmKsDiUtTmaQztwJQLPVf9VyWDqufMZHP5p" {
 					switch action.ActionName {
 					case "vote":
 						var params []string
