@@ -32,14 +32,14 @@ type UserAward struct {
 	Aid      string  `json:"aid" form:"aid" query:"aid"`
 	Username string  `json:"username" form:"username" query:"username"`
 	Pid      string  `json:"pid" form:"pid" query:"pid"`
-	Vote     int64   `json:"vote" form:"vote" query:"vote"`
+	Vote     float64 `json:"vote" form:"vote" query:"vote"`
 	Award    float64 `json:"award" form:"award" query:"award"`
 }
 
 type ProducerAward struct {
 	Aid   string  `json:"aid" form:"aid" query:"aid"`
 	Pid   string  `json:"pid" form:"pid" query:"pid"`
-	Vote  int64   `json:"vote" form:"vote" query:"vote"`
+	Vote  float64 `json:"vote" form:"vote" query:"vote"`
 	Award float64 `json:"award" form:"award" query:"award"`
 }
 

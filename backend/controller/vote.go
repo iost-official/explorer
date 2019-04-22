@@ -38,7 +38,7 @@ type VoteAction struct {
 	ActionType  int
 	From        string
 	To          string
-	Amount      int64
+	Amount      float64
 	BlockNumber int64
 }
 
@@ -197,8 +197,8 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				var params []string
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 3 {
-					var amount int64
-					amount, err = strconv.ParseInt(params[2], 10, 64)
+					var amount float64
+					amount, err = strconv.ParseFloat(params[2], 64)
 					if err != nil {
 						break
 					}
@@ -220,8 +220,8 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				var params []string
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 3 {
-					var amount int64
-					amount, err = strconv.ParseInt(params[2], 10, 64)
+					var amount float64
+					amount, err = strconv.ParseFloat(params[2], 64)
 					if err != nil {
 						break
 					}
@@ -277,8 +277,8 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						var params []string
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 3 {
-							var amount int64
-							amount, err = strconv.ParseInt(params[2], 10, 64)
+							var amount float64
+							amount, err = strconv.ParseFloat(params[2], 64)
 							if err != nil {
 								break
 							}
@@ -298,8 +298,8 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						var params []string
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 3 {
-							var amount int64
-							amount, err = strconv.ParseInt(params[2], 10, 64)
+							var amount float64
+							amount, err = strconv.ParseFloat(params[2], 64)
 							if err != nil {
 								break
 							}
@@ -347,12 +347,12 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 		}
 	}
 	producerOnlineList := map[string][]ProducerOnlineTime{}
-	producerVoteTotals := map[string]int64{}
-	var totalVotes int64
+	producerVoteTotals := map[string]float64{}
+	var totalVotes float64
 	//Calculate Producer award and ValidTime
 	for pid, voteActions := range producerTxs {
-		var producerVote int64
-		var producerVoteTotal int64
+		var producerVote float64
+		var producerVoteTotal float64
 		producerRegistered := true
 		producerOnline := false
 		var producerOnlineStart int64
@@ -422,10 +422,10 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 		producerAwards = append(producerAwards, producerAward)
 	}
 
-	userVotes := map[AidPidPair]int64{}
+	userVotes := map[AidPidPair]float64{}
 	for aidPidPair, voteActions := range userVote {
-		var validVoteTime int64
-		var voterLastVoteAmount int64
+		var validVoteTime float64
+		var voterLastVoteAmount float64
 		var voterLastVote int64
 		for _, voteAction := range voteActions {
 			switch voteAction.ActionType {
@@ -454,7 +454,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 					}
 
 				}
-				validVoteTime += voterLastVoteAmount * timeInter
+				validVoteTime += voterLastVoteAmount * float64(timeInter)
 				voterLastVote = currentBlock
 				voterLastVoteAmount += voteAction.Amount
 			case ActionUnvote:
@@ -482,9 +482,15 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 					}
 
 				}
-				validVoteTime += voterLastVoteAmount * timeInter
+				validVoteTime += voterLastVoteAmount * float64(timeInter)
 				voterLastVote = currentBlock
 				voterLastVoteAmount -= voteAction.Amount
+				if timeInter < 0 {
+					fmt.Println("WTF! Inter<0: ", timeInter, ", aid: ", aidPidPair.aid, "ProducerOnlne: ", producerOnlineList[aidPidPair.pid])
+				}
+				if voterLastVoteAmount < 0 {
+					fmt.Println("WTF! voteAmound <0 : ", voterLastVoteAmount, ", aid: ", aidPidPair.aid, " voteAmound: ", voteAction.Amount, " pid: ", aidPidPair.pid)
+				}
 			}
 		}
 		// Add last part
@@ -512,7 +518,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 					timeInter += o.End/awardInterval - o.Start/awardInterval
 				}
 			}
-			validVoteTime += voterLastVoteAmount * timeInter
+			validVoteTime += voterLastVoteAmount * float64(timeInter)
 			voterLastVote = currentBlock
 		}
 		userVotes[aidPidPair] = validVoteTime
@@ -587,8 +593,8 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				var params []string
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 3 {
-					var amount int64
-					amount, err = strconv.ParseInt(params[2], 10, 64)
+					var amount float64
+					amount, err = strconv.ParseFloat(params[2], 64)
 					if err != nil {
 						break
 					}
@@ -610,8 +616,8 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				var params []string
 				err := json.Unmarshal([]byte(receipt.Content), &params)
 				if err == nil && len(params) == 3 {
-					var amount int64
-					amount, err = strconv.ParseInt(params[2], 10, 64)
+					var amount float64
+					amount, err = strconv.ParseFloat(params[2], 64)
 					if err != nil {
 						break
 					}
@@ -666,8 +672,8 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						var params []string
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 3 {
-							var amount int64
-							amount, err = strconv.ParseInt(params[2], 10, 64)
+							var amount float64
+							amount, err = strconv.ParseFloat(params[2], 64)
 							if err != nil {
 								break
 							}
@@ -687,8 +693,8 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 						var params []string
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 3 {
-							var amount int64
-							amount, err = strconv.ParseInt(params[2], 10, 64)
+							var amount float64
+							amount, err = strconv.ParseFloat(params[2], 64)
 							if err != nil {
 								break
 							}
@@ -736,12 +742,12 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 		}
 	}
 	producerOnlineList := map[string][]ProducerOnlineTime{}
-	producerVoteTotals := map[string]int64{}
-	var totalVotes int64
+	producerVoteTotals := map[string]float64{}
+	var totalVotes float64
 	//Calculate Producer award and ValidTime
 	for pid, voteActions := range producerTxs {
-		var producerVote int64
-		var producerVoteTotal int64
+		var producerVote float64
+		var producerVoteTotal float64
 		producerRegistered := true
 		producerOnline := false
 		var producerOnlineStart int64
@@ -821,10 +827,10 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 		producerAwards = append(producerAwards, producerAward)
 	}
 
-	userVotes := map[AidPidPair]int64{}
+	userVotes := map[AidPidPair]float64{}
 	for aidPidPair, voteActions := range userVote {
-		var validVoteTime int64
-		var voterLastVoteAmount int64
+		var validVoteTime float64
+		var voterLastVoteAmount float64
 		var voterLastVote int64
 		for _, voteAction := range voteActions {
 			switch voteAction.ActionType {
@@ -853,7 +859,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 					}
 
 				}
-				validVoteTime += voterLastVoteAmount * timeInter
+				validVoteTime += voterLastVoteAmount * float64(timeInter)
 				voterLastVote = currentBlock
 				voterLastVoteAmount += voteAction.Amount
 			case ActionUnvote:
@@ -881,7 +887,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 					}
 
 				}
-				validVoteTime += voterLastVoteAmount * timeInter
+				validVoteTime += voterLastVoteAmount * float64(timeInter)
 				voterLastVote = currentBlock
 				voterLastVoteAmount -= voteAction.Amount
 			}
@@ -911,7 +917,7 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 					timeInter += o.End/awardInterval - o.Start/awardInterval
 				}
 			}
-			validVoteTime += voterLastVoteAmount * timeInter
+			validVoteTime += voterLastVoteAmount * float64(timeInter)
 			voterLastVote = currentBlock
 		}
 		userVotes[aidPidPair] = validVoteTime
@@ -947,14 +953,14 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 	return c.JSON(http.StatusOK, FormatResponse(currentAid))
 }
 
-func calculateVotes(voteStart, voteEnd, voteAmount, blockStart int64) int64 {
+func calculateVotes(voteStart, voteEnd int64, voteAmount float64, blockStart int64) float64 {
 	if voteEnd < blockStart {
 		return 0
 	}
 	if voteStart < blockStart {
 		voteStart = blockStart
 	}
-	return (voteEnd/awardInterval - voteStart/awardInterval) * voteAmount
+	return float64(voteEnd/awardInterval-voteStart/awardInterval) * voteAmount
 }
 
 func appendProducerOnline(currentList []ProducerOnlineTime, onlineStart, onlineEnd, blockStart int64) []ProducerOnlineTime {
