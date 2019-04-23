@@ -184,6 +184,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 	}
 	fmt.Println("fristBlock: ", firstBlockNumber, " lastBlock: ", lastBlockNumber)
 
+	// Calculate producerTxs and userVote
 	voteTxs, err := db.GetVoteTxs(lastBlockNumber)
 	producerTxs := map[string][]VoteAction{}
 	userVote := map[AidPidPair][]VoteAction{}
@@ -422,6 +423,7 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 		producerAwards = append(producerAwards, producerAward)
 	}
 
+	//Calculate userVotes that counts
 	userVotes := map[AidPidPair]float64{}
 	for aidPidPair, voteActions := range userVote {
 		var validVoteTime float64
