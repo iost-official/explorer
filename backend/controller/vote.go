@@ -398,6 +398,9 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 				}
 			case ActionUnRegister:
 				if producerRegistered && producerOnline {
+					currentBlockNumber := voteAction.BlockNumber
+					producerVoteTotal += calculateVotes(producerVoteChangeLast, currentBlockNumber, producerVote, firstBlockNumber)
+					producerVoteChangeLast = currentBlockNumber
 					producerOnlineList[pid] = appendProducerOnline(producerOnlineList[pid], producerOnlineStart, voteAction.BlockNumber, firstBlockNumber)
 				}
 				producerRegistered = false
@@ -798,6 +801,9 @@ func CalculateProducerContributions(c echo.Context, pInfo db.ProducerLevelInfo) 
 				}
 			case ActionUnRegister:
 				if producerRegistered && producerOnline {
+					currentBlockNumber := voteAction.BlockNumber
+					producerVoteTotal += calculateVotes(producerVoteChangeLast, currentBlockNumber, producerVote, firstBlockNumber)
+					producerVoteChangeLast = currentBlockNumber
 					producerOnlineList[pid] = appendProducerOnline(producerOnlineList[pid], producerOnlineStart, voteAction.BlockNumber, firstBlockNumber)
 				}
 				producerRegistered = false
