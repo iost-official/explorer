@@ -29,12 +29,12 @@ type FailBlock struct {
 
 func GetFirstBlockNumberAfter(time int64) (int64, error) {
 	collection := GetCollection(CollectionBlocks)
-	var block Block
+	var block *rpcpb.Block
 	err := collection.Find(bson.M{"time": bson.M{"$gt": time}}).Sort("time").One(&block)
 	if err != nil && err.Error() == "not found" {
 		return 0, nil
 	}
-	return block.BlockNumber, nil
+	return block.Number, nil
 }
 
 func GetLastBlockNumberBefore(time int64) (int64, error) {
