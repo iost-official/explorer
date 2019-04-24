@@ -329,15 +329,17 @@ func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
 						}
 						break
 					case "applyRegister":
-						var params []string
+						var params []interface{}
 						err := json.Unmarshal([]byte(action.Data), &params)
 						if err == nil && len(params) == 6 {
 							vAction := VoteAction{
 								ActionType:  ActionRegister,
-								To:          params[0],
+								To:          params[0].(string),
 								BlockNumber: vTx.BlockNumber,
 							}
 							producerTxs[vAction.To] = append(producerTxs[vAction.To], vAction)
+						} else {
+							fmt.Println(err.Error())
 						}
 						break
 					default:
