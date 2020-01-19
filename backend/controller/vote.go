@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/iost-official/explorer/backend/util"
+	"github.com/iost-official/explorer/backend/util/common"
 	"net/http"
 	"strconv"
 
@@ -28,7 +28,7 @@ func SetProducerContributions(c echo.Context) (err error) {
 	}
 
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-	err = util.CalculateProducerContributions(*aInfo)
+	err = common.CalculateProducerContributions(*aInfo)
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}
@@ -144,7 +144,7 @@ func GetVoteAwardInfo(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, FormatResponse(voteAward))
 }
 func CalculateAward(c echo.Context, ainfo db.AwardInfo) (err error) {
-	err = util.CalculateAward(ainfo)
+	err = common.CalculateAward(ainfo)
 	if err != nil {
 		return c.JSON(http.StatusOK, FormatResponseFailed(err.Error()))
 	}

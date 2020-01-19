@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/explorer/backend/util"
+	"github.com/iost-official/explorer/backend/util/common"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	}
 	fmt.Println("%+v", ainfo)
 
-	err = util.CalculateProducerContributions(ainfo)
+	err = common.CalculateProducerContributions(ainfo)
 	if err != nil {
 		panic(err)
 	}
