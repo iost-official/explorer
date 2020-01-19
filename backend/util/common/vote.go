@@ -860,4 +860,4 @@ func appendProducerOnline(currentList []ProducerOnlineTime, onlineStart, onlineE
 }
 
 
-var levelAward            = []float64{6328767.12, 3164383.56, 1582191.78, 949315.07, 632876.71, 0}
+var levelAward            = []float64{26465753/2.0, 13232877/2.0, 6616438/2.0, 3969863/2.0, 2646575/2.0, 0}
