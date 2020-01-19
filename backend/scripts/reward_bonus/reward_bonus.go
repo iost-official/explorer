@@ -43,7 +43,7 @@ func award() error {
 	var userAwards []*UserAward
 
 	// get tasks
-	err := awardC.Find(bson.M{}).Sort("userName").All(&userAwards)
+	err = awardC.Find(bson.M{}).Sort("userName").All(&userAwards)
 	if err != nil {
 		return err
 	}

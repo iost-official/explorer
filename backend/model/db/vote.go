@@ -111,6 +111,12 @@ func SaveProducerLevelInfo(aInfo ProducerLevelInfo) error {
 	return err
 }
 
+func GetProducerLevelInfo(aid string) (pInfo ProducerLevelInfo, err error) {
+	BPC := GetCollection(CollectionProducerLevelInfo)
+	err = BPC.Find(bson.M{"aid": aid}).One(&pInfo)
+	return
+}
+
 func SaveAwardInfo(aInfo AwardInfo) error {
 	BPC := GetCollection(CollectionAwardInfo)
 	count, err := BPC.Find(bson.M{"aid": aInfo.Aid}).Count()
