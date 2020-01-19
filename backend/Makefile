@@ -5,7 +5,7 @@ TARGET = explorer
 all:$(TARGET)
 
 explorer: main.go
-	$(GO) build -o $@ $^
+	$(GO) build -mod vendor -o $@ $^
 
 clean:
 	rm -rf $(TARGET)
