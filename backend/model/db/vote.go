@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -115,6 +116,12 @@ func SaveProducerLevelInfo(aInfo ProducerLevelInfo) error {
 	BPC := GetCollection(CollectionProducerLevelInfo)
 	_, err := BPC.Upsert(bson.M{"aid": aInfo.Aid}, aInfo)
 	return err
+}
+
+func GetProducerLevelInfo(aid string) (pInfo ProducerLevelInfo, err error) {
+	BPC := GetCollection(CollectionProducerLevelInfo)
+	err = BPC.Find(bson.M{"aid": aid}).One(&pInfo)
+	return
 }
 
 func SaveAwardInfo(aInfo AwardInfo) error {
