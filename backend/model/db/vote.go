@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"errors"
 	"log"
 	"time"
@@ -62,8 +63,13 @@ func retryWriteMongo(b *mgo.Bulk) {
 func SaveUserContributionAward(userAwards []UserAward) error {
 	UAC := GetCollection(CollectionUserContributionAward)
 	UAB := UAC.Bulk()
-	for _, ua := range userAwards {
+	for k, ua := range userAwards {
 		UAB.Upsert(bson.M{"aid": ua.Aid, "pid": ua.Pid, "username": ua.Username}, ua)
+		if k % 100 == 0 {
+			retryWriteMongo(UAB)
+			UAB = UAC.Bulk()
+			fmt.Println("finished:", k)
+		}
 	}
 	retryWriteMongo(UAB)
 	return nil
@@ -186,6 +192,7 @@ func GetProducerAward(id string) ([]*ProducerAward, error) {
 
 func GetVoteTxs(endBlock int64) (voteTx []*VoteTx, err error) {
 	BPC := GetCollection(CollectionVoteTx)
+	fmt.Println("vote dbb:", BPC.Database.Name, endBlock)
 	err = BPC.Find(bson.M{"blockNumber": bson.M{"$lte": endBlock}}).Sort("blockNumber").All(&voteTx)
 	if err != nil {
 		return nil, err
