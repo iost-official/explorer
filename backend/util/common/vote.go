@@ -859,5 +859,14 @@ func appendProducerOnline(currentList []ProducerOnlineTime, onlineStart, onlineE
 	return append(currentList, ProducerOnlineTime{Start: onlineStart, End: onlineEnd})
 }
 
+// old:
+// 账号贡献奖励:共1%，用户一半，节点一半
+// 一等：50%, 二等: 25%，类推
+// x = 2.1e8 / 365 * 92 / 2
+// x * 0.5, x * 0.25, x * 0.125, x*0.075, x*0.005 
+//var levelAward            = []float64{26465753/2.0, 13232877/2.0, 6616438/2.0, 3969863/2.0, 2646575/2.0, 0}
 
-var levelAward            = []float64{26465753/2.0, 13232877/2.0, 6616438/2.0, 3969863/2.0, 2646575/2.0, 0}
+// new:
+
+var levelAwardTotal = 2.1e8 / 365 * 92 / 2
+var levelAward = []float64{levelAwardTotal*0.5, levelAwardTotal*0.3, levelAwardTotal*0.15, levelAwardTotal*0.04, levelAwardTotal*0.01}

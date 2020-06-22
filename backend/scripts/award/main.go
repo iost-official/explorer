@@ -14,7 +14,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("%+v", ainfo)
+	fmt.Printf("%+v\n", ainfo)
 
 	err = common.CalculateProducerContributions(ainfo)
 	if err != nil {
