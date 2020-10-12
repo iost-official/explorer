@@ -119,7 +119,7 @@ func GetAccountDetail(c echo.Context) error {
 	//	price = 0
 	//}
 	//value := account.AccountInfo.Balance * price
-	value := 0
+	value := 0.0
 
 	return c.JSON(http.StatusOK, FormatResponse(struct {
 		*AccountOutput
