@@ -66,3 +66,5 @@ backend/task/explorer-task
 backend/explorer
 
 config.json
+
+db
