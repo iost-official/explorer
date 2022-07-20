@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/globalsign/mgo"
-	"github.com/iost-official/explorer/backend/util/transport"
+	"github.com/GincoInc/iost-explorer/backend/util/transport"
 )
 
 func GetDb() (*mgo.Database, error) {

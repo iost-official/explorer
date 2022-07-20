@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/iost-official/explorer/backend/model"
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/model"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 	"github.com/labstack/echo"
 )
 

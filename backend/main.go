@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/iost-official/explorer/backend/config"
-	"github.com/iost-official/explorer/backend/controller"
-	"github.com/iost-official/explorer/backend/middleware"
+	"github.com/GincoInc/iost-explorer/backend/config"
+	"github.com/GincoInc/iost-explorer/backend/controller"
+	"github.com/GincoInc/iost-explorer/backend/middleware"
 	"github.com/labstack/echo"
 	echoMiddle "github.com/labstack/echo/middleware"
 )

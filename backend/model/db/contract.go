@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain/rpcpb"
 )
 
 type ContractTx struct {

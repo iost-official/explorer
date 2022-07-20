@@ -3,9 +3,9 @@ package model
 import (
 	"log"
 
-	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
-	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/explorer/backend/util"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain/rpcpb"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/util"
 )
 
 type BlockOutput struct {

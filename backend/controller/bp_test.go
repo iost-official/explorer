@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/iost-official/explorer/backend/config"
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/config"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 )
 
 func TestGetBPAccount(t *testing.T) {

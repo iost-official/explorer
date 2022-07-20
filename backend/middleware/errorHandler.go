@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/iost-official/explorer/backend/controller"
+	"github.com/GincoInc/iost-explorer/backend/controller"
 	"github.com/labstack/echo"
 	"net/http"
 )

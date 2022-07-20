@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/iost-official/explorer/backend/util/mail"
+	"github.com/GincoInc/iost-explorer/backend/util/mail"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"

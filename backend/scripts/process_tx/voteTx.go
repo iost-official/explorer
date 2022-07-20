@@ -8,9 +8,9 @@ import (
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/explorer/backend/config"
-	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/config"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain/rpcpb"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 )
 
 func retryWriteMongo(b *mgo.Bulk) {

@@ -17,9 +17,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iost-official/explorer/backend/model/blockchain"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain"
 
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 	"github.com/labstack/echo"
 	"github.com/spf13/viper"
 )
