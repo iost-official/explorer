@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC.
+// Copyright 2022 Google LLC.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -54,8 +54,10 @@ import (
 	"strings"
 
 	googleapi "google.golang.org/api/googleapi"
+	internal "google.golang.org/api/internal"
 	gensupport "google.golang.org/api/internal/gensupport"
 	option "google.golang.org/api/option"
+	internaloption "google.golang.org/api/option/internaloption"
 	htransport "google.golang.org/api/transport/http"
 )
 
@@ -72,31 +74,45 @@ var _ = googleapi.Version
 var _ = errors.New
 var _ = strings.Replace
 var _ = context.Canceled
+var _ = internaloption.WithDefaultEndpoint
 
 const apiId = "gmail:v1"
 const apiName = "gmail"
 const apiVersion = "v1"
-const basePath = "https://www.googleapis.com/gmail/v1/users/"
+const basePath = "https://gmail.googleapis.com/"
+const mtlsBasePath = "https://gmail.mtls.googleapis.com/"
 
 // OAuth2 scopes used by this API.
 const (
 	// Read, compose, send, and permanently delete all your email from Gmail
 	MailGoogleComScope = "https://mail.google.com/"
 
+	// Manage drafts and send emails when you interact with the add-on
+	GmailAddonsCurrentActionComposeScope = "https://www.googleapis.com/auth/gmail.addons.current.action.compose"
+
+	// View your email messages when you interact with the add-on
+	GmailAddonsCurrentMessageActionScope = "https://www.googleapis.com/auth/gmail.addons.current.message.action"
+
+	// View your email message metadata when the add-on is running
+	GmailAddonsCurrentMessageMetadataScope = "https://www.googleapis.com/auth/gmail.addons.current.message.metadata"
+
+	// View your email messages when the add-on is running
+	GmailAddonsCurrentMessageReadonlyScope = "https://www.googleapis.com/auth/gmail.addons.current.message.readonly"
+
 	// Manage drafts and send emails
 	GmailComposeScope = "https://www.googleapis.com/auth/gmail.compose"
 
-	// Insert mail into your mailbox
+	// Add emails into your Gmail mailbox
 	GmailInsertScope = "https://www.googleapis.com/auth/gmail.insert"
 
-	// Manage mailbox labels
+	// See and edit your email labels
 	GmailLabelsScope = "https://www.googleapis.com/auth/gmail.labels"
 
 	// View your email message metadata such as labels and headers, but not
 	// the email body
 	GmailMetadataScope = "https://www.googleapis.com/auth/gmail.metadata"
 
-	// View and modify but not delete your email
+	// Read, compose, and send emails from your Gmail account
 	GmailModifyScope = "https://www.googleapis.com/auth/gmail.modify"
 
 	// View your email messages and settings
@@ -105,7 +121,7 @@ const (
 	// Send email on your behalf
 	GmailSendScope = "https://www.googleapis.com/auth/gmail.send"
 
-	// Manage your basic mail settings
+	// See, edit, create, or change your email settings and filters in Gmail
 	GmailSettingsBasicScope = "https://www.googleapis.com/auth/gmail.settings.basic"
 
 	// Manage your sensitive mail settings, including who can manage your
@@ -115,8 +131,12 @@ const (
 
 // NewService creates a new Service.
 func NewService(ctx context.Context, opts ...option.ClientOption) (*Service, error) {
-	scopesOption := option.WithScopes(
+	scopesOption := internaloption.WithDefaultScopes(
 		"https://mail.google.com/",
+		"https://www.googleapis.com/auth/gmail.addons.current.action.compose",
+		"https://www.googleapis.com/auth/gmail.addons.current.message.action",
+		"https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
+		"https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
 		"https://www.googleapis.com/auth/gmail.compose",
 		"https://www.googleapis.com/auth/gmail.insert",
 		"https://www.googleapis.com/auth/gmail.labels",
@@ -129,6 +149,8 @@ func NewService(ctx context.Context, opts ...option.ClientOption) (*Service, err
 	)
 	// NOTE: prepend, so we don't override user-specified scopes.
 	opts = append([]option.ClientOption{scopesOption}, opts...)
+	opts = append(opts, internaloption.WithDefaultEndpoint(basePath))
+	opts = append(opts, internaloption.WithDefaultMTLSEndpoint(mtlsBasePath))
 	client, endpoint, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
@@ -331,11 +353,11 @@ type AutoForwarding struct {
 	// been forwarded.
 	//
 	// Possible values:
-	//   "archive"
-	//   "dispositionUnspecified"
-	//   "leaveInInbox"
-	//   "markRead"
-	//   "trash"
+	//   "dispositionUnspecified" - Unspecified disposition.
+	//   "leaveInInbox" - Leave the message in the `INBOX`.
+	//   "archive" - Archive the message.
+	//   "trash" - Move the message to the `TRASH`.
+	//   "markRead" - Leave the message in the `INBOX` and mark it as read.
 	Disposition string `json:"disposition,omitempty"`
 
 	// EmailAddress: Email address to which all incoming messages are
@@ -353,10 +375,10 @@ type AutoForwarding struct {
 
 	// ForceSendFields is a list of field names (e.g. "Disposition") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Disposition") to include
@@ -380,10 +402,10 @@ type BatchDeleteMessagesRequest struct {
 
 	// ForceSendFields is a list of field names (e.g. "Ids") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Ids") to include in API
@@ -414,10 +436,10 @@ type BatchModifyMessagesRequest struct {
 
 	// ForceSendFields is a list of field names (e.g. "AddLabelIds") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "AddLabelIds") to include
@@ -447,11 +469,14 @@ type Delegate struct {
 	// and can act as a delegate for the account. Read-only.
 	//
 	// Possible values:
-	//   "accepted"
-	//   "expired"
-	//   "pending"
-	//   "rejected"
-	//   "verificationStatusUnspecified"
+	//   "verificationStatusUnspecified" - Unspecified verification status.
+	//   "accepted" - The address can act a delegate for the account.
+	//   "pending" - A verification request was mailed to the address, and
+	// the owner has not yet accepted it.
+	//   "rejected" - A verification request was mailed to the address, and
+	// the owner rejected it.
+	//   "expired" - A verification request was mailed to the address, and
+	// it expired without verification.
 	VerificationStatus string `json:"verificationStatus,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -460,10 +485,10 @@ type Delegate struct {
 
 	// ForceSendFields is a list of field names (e.g. "DelegateEmail") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "DelegateEmail") to include
@@ -495,10 +520,10 @@ type Draft struct {
 
 	// ForceSendFields is a list of field names (e.g. "Id") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Id") to include in API
@@ -534,10 +559,10 @@ type Filter struct {
 
 	// ForceSendFields is a list of field names (e.g. "Action") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Action") to include in API
@@ -568,10 +593,10 @@ type FilterAction struct {
 
 	// ForceSendFields is a list of field names (e.g. "AddLabelIds") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "AddLabelIds") to include
@@ -618,9 +643,9 @@ type FilterCriteria struct {
 	// to the size field.
 	//
 	// Possible values:
-	//   "larger"
-	//   "smaller"
 	//   "unspecified"
+	//   "smaller" - Find messages smaller than the given size.
+	//   "larger" - Find messages larger than the given size.
 	SizeComparison string `json:"sizeComparison,omitempty"`
 
 	// Subject: Case-insensitive phrase found in the message's subject.
@@ -637,10 +662,10 @@ type FilterCriteria struct {
 
 	// ForceSendFields is a list of field names (e.g. "ExcludeChats") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "ExcludeChats") to include
@@ -667,9 +692,9 @@ type ForwardingAddress struct {
 	// and is usable for forwarding. Read-only.
 	//
 	// Possible values:
-	//   "accepted"
-	//   "pending"
-	//   "verificationStatusUnspecified"
+	//   "verificationStatusUnspecified" - Unspecified verification status.
+	//   "accepted" - The address is ready to use for forwarding.
+	//   "pending" - The address is awaiting verification by the owner.
 	VerificationStatus string `json:"verificationStatus,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -678,10 +703,10 @@ type ForwardingAddress struct {
 
 	// ForceSendFields is a list of field names (e.g. "ForwardingEmail") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "ForwardingEmail") to
@@ -713,7 +738,7 @@ type History struct {
 	LabelsRemoved []*HistoryLabelRemoved `json:"labelsRemoved,omitempty"`
 
 	// Messages: List of messages changed in this history record. The fields
-	// for specific change types, such as messagesAdded may duplicate
+	// for specific change types, such as `messagesAdded` may duplicate
 	// messages in this field. We recommend using the specific change-type
 	// fields instead of this.
 	Messages []*Message `json:"messages,omitempty"`
@@ -727,10 +752,10 @@ type History struct {
 
 	// ForceSendFields is a list of field names (e.g. "Id") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Id") to include in API
@@ -756,10 +781,10 @@ type HistoryLabelAdded struct {
 
 	// ForceSendFields is a list of field names (e.g. "LabelIds") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "LabelIds") to include in
@@ -785,10 +810,10 @@ type HistoryLabelRemoved struct {
 
 	// ForceSendFields is a list of field names (e.g. "LabelIds") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "LabelIds") to include in
@@ -811,10 +836,10 @@ type HistoryMessageAdded struct {
 
 	// ForceSendFields is a list of field names (e.g. "Message") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Message") to include in
@@ -837,10 +862,10 @@ type HistoryMessageDeleted struct {
 
 	// ForceSendFields is a list of field names (e.g. "Message") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Message") to include in
@@ -874,10 +899,11 @@ type ImapSettings struct {
 	// folder.
 	//
 	// Possible values:
-	//   "archive"
-	//   "deleteForever"
-	//   "expungeBehaviorUnspecified"
-	//   "trash"
+	//   "expungeBehaviorUnspecified" - Unspecified behavior.
+	//   "archive" - Archive messages marked as deleted.
+	//   "trash" - Move messages marked as deleted to the trash.
+	//   "deleteForever" - Immediately and permanently delete messages
+	// marked as deleted. The expunged messages cannot be recovered.
 	ExpungeBehavior string `json:"expungeBehavior,omitempty"`
 
 	// MaxFolderSize: An optional limit on the number of messages that an
@@ -891,10 +917,10 @@ type ImapSettings struct {
 
 	// ForceSendFields is a list of field names (e.g. "AutoExpunge") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "AutoExpunge") to include
@@ -913,10 +939,11 @@ func (s *ImapSettings) MarshalJSON() ([]byte, error) {
 }
 
 // Label: Labels are used to categorize messages and threads within the
-// user's mailbox.
+// user's mailbox. The maximum number of labels supported for a user's
+// mailbox is 10,000.
 type Label struct {
 	// Color: The color to assign to the label. Color is only available for
-	// labels that have their type set to user.
+	// labels that have their `type` set to `user`.
 	Color *LabelColor `json:"color,omitempty"`
 
 	// Id: The immutable ID of the label.
@@ -926,17 +953,18 @@ type Label struct {
 	// the Gmail web interface.
 	//
 	// Possible values:
-	//   "labelHide"
-	//   "labelShow"
-	//   "labelShowIfUnread"
+	//   "labelShow" - Show the label in the label list.
+	//   "labelShowIfUnread" - Show the label if there are any unread
+	// messages with that label.
+	//   "labelHide" - Do not show the label in the label list.
 	LabelListVisibility string `json:"labelListVisibility,omitempty"`
 
-	// MessageListVisibility: The visibility of the label in the message
-	// list in the Gmail web interface.
+	// MessageListVisibility: The visibility of messages with this label in
+	// the message list in the Gmail web interface.
 	//
 	// Possible values:
-	//   "hide"
-	//   "show"
+	//   "show" - Show the label in the message list.
+	//   "hide" - Do not show the label in the message list.
 	MessageListVisibility string `json:"messageListVisibility,omitempty"`
 
 	// MessagesTotal: The total number of messages with the label.
@@ -960,13 +988,13 @@ type Label struct {
 	// cannot be added, modified, or deleted. System labels may be able to
 	// be applied to or removed from messages and threads under some
 	// circumstances but this is not guaranteed. For example, users can
-	// apply and remove the INBOX and UNREAD labels from messages and
-	// threads, but cannot apply or remove the DRAFTS or SENT labels from
-	// messages or threads.
+	// apply and remove the `INBOX` and `UNREAD` labels from messages and
+	// threads, but cannot apply or remove the `DRAFTS` or `SENT` labels
+	// from messages or threads.
 	//
 	// Possible values:
-	//   "system"
-	//   "user"
+	//   "system" - Labels created by Gmail.
+	//   "user" - Custom labels created by the user or application.
 	Type string `json:"type,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -975,10 +1003,10 @@ type Label struct {
 
 	// ForceSendFields is a list of field names (e.g. "Color") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Color") to include in API
@@ -1000,50 +1028,49 @@ type LabelColor struct {
 	// BackgroundColor: The background color represented as hex string
 	// #RRGGBB (ex #000000). This field is required in order to set the
 	// color of a label. Only the following predefined set of color values
-	// are allowed:
-	// #000000, #434343, #666666, #999999, #cccccc, #efefef, #f3f3f3,
-	// #ffffff, #fb4c2f, #ffad47, #fad165, #16a766, #43d692, #4a86e8,
-	// #a479e2, #f691b3, #f6c5be, #ffe6c7, #fef1d1, #b9e4d0, #c6f3de,
-	// #c9daf8, #e4d7f5, #fcdee8, #efa093, #ffd6a2, #fce8b3, #89d3b2,
-	// #a0eac9, #a4c2f4, #d0bcf1, #fbc8d9, #e66550, #ffbc6b, #fcda83,
-	// #44b984, #68dfa9, #6d9eeb, #b694e8, #f7a7c0, #cc3a21, #eaa041,
-	// #f2c960, #149e60, #3dc789, #3c78d8, #8e63ce, #e07798, #ac2b16,
-	// #cf8933, #d5ae49, #0b804b, #2a9c68, #285bac, #653e9b, #b65775,
-	// #822111, #a46a21, #aa8831, #076239, #1a764d, #1c4587, #41236d,
-	// #83334c #464646, #e7e7e7, #0d3472, #b6cff5, #0d3b44, #98d7e4,
-	// #3d188e, #e3d7ff, #711a36, #fbd3e0, #8a1c0a, #f2b2a8, #7a2e0b,
-	// #ffc8af, #7a4706, #ffdeb5, #594c05, #fbe983, #684e07, #fdedc1,
-	// #0b4f30, #b3efd3, #04502e, #a2dcc1, #c2c2c2, #4986e7, #2da2bb,
-	// #b99aff, #994a64, #f691b2, #ff7537, #ffad46, #662e37, #ebdbde,
-	// #cca6ac, #094228, #42d692, #16a765
+	// are allowed: \#000000, #434343, #666666, #999999, #cccccc, #efefef,
+	// #f3f3f3, #ffffff, \#fb4c2f, #ffad47, #fad165, #16a766, #43d692,
+	// #4a86e8, #a479e2, #f691b3, \#f6c5be, #ffe6c7, #fef1d1, #b9e4d0,
+	// #c6f3de, #c9daf8, #e4d7f5, #fcdee8, \#efa093, #ffd6a2, #fce8b3,
+	// #89d3b2, #a0eac9, #a4c2f4, #d0bcf1, #fbc8d9, \#e66550, #ffbc6b,
+	// #fcda83, #44b984, #68dfa9, #6d9eeb, #b694e8, #f7a7c0, \#cc3a21,
+	// #eaa041, #f2c960, #149e60, #3dc789, #3c78d8, #8e63ce, #e07798,
+	// \#ac2b16, #cf8933, #d5ae49, #0b804b, #2a9c68, #285bac, #653e9b,
+	// #b65775, \#822111, #a46a21, #aa8831, #076239, #1a764d, #1c4587,
+	// #41236d, #83334c \#464646, #e7e7e7, #0d3472, #b6cff5, #0d3b44,
+	// #98d7e4, #3d188e, #e3d7ff, \#711a36, #fbd3e0, #8a1c0a, #f2b2a8,
+	// #7a2e0b, #ffc8af, #7a4706, #ffdeb5, \#594c05, #fbe983, #684e07,
+	// #fdedc1, #0b4f30, #b3efd3, #04502e, #a2dcc1, \#c2c2c2, #4986e7,
+	// #2da2bb, #b99aff, #994a64, #f691b2, #ff7537, #ffad46, \#662e37,
+	// #ebdbde, #cca6ac, #094228, #42d692, #16a765
 	BackgroundColor string `json:"backgroundColor,omitempty"`
 
 	// TextColor: The text color of the label, represented as hex string.
 	// This field is required in order to set the color of a label. Only the
-	// following predefined set of color values are allowed:
-	// #000000, #434343, #666666, #999999, #cccccc, #efefef, #f3f3f3,
-	// #ffffff, #fb4c2f, #ffad47, #fad165, #16a766, #43d692, #4a86e8,
-	// #a479e2, #f691b3, #f6c5be, #ffe6c7, #fef1d1, #b9e4d0, #c6f3de,
-	// #c9daf8, #e4d7f5, #fcdee8, #efa093, #ffd6a2, #fce8b3, #89d3b2,
-	// #a0eac9, #a4c2f4, #d0bcf1, #fbc8d9, #e66550, #ffbc6b, #fcda83,
-	// #44b984, #68dfa9, #6d9eeb, #b694e8, #f7a7c0, #cc3a21, #eaa041,
-	// #f2c960, #149e60, #3dc789, #3c78d8, #8e63ce, #e07798, #ac2b16,
-	// #cf8933, #d5ae49, #0b804b, #2a9c68, #285bac, #653e9b, #b65775,
-	// #822111, #a46a21, #aa8831, #076239, #1a764d, #1c4587, #41236d,
-	// #83334c #464646, #e7e7e7, #0d3472, #b6cff5, #0d3b44, #98d7e4,
-	// #3d188e, #e3d7ff, #711a36, #fbd3e0, #8a1c0a, #f2b2a8, #7a2e0b,
-	// #ffc8af, #7a4706, #ffdeb5, #594c05, #fbe983, #684e07, #fdedc1,
-	// #0b4f30, #b3efd3, #04502e, #a2dcc1, #c2c2c2, #4986e7, #2da2bb,
-	// #b99aff, #994a64, #f691b2, #ff7537, #ffad46, #662e37, #ebdbde,
-	// #cca6ac, #094228, #42d692, #16a765
+	// following predefined set of color values are allowed: \#000000,
+	// #434343, #666666, #999999, #cccccc, #efefef, #f3f3f3, #ffffff,
+	// \#fb4c2f, #ffad47, #fad165, #16a766, #43d692, #4a86e8, #a479e2,
+	// #f691b3, \#f6c5be, #ffe6c7, #fef1d1, #b9e4d0, #c6f3de, #c9daf8,
+	// #e4d7f5, #fcdee8, \#efa093, #ffd6a2, #fce8b3, #89d3b2, #a0eac9,
+	// #a4c2f4, #d0bcf1, #fbc8d9, \#e66550, #ffbc6b, #fcda83, #44b984,
+	// #68dfa9, #6d9eeb, #b694e8, #f7a7c0, \#cc3a21, #eaa041, #f2c960,
+	// #149e60, #3dc789, #3c78d8, #8e63ce, #e07798, \#ac2b16, #cf8933,
+	// #d5ae49, #0b804b, #2a9c68, #285bac, #653e9b, #b65775, \#822111,
+	// #a46a21, #aa8831, #076239, #1a764d, #1c4587, #41236d, #83334c
+	// \#464646, #e7e7e7, #0d3472, #b6cff5, #0d3b44, #98d7e4, #3d188e,
+	// #e3d7ff, \#711a36, #fbd3e0, #8a1c0a, #f2b2a8, #7a2e0b, #ffc8af,
+	// #7a4706, #ffdeb5, \#594c05, #fbe983, #684e07, #fdedc1, #0b4f30,
+	// #b3efd3, #04502e, #a2dcc1, \#c2c2c2, #4986e7, #2da2bb, #b99aff,
+	// #994a64, #f691b2, #ff7537, #ffad46, \#662e37, #ebdbde, #cca6ac,
+	// #094228, #42d692, #16a765
 	TextColor string `json:"textColor,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "BackgroundColor") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "BackgroundColor") to
@@ -1066,17 +1093,14 @@ func (s *LabelColor) MarshalJSON() ([]byte, error) {
 // correspond to the "Language settings" feature in the web interface.
 type LanguageSettings struct {
 	// DisplayLanguage: The language to display Gmail in, formatted as an
-	// RFC 3066 Language Tag (for example en-GB, fr or ja for British
-	// English, French, or Japanese respectively).
-	//
-	// The set of languages supported by Gmail evolves over time, so please
-	// refer to the "Language" dropdown in the Gmail settings  for all
-	// available options, as described in the language settings help
-	// article. A table of sample values is also provided in the Managing
-	// Language Settings guide
-	//
-	// Not all Gmail clients can display the same set of languages. In the
-	// case that a user's display language is not available for use on a
+	// RFC 3066 Language Tag (for example `en-GB`, `fr` or `ja` for British
+	// English, French, or Japanese respectively). The set of languages
+	// supported by Gmail evolves over time, so please refer to the
+	// "Language" dropdown in the Gmail settings for all available options,
+	// as described in the language settings help article. A table of sample
+	// values is also provided in the Managing Language Settings guide Not
+	// all Gmail clients can display the same set of languages. In the case
+	// that a user's display language is not available for use on a
 	// particular client, said client automatically chooses to display in
 	// the closest supported variant (or a reasonable default).
 	DisplayLanguage string `json:"displayLanguage,omitempty"`
@@ -1087,10 +1111,10 @@ type LanguageSettings struct {
 
 	// ForceSendFields is a list of field names (e.g. "DisplayLanguage") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "DisplayLanguage") to
@@ -1112,7 +1136,8 @@ func (s *LanguageSettings) MarshalJSON() ([]byte, error) {
 // ListDelegatesResponse: Response for the ListDelegates method.
 type ListDelegatesResponse struct {
 	// Delegates: List of the user's delegates (with any verification
-	// status).
+	// status). If an account doesn't have delegates, this field doesn't
+	// appear.
 	Delegates []*Delegate `json:"delegates,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -1121,10 +1146,10 @@ type ListDelegatesResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "Delegates") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Delegates") to include in
@@ -1143,9 +1168,9 @@ func (s *ListDelegatesResponse) MarshalJSON() ([]byte, error) {
 }
 
 type ListDraftsResponse struct {
-	// Drafts: List of drafts. Note that the Message property in each Draft
-	// resource only contains an id and a threadId. The messages.get method
-	// can fetch additional message details.
+	// Drafts: List of drafts. Note that the `Message` property in each
+	// `Draft` resource only contains an `id` and a `threadId`. The
+	// messages.get method can fetch additional message details.
 	Drafts []*Draft `json:"drafts,omitempty"`
 
 	// NextPageToken: Token to retrieve the next page of results in the
@@ -1161,10 +1186,10 @@ type ListDraftsResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "Drafts") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Drafts") to include in API
@@ -1193,10 +1218,10 @@ type ListFiltersResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "Filter") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Filter") to include in API
@@ -1227,10 +1252,10 @@ type ListForwardingAddressesResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "ForwardingAddresses")
 	// to unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "ForwardingAddresses") to
@@ -1250,8 +1275,9 @@ func (s *ListForwardingAddressesResponse) MarshalJSON() ([]byte, error) {
 }
 
 type ListHistoryResponse struct {
-	// History: List of history records. Any messages contained in the
-	// response will typically only have id and threadId fields populated.
+	// History: List of history records. Any `messages` contained in the
+	// response will typically only have `id` and `threadId` fields
+	// populated.
 	History []*History `json:"history,omitempty"`
 
 	// HistoryId: The ID of the mailbox's current history record.
@@ -1267,10 +1293,10 @@ type ListHistoryResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "History") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "History") to include in
@@ -1290,8 +1316,8 @@ func (s *ListHistoryResponse) MarshalJSON() ([]byte, error) {
 
 type ListLabelsResponse struct {
 	// Labels: List of labels. Note that each label resource only contains
-	// an id, name, messageListVisibility, labelListVisibility, and type.
-	// The labels.get method can fetch additional label details.
+	// an `id`, `name`, `messageListVisibility`, `labelListVisibility`, and
+	// `type`. The labels.get method can fetch additional label details.
 	Labels []*Label `json:"labels,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -1300,10 +1326,10 @@ type ListLabelsResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "Labels") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Labels") to include in API
@@ -1323,8 +1349,8 @@ func (s *ListLabelsResponse) MarshalJSON() ([]byte, error) {
 
 type ListMessagesResponse struct {
 	// Messages: List of messages. Note that each message resource contains
-	// only an id and a threadId. Additional message details can be fetched
-	// using the messages.get method.
+	// only an `id` and a `threadId`. Additional message details can be
+	// fetched using the messages.get method.
 	Messages []*Message `json:"messages,omitempty"`
 
 	// NextPageToken: Token to retrieve the next page of results in the
@@ -1340,10 +1366,10 @@ type ListMessagesResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "Messages") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Messages") to include in
@@ -1372,10 +1398,10 @@ type ListSendAsResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "SendAs") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "SendAs") to include in API
@@ -1403,10 +1429,10 @@ type ListSmimeInfoResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "SmimeInfo") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "SmimeInfo") to include in
@@ -1433,8 +1459,8 @@ type ListThreadsResponse struct {
 	ResultSizeEstimate int64 `json:"resultSizeEstimate,omitempty"`
 
 	// Threads: List of threads. Note that each thread resource does not
-	// contain a list of messages. The list of messages for a given thread
-	// can be fetched using the threads.get method.
+	// contain a list of `messages`. The list of `messages` for a given
+	// thread can be fetched using the threads.get method.
 	Threads []*Thread `json:"threads,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -1443,10 +1469,10 @@ type ListThreadsResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "NextPageToken") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "NextPageToken") to include
@@ -1476,9 +1502,9 @@ type Message struct {
 	// InternalDate: The internal message creation timestamp (epoch ms),
 	// which determines ordering in the inbox. For normal SMTP-received
 	// email, this represents the time the message was originally accepted
-	// by Google, which is more reliable than the Date header. However, for
-	// API-migrated mail, it can be configured by client to be based on the
-	// Date header.
+	// by Google, which is more reliable than the `Date` header. However,
+	// for API-migrated mail, it can be configured by client to be based on
+	// the `Date` header.
 	InternalDate int64 `json:"internalDate,omitempty,string"`
 
 	// LabelIds: List of IDs of labels applied to this message.
@@ -1488,8 +1514,8 @@ type Message struct {
 	Payload *MessagePart `json:"payload,omitempty"`
 
 	// Raw: The entire email message in an RFC 2822 formatted and base64url
-	// encoded string. Returned in messages.get and drafts.get responses
-	// when the format=RAW parameter is supplied.
+	// encoded string. Returned in `messages.get` and `drafts.get` responses
+	// when the `format=RAW` parameter is supplied.
 	Raw string `json:"raw,omitempty"`
 
 	// SizeEstimate: Estimated size in bytes of the message.
@@ -1499,12 +1525,12 @@ type Message struct {
 	Snippet string `json:"snippet,omitempty"`
 
 	// ThreadId: The ID of the thread the message belongs to. To add a
-	// message or draft to a thread, the following criteria must be met:
-	// - The requested threadId must be specified on the Message or
-	// Draft.Message you supply with your request.
-	// - The References and In-Reply-To headers must be set in compliance
-	// with the RFC 2822 standard.
-	// - The Subject headers must match.
+	// message or draft to a thread, the following criteria must be met: 1.
+	// The requested `threadId` must be specified on the `Message` or
+	// `Draft.Message` you supply with your request. 2. The `References` and
+	// `In-Reply-To` headers must be set in compliance with the RFC 2822
+	// (https://tools.ietf.org/html/rfc2822) standard. 3. The `Subject`
+	// headers must match.
 	ThreadId string `json:"threadId,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -1513,10 +1539,10 @@ type Message struct {
 
 	// ForceSendFields is a list of field names (e.g. "HistoryId") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "HistoryId") to include in
@@ -1546,8 +1572,8 @@ type MessagePart struct {
 
 	// Headers: List of headers on this message part. For the top-level
 	// message part, representing the entire message payload, it will
-	// contain the standard RFC 2822 email headers such as To, From, and
-	// Subject.
+	// contain the standard RFC 2822 email headers such as `To`, `From`, and
+	// `Subject`.
 	Headers []*MessagePartHeader `json:"headers,omitempty"`
 
 	// MimeType: The MIME type of the message part.
@@ -1557,17 +1583,17 @@ type MessagePart struct {
 	PartId string `json:"partId,omitempty"`
 
 	// Parts: The child MIME message parts of this part. This only applies
-	// to container MIME message parts, for example multipart/*. For non-
-	// container MIME message part types, such as text/plain, this field is
-	// empty. For more information, see RFC 1521.
+	// to container MIME message parts, for example `multipart/*`. For non-
+	// container MIME message part types, such as `text/plain`, this field
+	// is empty. For more information, see RFC 1521.
 	Parts []*MessagePart `json:"parts,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Body") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Body") to include in API
@@ -1588,9 +1614,9 @@ func (s *MessagePart) MarshalJSON() ([]byte, error) {
 // MessagePartBody: The body of a single MIME message part.
 type MessagePartBody struct {
 	// AttachmentId: When present, contains the ID of an external attachment
-	// that can be retrieved in a separate messages.attachments.get request.
-	// When not present, the entire content of the message part body is
-	// contained in the data field.
+	// that can be retrieved in a separate `messages.attachments.get`
+	// request. When not present, the entire content of the message part
+	// body is contained in the data field.
 	AttachmentId string `json:"attachmentId,omitempty"`
 
 	// Data: The body data of a MIME message part as a base64url encoded
@@ -1610,10 +1636,10 @@ type MessagePartBody struct {
 
 	// ForceSendFields is a list of field names (e.g. "AttachmentId") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "AttachmentId") to include
@@ -1632,19 +1658,20 @@ func (s *MessagePartBody) MarshalJSON() ([]byte, error) {
 }
 
 type MessagePartHeader struct {
-	// Name: The name of the header before the : separator. For example, To.
+	// Name: The name of the header before the `:` separator. For example,
+	// `To`.
 	Name string `json:"name,omitempty"`
 
-	// Value: The value of the header after the : separator. For example,
-	// someuser@example.com.
+	// Value: The value of the header after the `:` separator. For example,
+	// `someuser@example.com`.
 	Value string `json:"value,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "Name") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Name") to include in API
@@ -1663,18 +1690,20 @@ func (s *MessagePartHeader) MarshalJSON() ([]byte, error) {
 }
 
 type ModifyMessageRequest struct {
-	// AddLabelIds: A list of IDs of labels to add to this message.
+	// AddLabelIds: A list of IDs of labels to add to this message. You can
+	// add up to 100 labels with each update.
 	AddLabelIds []string `json:"addLabelIds,omitempty"`
 
-	// RemoveLabelIds: A list IDs of labels to remove from this message.
+	// RemoveLabelIds: A list IDs of labels to remove from this message. You
+	// can remove up to 100 labels with each update.
 	RemoveLabelIds []string `json:"removeLabelIds,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "AddLabelIds") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "AddLabelIds") to include
@@ -1693,18 +1722,20 @@ func (s *ModifyMessageRequest) MarshalJSON() ([]byte, error) {
 }
 
 type ModifyThreadRequest struct {
-	// AddLabelIds: A list of IDs of labels to add to this thread.
+	// AddLabelIds: A list of IDs of labels to add to this thread. You can
+	// add up to 100 labels with each update.
 	AddLabelIds []string `json:"addLabelIds,omitempty"`
 
 	// RemoveLabelIds: A list of IDs of labels to remove from this thread.
+	// You can remove up to 100 labels with each update.
 	RemoveLabelIds []string `json:"removeLabelIds,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "AddLabelIds") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "AddLabelIds") to include
@@ -1727,21 +1758,23 @@ type PopSettings struct {
 	// AccessWindow: The range of messages which are accessible via POP.
 	//
 	// Possible values:
-	//   "accessWindowUnspecified"
-	//   "allMail"
-	//   "disabled"
-	//   "fromNowOn"
+	//   "accessWindowUnspecified" - Unspecified range.
+	//   "disabled" - Indicates that no messages are accessible via POP.
+	//   "fromNowOn" - Indicates that unfetched messages received after some
+	// past point in time are accessible via POP.
+	//   "allMail" - Indicates that all unfetched messages are accessible
+	// via POP.
 	AccessWindow string `json:"accessWindow,omitempty"`
 
 	// Disposition: The action that will be executed on a message after it
 	// has been fetched via POP.
 	//
 	// Possible values:
-	//   "archive"
-	//   "dispositionUnspecified"
-	//   "leaveInInbox"
-	//   "markRead"
-	//   "trash"
+	//   "dispositionUnspecified" - Unspecified disposition.
+	//   "leaveInInbox" - Leave the message in the `INBOX`.
+	//   "archive" - Archive the message.
+	//   "trash" - Move the message to the `TRASH`.
+	//   "markRead" - Leave the message in the `INBOX` and mark it as read.
 	Disposition string `json:"disposition,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -1750,10 +1783,10 @@ type PopSettings struct {
 
 	// ForceSendFields is a list of field names (e.g. "AccessWindow") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "AccessWindow") to include
@@ -1791,10 +1824,10 @@ type Profile struct {
 
 	// ForceSendFields is a list of field names (e.g. "EmailAddress") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "EmailAddress") to include
@@ -1829,9 +1862,9 @@ type SendAs struct {
 	// address in situations such as composing a new message or sending a
 	// vacation auto-reply. Every Gmail account has exactly one default
 	// send-as address, so the only legal value that clients may write to
-	// this field is true. Changing this from false to true for an address
-	// will result in this field becoming false for the other previous
-	// default address.
+	// this field is `true`. Changing this from `false` to `true` for an
+	// address will result in this field becoming `false` for the other
+	// previous default address.
 	IsDefault bool `json:"isDefault,omitempty"`
 
 	// IsPrimary: Whether this address is the primary address used to login
@@ -1851,7 +1884,8 @@ type SendAs struct {
 	SendAsEmail string `json:"sendAsEmail,omitempty"`
 
 	// Signature: An optional HTML signature that is included in messages
-	// composed with this alias in the Gmail web UI.
+	// composed with this alias in the Gmail web UI. This signature is added
+	// to new emails only.
 	Signature string `json:"signature,omitempty"`
 
 	// SmtpMsa: An optional SMTP service that will be used as an outbound
@@ -1860,9 +1894,9 @@ type SendAs struct {
 	// service. This setting only applies to custom "from" aliases.
 	SmtpMsa *SmtpMsa `json:"smtpMsa,omitempty"`
 
-	// TreatAsAlias: Whether Gmail should  treat this address as an alias
-	// for the user's primary email address. This setting only applies to
-	// custom "from" aliases.
+	// TreatAsAlias: Whether Gmail should treat this address as an alias for
+	// the user's primary email address. This setting only applies to custom
+	// "from" aliases.
 	TreatAsAlias bool `json:"treatAsAlias,omitempty"`
 
 	// VerificationStatus: Indicates whether this address has been verified
@@ -1870,9 +1904,9 @@ type SendAs struct {
 	// custom "from" aliases.
 	//
 	// Possible values:
-	//   "accepted"
-	//   "pending"
-	//   "verificationStatusUnspecified"
+	//   "verificationStatusUnspecified" - Unspecified verification status.
+	//   "accepted" - The address is ready to use as a send-as alias.
+	//   "pending" - The address is awaiting verification by the owner.
 	VerificationStatus string `json:"verificationStatus,omitempty"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -1881,10 +1915,10 @@ type SendAs struct {
 
 	// ForceSendFields is a list of field names (e.g. "DisplayName") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "DisplayName") to include
@@ -1939,8 +1973,8 @@ type SmimeInfo struct {
 
 	// ForceSendFields is a list of field names (e.g.
 	// "EncryptedKeyPassword") to unconditionally include in API requests.
-	// By default, fields with empty values are omitted from API requests.
-	// However, any non-pointer, non-interface field appearing in
+	// By default, fields with empty or default values are omitted from API
+	// requests. However, any non-pointer, non-interface field appearing in
 	// ForceSendFields will be sent to the server regardless of whether the
 	// field is empty or not. This may be used to include empty fields in
 	// Patch requests.
@@ -1980,10 +2014,13 @@ type SmtpMsa struct {
 	// with the SMTP service. Required.
 	//
 	// Possible values:
-	//   "none"
-	//   "securityModeUnspecified"
-	//   "ssl"
-	//   "starttls"
+	//   "securityModeUnspecified" - Unspecified security mode.
+	//   "none" - Communication with the remote SMTP service is unsecured.
+	// Requires port 25.
+	//   "ssl" - Communication with the remote SMTP service is secured using
+	// SSL.
+	//   "starttls" - Communication with the remote SMTP service is secured
+	// using STARTTLS.
 	SecurityMode string `json:"securityMode,omitempty"`
 
 	// Username: The username that will be used for authentication with the
@@ -1994,10 +2031,10 @@ type SmtpMsa struct {
 
 	// ForceSendFields is a list of field names (e.g. "Host") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Host") to include in API
@@ -2036,10 +2073,10 @@ type Thread struct {
 
 	// ForceSendFields is a list of field names (e.g. "HistoryId") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "HistoryId") to include in
@@ -2067,15 +2104,19 @@ type VacationSettings struct {
 
 	// EndTime: An optional end time for sending auto-replies (epoch ms).
 	// When this is specified, Gmail will automatically reply only to
-	// messages that it receives before the end time. If both startTime and
-	// endTime are specified, startTime must precede endTime.
+	// messages that it receives before the end time. If both `startTime`
+	// and `endTime` are specified, `startTime` must precede `endTime`.
 	EndTime int64 `json:"endTime,omitempty,string"`
 
 	// ResponseBodyHtml: Response body in HTML format. Gmail will sanitize
-	// the HTML before storing it.
+	// the HTML before storing it. If both `response_body_plain_text` and
+	// `response_body_html` are specified, `response_body_html` will be
+	// used.
 	ResponseBodyHtml string `json:"responseBodyHtml,omitempty"`
 
-	// ResponseBodyPlainText: Response body in plain text format.
+	// ResponseBodyPlainText: Response body in plain text format. If both
+	// `response_body_plain_text` and `response_body_html` are specified,
+	// `response_body_html` will be used.
 	ResponseBodyPlainText string `json:"responseBodyPlainText,omitempty"`
 
 	// ResponseSubject: Optional text to prepend to the subject line in
@@ -2094,8 +2135,8 @@ type VacationSettings struct {
 
 	// StartTime: An optional start time for sending auto-replies (epoch
 	// ms). When this is specified, Gmail will automatically reply only to
-	// messages that it receives after the start time. If both startTime and
-	// endTime are specified, startTime must precede endTime.
+	// messages that it receives after the start time. If both `startTime`
+	// and `endTime` are specified, `startTime` must precede `endTime`.
 	StartTime int64 `json:"startTime,omitempty,string"`
 
 	// ServerResponse contains the HTTP response code and headers from the
@@ -2104,10 +2145,10 @@ type VacationSettings struct {
 
 	// ForceSendFields is a list of field names (e.g. "EnableAutoReply") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "EnableAutoReply") to
@@ -2132,8 +2173,10 @@ type WatchRequest struct {
 	// LabelFilterAction: Filtering behavior of labelIds list specified.
 	//
 	// Possible values:
-	//   "exclude"
-	//   "include"
+	//   "include" - Only get push notifications for message changes
+	// relating to labelIds specified.
+	//   "exclude" - Get push notifications for all message changes except
+	// those relating to labelIds specified.
 	LabelFilterAction string `json:"labelFilterAction,omitempty"`
 
 	// LabelIds: List of label_ids to restrict notifications about. By
@@ -2147,18 +2190,17 @@ type WatchRequest struct {
 	// Cloud Pub/Sub and you **must** have already granted gmail "publish"
 	// permission on it. For example,
 	// "projects/my-project-identifier/topics/my-topic-name" (using the
-	// Cloud Pub/Sub "v1" topic naming format).
-	//
-	// Note that the "my-project-identifier" portion must exactly match your
-	// Google developer project id (the one executing this watch request).
+	// Cloud Pub/Sub "v1" topic naming format). Note that the
+	// "my-project-identifier" portion must exactly match your Google
+	// developer project id (the one executing this watch request).
 	TopicName string `json:"topicName,omitempty"`
 
 	// ForceSendFields is a list of field names (e.g. "LabelFilterAction")
 	// to unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "LabelFilterAction") to
@@ -2180,7 +2222,7 @@ func (s *WatchRequest) MarshalJSON() ([]byte, error) {
 // WatchResponse: Push notification watch response.
 type WatchResponse struct {
 	// Expiration: When Gmail will stop sending notifications for mailbox
-	// updates (epoch millis). Call watch again before this time to renew
+	// updates (epoch millis). Call `watch` again before this time to renew
 	// the watch.
 	Expiration int64 `json:"expiration,omitempty,string"`
 
@@ -2193,10 +2235,10 @@ type WatchResponse struct {
 
 	// ForceSendFields is a list of field names (e.g. "Expiration") to
 	// unconditionally include in API requests. By default, fields with
-	// empty values are omitted from API requests. However, any non-pointer,
-	// non-interface field appearing in ForceSendFields will be sent to the
-	// server regardless of whether the field is empty or not. This may be
-	// used to include empty fields in Patch requests.
+	// empty or default values are omitted from API requests. However, any
+	// non-pointer, non-interface field appearing in ForceSendFields will be
+	// sent to the server regardless of whether the field is empty or not.
+	// This may be used to include empty fields in Patch requests.
 	ForceSendFields []string `json:"-"`
 
 	// NullFields is a list of field names (e.g. "Expiration") to include in
@@ -2226,6 +2268,9 @@ type UsersGetProfileCall struct {
 }
 
 // GetProfile: Gets the current user's Gmail profile.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersService) GetProfile(userId string) *UsersGetProfileCall {
 	c := &UsersGetProfileCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -2269,7 +2314,7 @@ func (c *UsersGetProfileCall) Header() http.Header {
 
 func (c *UsersGetProfileCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2280,7 +2325,7 @@ func (c *UsersGetProfileCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/profile")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/profile")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -2332,6 +2377,7 @@ func (c *UsersGetProfileCall) Do(opts ...googleapi.CallOption) (*Profile, error)
 	return ret, nil
 	// {
 	//   "description": "Gets the current user's Gmail profile.",
+	//   "flatPath": "gmail/v1/users/{userId}/profile",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.getProfile",
 	//   "parameterOrder": [
@@ -2340,13 +2386,13 @@ func (c *UsersGetProfileCall) Do(opts ...googleapi.CallOption) (*Profile, error)
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/profile",
+	//   "path": "gmail/v1/users/{userId}/profile",
 	//   "response": {
 	//     "$ref": "Profile"
 	//   },
@@ -2372,6 +2418,9 @@ type UsersStopCall struct {
 }
 
 // Stop: Stop receiving push notifications for the given user mailbox.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersService) Stop(userId string) *UsersStopCall {
 	c := &UsersStopCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -2405,7 +2454,7 @@ func (c *UsersStopCall) Header() http.Header {
 
 func (c *UsersStopCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2413,7 +2462,7 @@ func (c *UsersStopCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/stop")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/stop")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -2440,6 +2489,7 @@ func (c *UsersStopCall) Do(opts ...googleapi.CallOption) error {
 	return nil
 	// {
 	//   "description": "Stop receiving push notifications for the given user mailbox.",
+	//   "flatPath": "gmail/v1/users/{userId}/stop",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.stop",
 	//   "parameterOrder": [
@@ -2448,13 +2498,13 @@ func (c *UsersStopCall) Do(opts ...googleapi.CallOption) error {
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/stop",
+	//   "path": "gmail/v1/users/{userId}/stop",
 	//   "scopes": [
 	//     "https://mail.google.com/",
 	//     "https://www.googleapis.com/auth/gmail.metadata",
@@ -2478,6 +2528,9 @@ type UsersWatchCall struct {
 
 // Watch: Set up or update a push notification watch on the given user
 // mailbox.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersService) Watch(userId string, watchrequest *WatchRequest) *UsersWatchCall {
 	c := &UsersWatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -2512,7 +2565,7 @@ func (c *UsersWatchCall) Header() http.Header {
 
 func (c *UsersWatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2525,7 +2578,7 @@ func (c *UsersWatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/watch")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/watch")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -2577,6 +2630,7 @@ func (c *UsersWatchCall) Do(opts ...googleapi.CallOption) (*WatchResponse, error
 	return ret, nil
 	// {
 	//   "description": "Set up or update a push notification watch on the given user mailbox.",
+	//   "flatPath": "gmail/v1/users/{userId}/watch",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.watch",
 	//   "parameterOrder": [
@@ -2585,13 +2639,13 @@ func (c *UsersWatchCall) Do(opts ...googleapi.CallOption) (*WatchResponse, error
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/watch",
+	//   "path": "gmail/v1/users/{userId}/watch",
 	//   "request": {
 	//     "$ref": "WatchRequest"
 	//   },
@@ -2620,7 +2674,10 @@ type UsersDraftsCreateCall struct {
 	header_    http.Header
 }
 
-// Create: Creates a new draft with the DRAFT label.
+// Create: Creates a new draft with the `DRAFT` label.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersDraftsService) Create(userId string, draft *Draft) *UsersDraftsCreateCall {
 	c := &UsersDraftsCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -2694,7 +2751,7 @@ func (c *UsersDraftsCreateCall) Header() http.Header {
 
 func (c *UsersDraftsCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2707,7 +2764,7 @@ func (c *UsersDraftsCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/drafts")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/drafts")
 	if c.mediaInfo_ != nil {
 		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/gmail/v1/users/{userId}/drafts")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
@@ -2786,14 +2843,15 @@ func (c *UsersDraftsCreateCall) Do(opts ...googleapi.CallOption) (*Draft, error)
 	}
 	return ret, nil
 	// {
-	//   "description": "Creates a new draft with the DRAFT label.",
+	//   "description": "Creates a new draft with the `DRAFT` label.",
+	//   "flatPath": "gmail/v1/users/{userId}/drafts",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.drafts.create",
 	//   "mediaUpload": {
 	//     "accept": [
-	//       "message/rfc822"
+	//       "message/*"
 	//     ],
-	//     "maxSize": "35MB",
+	//     "maxSize": "36700160",
 	//     "protocols": {
 	//       "resumable": {
 	//         "multipart": true,
@@ -2811,13 +2869,13 @@ func (c *UsersDraftsCreateCall) Do(opts ...googleapi.CallOption) (*Draft, error)
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/drafts",
+	//   "path": "gmail/v1/users/{userId}/drafts",
 	//   "request": {
 	//     "$ref": "Draft"
 	//   },
@@ -2826,6 +2884,7 @@ func (c *UsersDraftsCreateCall) Do(opts ...googleapi.CallOption) (*Draft, error)
 	//   },
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
 	//     "https://www.googleapis.com/auth/gmail.compose",
 	//     "https://www.googleapis.com/auth/gmail.modify"
 	//   ],
@@ -2847,6 +2906,10 @@ type UsersDraftsDeleteCall struct {
 
 // Delete: Immediately and permanently deletes the specified draft. Does
 // not simply trash it.
+//
+// - id: The ID of the draft to delete.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersDraftsService) Delete(userId string, id string) *UsersDraftsDeleteCall {
 	c := &UsersDraftsDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -2881,7 +2944,7 @@ func (c *UsersDraftsDeleteCall) Header() http.Header {
 
 func (c *UsersDraftsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -2889,7 +2952,7 @@ func (c *UsersDraftsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/drafts/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/drafts/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -2917,6 +2980,7 @@ func (c *UsersDraftsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	return nil
 	// {
 	//   "description": "Immediately and permanently deletes the specified draft. Does not simply trash it.",
+	//   "flatPath": "gmail/v1/users/{userId}/drafts/{id}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.drafts.delete",
 	//   "parameterOrder": [
@@ -2932,15 +2996,16 @@ func (c *UsersDraftsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/drafts/{id}",
+	//   "path": "gmail/v1/users/{userId}/drafts/{id}",
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
 	//     "https://www.googleapis.com/auth/gmail.compose",
 	//     "https://www.googleapis.com/auth/gmail.modify"
 	//   ]
@@ -2961,6 +3026,10 @@ type UsersDraftsGetCall struct {
 }
 
 // Get: Gets the specified draft.
+//
+// - id: The ID of the draft to retrieve.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersDraftsService) Get(userId string, id string) *UsersDraftsGetCall {
 	c := &UsersDraftsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -2972,10 +3041,18 @@ func (r *UsersDraftsService) Get(userId string, id string) *UsersDraftsGetCall {
 // draft in.
 //
 // Possible values:
-//   "full" (default)
-//   "metadata"
-//   "minimal"
-//   "raw"
+//   "minimal" - Returns only email message ID and labels; does not
+// return the email headers, body, or payload.
+//   "full" (default) - Returns the full email message data with body
+// content parsed in the `payload` field; the `raw` field is not used.
+// Format cannot be used when accessing the api using the gmail.metadata
+// scope.
+//   "raw" - Returns the full email message data with body content in
+// the `raw` field as a base64url encoded string; the `payload` field is
+// not used. Format cannot be used when accessing the api using the
+// gmail.metadata scope.
+//   "metadata" - Returns only email message ID, labels, and email
+// headers.
 func (c *UsersDraftsGetCall) Format(format string) *UsersDraftsGetCall {
 	c.urlParams_.Set("format", format)
 	return c
@@ -3018,7 +3095,7 @@ func (c *UsersDraftsGetCall) Header() http.Header {
 
 func (c *UsersDraftsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3029,7 +3106,7 @@ func (c *UsersDraftsGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/drafts/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/drafts/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -3082,6 +3159,7 @@ func (c *UsersDraftsGetCall) Do(opts ...googleapi.CallOption) (*Draft, error) {
 	return ret, nil
 	// {
 	//   "description": "Gets the specified draft.",
+	//   "flatPath": "gmail/v1/users/{userId}/drafts/{id}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.drafts.get",
 	//   "parameterOrder": [
@@ -3093,16 +3171,16 @@ func (c *UsersDraftsGetCall) Do(opts ...googleapi.CallOption) (*Draft, error) {
 	//       "default": "full",
 	//       "description": "The format to return the draft in.",
 	//       "enum": [
-	//         "full",
-	//         "metadata",
 	//         "minimal",
-	//         "raw"
+	//         "full",
+	//         "raw",
+	//         "metadata"
 	//       ],
 	//       "enumDescriptions": [
-	//         "",
-	//         "",
-	//         "",
-	//         ""
+	//         "Returns only email message ID and labels; does not return the email headers, body, or payload.",
+	//         "Returns the full email message data with body content parsed in the `payload` field; the `raw` field is not used. Format cannot be used when accessing the api using the gmail.metadata scope.",
+	//         "Returns the full email message data with body content in the `raw` field as a base64url encoded string; the `payload` field is not used. Format cannot be used when accessing the api using the gmail.metadata scope.",
+	//         "Returns only email message ID, labels, and email headers."
 	//       ],
 	//       "location": "query",
 	//       "type": "string"
@@ -3115,13 +3193,13 @@ func (c *UsersDraftsGetCall) Do(opts ...googleapi.CallOption) (*Draft, error) {
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/drafts/{id}",
+	//   "path": "gmail/v1/users/{userId}/drafts/{id}",
 	//   "response": {
 	//     "$ref": "Draft"
 	//   },
@@ -3147,6 +3225,9 @@ type UsersDraftsListCall struct {
 }
 
 // List: Lists the drafts in the user's mailbox.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersDraftsService) List(userId string) *UsersDraftsListCall {
 	c := &UsersDraftsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -3154,14 +3235,15 @@ func (r *UsersDraftsService) List(userId string) *UsersDraftsListCall {
 }
 
 // IncludeSpamTrash sets the optional parameter "includeSpamTrash":
-// Include drafts from SPAM and TRASH in the results.
+// Include drafts from `SPAM` and `TRASH` in the results.
 func (c *UsersDraftsListCall) IncludeSpamTrash(includeSpamTrash bool) *UsersDraftsListCall {
 	c.urlParams_.Set("includeSpamTrash", fmt.Sprint(includeSpamTrash))
 	return c
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of drafts to return.
+// of drafts to return. This field defaults to 100. The maximum allowed
+// value for this field is 500.
 func (c *UsersDraftsListCall) MaxResults(maxResults int64) *UsersDraftsListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
 	return c
@@ -3220,7 +3302,7 @@ func (c *UsersDraftsListCall) Header() http.Header {
 
 func (c *UsersDraftsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3231,7 +3313,7 @@ func (c *UsersDraftsListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/drafts")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/drafts")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -3283,6 +3365,7 @@ func (c *UsersDraftsListCall) Do(opts ...googleapi.CallOption) (*ListDraftsRespo
 	return ret, nil
 	// {
 	//   "description": "Lists the drafts in the user's mailbox.",
+	//   "flatPath": "gmail/v1/users/{userId}/drafts",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.drafts.list",
 	//   "parameterOrder": [
@@ -3291,13 +3374,13 @@ func (c *UsersDraftsListCall) Do(opts ...googleapi.CallOption) (*ListDraftsRespo
 	//   "parameters": {
 	//     "includeSpamTrash": {
 	//       "default": "false",
-	//       "description": "Include drafts from SPAM and TRASH in the results.",
+	//       "description": "Include drafts from `SPAM` and `TRASH` in the results.",
 	//       "location": "query",
 	//       "type": "boolean"
 	//     },
 	//     "maxResults": {
 	//       "default": "100",
-	//       "description": "Maximum number of drafts to return.",
+	//       "description": "Maximum number of drafts to return. This field defaults to 100. The maximum allowed value for this field is 500.",
 	//       "format": "uint32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -3308,19 +3391,19 @@ func (c *UsersDraftsListCall) Do(opts ...googleapi.CallOption) (*ListDraftsRespo
 	//       "type": "string"
 	//     },
 	//     "q": {
-	//       "description": "Only return draft messages matching the specified query. Supports the same query format as the Gmail search box. For example, \"from:someuser@example.com rfc822msgid: is:unread\".",
+	//       "description": "Only return draft messages matching the specified query. Supports the same query format as the Gmail search box. For example, `\"from:someuser@example.com rfc822msgid: is:unread\"`.",
 	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/drafts",
+	//   "path": "gmail/v1/users/{userId}/drafts",
 	//   "response": {
 	//     "$ref": "ListDraftsResponse"
 	//   },
@@ -3368,7 +3451,10 @@ type UsersDraftsSendCall struct {
 }
 
 // Send: Sends the specified, existing draft to the recipients in the
-// To, Cc, and Bcc headers.
+// `To`, `Cc`, and `Bcc` headers.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersDraftsService) Send(userId string, draft *Draft) *UsersDraftsSendCall {
 	c := &UsersDraftsSendCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -3442,7 +3528,7 @@ func (c *UsersDraftsSendCall) Header() http.Header {
 
 func (c *UsersDraftsSendCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3455,7 +3541,7 @@ func (c *UsersDraftsSendCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/drafts/send")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/drafts/send")
 	if c.mediaInfo_ != nil {
 		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/gmail/v1/users/{userId}/drafts/send")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
@@ -3534,14 +3620,15 @@ func (c *UsersDraftsSendCall) Do(opts ...googleapi.CallOption) (*Message, error)
 	}
 	return ret, nil
 	// {
-	//   "description": "Sends the specified, existing draft to the recipients in the To, Cc, and Bcc headers.",
+	//   "description": "Sends the specified, existing draft to the recipients in the `To`, `Cc`, and `Bcc` headers.",
+	//   "flatPath": "gmail/v1/users/{userId}/drafts/send",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.drafts.send",
 	//   "mediaUpload": {
 	//     "accept": [
-	//       "message/rfc822"
+	//       "message/*"
 	//     ],
-	//     "maxSize": "35MB",
+	//     "maxSize": "36700160",
 	//     "protocols": {
 	//       "resumable": {
 	//         "multipart": true,
@@ -3559,13 +3646,13 @@ func (c *UsersDraftsSendCall) Do(opts ...googleapi.CallOption) (*Message, error)
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/drafts/send",
+	//   "path": "gmail/v1/users/{userId}/drafts/send",
 	//   "request": {
 	//     "$ref": "Draft"
 	//   },
@@ -3574,6 +3661,7 @@ func (c *UsersDraftsSendCall) Do(opts ...googleapi.CallOption) (*Message, error)
 	//   },
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
 	//     "https://www.googleapis.com/auth/gmail.compose",
 	//     "https://www.googleapis.com/auth/gmail.modify"
 	//   ],
@@ -3596,6 +3684,10 @@ type UsersDraftsUpdateCall struct {
 }
 
 // Update: Replaces a draft's content.
+//
+// - id: The ID of the draft to update.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersDraftsService) Update(userId string, id string, draft *Draft) *UsersDraftsUpdateCall {
 	c := &UsersDraftsUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -3670,7 +3762,7 @@ func (c *UsersDraftsUpdateCall) Header() http.Header {
 
 func (c *UsersDraftsUpdateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3683,7 +3775,7 @@ func (c *UsersDraftsUpdateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/drafts/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/drafts/{id}")
 	if c.mediaInfo_ != nil {
 		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/gmail/v1/users/{userId}/drafts/{id}")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
@@ -3764,13 +3856,14 @@ func (c *UsersDraftsUpdateCall) Do(opts ...googleapi.CallOption) (*Draft, error)
 	return ret, nil
 	// {
 	//   "description": "Replaces a draft's content.",
+	//   "flatPath": "gmail/v1/users/{userId}/drafts/{id}",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.drafts.update",
 	//   "mediaUpload": {
 	//     "accept": [
-	//       "message/rfc822"
+	//       "message/*"
 	//     ],
-	//     "maxSize": "35MB",
+	//     "maxSize": "36700160",
 	//     "protocols": {
 	//       "resumable": {
 	//         "multipart": true,
@@ -3795,13 +3888,13 @@ func (c *UsersDraftsUpdateCall) Do(opts ...googleapi.CallOption) (*Draft, error)
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/drafts/{id}",
+	//   "path": "gmail/v1/users/{userId}/drafts/{id}",
 	//   "request": {
 	//     "$ref": "Draft"
 	//   },
@@ -3810,6 +3903,7 @@ func (c *UsersDraftsUpdateCall) Do(opts ...googleapi.CallOption) (*Draft, error)
 	//   },
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
 	//     "https://www.googleapis.com/auth/gmail.compose",
 	//     "https://www.googleapis.com/auth/gmail.modify"
 	//   ],
@@ -3830,7 +3924,10 @@ type UsersHistoryListCall struct {
 }
 
 // List: Lists the history of all changes to the given mailbox. History
-// results are returned in chronological order (increasing historyId).
+// results are returned in chronological order (increasing `historyId`).
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersHistoryService) List(userId string) *UsersHistoryListCall {
 	c := &UsersHistoryListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -3841,10 +3938,10 @@ func (r *UsersHistoryService) List(userId string) *UsersHistoryListCall {
 // types to be returned by the function
 //
 // Possible values:
-//   "labelAdded"
-//   "labelRemoved"
 //   "messageAdded"
 //   "messageDeleted"
+//   "labelAdded"
+//   "labelRemoved"
 func (c *UsersHistoryListCall) HistoryTypes(historyTypes ...string) *UsersHistoryListCall {
 	c.urlParams_.SetMulti("historyTypes", append([]string{}, historyTypes...))
 	return c
@@ -3857,8 +3954,9 @@ func (c *UsersHistoryListCall) LabelId(labelId string) *UsersHistoryListCall {
 	return c
 }
 
-// MaxResults sets the optional parameter "maxResults": The maximum
-// number of history records to return.
+// MaxResults sets the optional parameter "maxResults": Maximum number
+// of history records to return. This field defaults to 100. The maximum
+// allowed value for this field is 500.
 func (c *UsersHistoryListCall) MaxResults(maxResults int64) *UsersHistoryListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
 	return c
@@ -3872,17 +3970,18 @@ func (c *UsersHistoryListCall) PageToken(pageToken string) *UsersHistoryListCall
 }
 
 // StartHistoryId sets the optional parameter "startHistoryId":
-// Required. Returns history records after the specified startHistoryId.
-// The supplied startHistoryId should be obtained from the historyId of
-// a message, thread, or previous list response. History IDs increase
-// chronologically but are not contiguous with random gaps in between
-// valid IDs. Supplying an invalid or out of date startHistoryId
-// typically returns an HTTP 404 error code. A historyId is typically
-// valid for at least a week, but in some rare circumstances may be
-// valid for only a few hours. If you receive an HTTP 404 error
-// response, your application should perform a full sync. If you receive
-// no nextPageToken in the response, there are no updates to retrieve
-// and you can store the returned historyId for a future request.
+// Required. Returns history records after the specified
+// `startHistoryId`. The supplied `startHistoryId` should be obtained
+// from the `historyId` of a message, thread, or previous `list`
+// response. History IDs increase chronologically but are not contiguous
+// with random gaps in between valid IDs. Supplying an invalid or out of
+// date `startHistoryId` typically returns an `HTTP 404` error code. A
+// `historyId` is typically valid for at least a week, but in some rare
+// circumstances may be valid for only a few hours. If you receive an
+// `HTTP 404` error response, your application should perform a full
+// sync. If you receive no `nextPageToken` in the response, there are no
+// updates to retrieve and you can store the returned `historyId` for a
+// future request.
 func (c *UsersHistoryListCall) StartHistoryId(startHistoryId uint64) *UsersHistoryListCall {
 	c.urlParams_.Set("startHistoryId", fmt.Sprint(startHistoryId))
 	return c
@@ -3925,7 +4024,7 @@ func (c *UsersHistoryListCall) Header() http.Header {
 
 func (c *UsersHistoryListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -3936,7 +4035,7 @@ func (c *UsersHistoryListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/history")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/history")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -3987,7 +4086,8 @@ func (c *UsersHistoryListCall) Do(opts ...googleapi.CallOption) (*ListHistoryRes
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).",
+	//   "description": "Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing `historyId`).",
+	//   "flatPath": "gmail/v1/users/{userId}/history",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.history.list",
 	//   "parameterOrder": [
@@ -3997,10 +4097,10 @@ func (c *UsersHistoryListCall) Do(opts ...googleapi.CallOption) (*ListHistoryRes
 	//     "historyTypes": {
 	//       "description": "History types to be returned by the function",
 	//       "enum": [
-	//         "labelAdded",
-	//         "labelRemoved",
 	//         "messageAdded",
-	//         "messageDeleted"
+	//         "messageDeleted",
+	//         "labelAdded",
+	//         "labelRemoved"
 	//       ],
 	//       "enumDescriptions": [
 	//         "",
@@ -4019,7 +4119,7 @@ func (c *UsersHistoryListCall) Do(opts ...googleapi.CallOption) (*ListHistoryRes
 	//     },
 	//     "maxResults": {
 	//       "default": "100",
-	//       "description": "The maximum number of history records to return.",
+	//       "description": "Maximum number of history records to return. This field defaults to 100. The maximum allowed value for this field is 500.",
 	//       "format": "uint32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -4030,20 +4130,20 @@ func (c *UsersHistoryListCall) Do(opts ...googleapi.CallOption) (*ListHistoryRes
 	//       "type": "string"
 	//     },
 	//     "startHistoryId": {
-	//       "description": "Required. Returns history records after the specified startHistoryId. The supplied startHistoryId should be obtained from the historyId of a message, thread, or previous list response. History IDs increase chronologically but are not contiguous with random gaps in between valid IDs. Supplying an invalid or out of date startHistoryId typically returns an HTTP 404 error code. A historyId is typically valid for at least a week, but in some rare circumstances may be valid for only a few hours. If you receive an HTTP 404 error response, your application should perform a full sync. If you receive no nextPageToken in the response, there are no updates to retrieve and you can store the returned historyId for a future request.",
+	//       "description": "Required. Returns history records after the specified `startHistoryId`. The supplied `startHistoryId` should be obtained from the `historyId` of a message, thread, or previous `list` response. History IDs increase chronologically but are not contiguous with random gaps in between valid IDs. Supplying an invalid or out of date `startHistoryId` typically returns an `HTTP 404` error code. A `historyId` is typically valid for at least a week, but in some rare circumstances may be valid for only a few hours. If you receive an `HTTP 404` error response, your application should perform a full sync. If you receive no `nextPageToken` in the response, there are no updates to retrieve and you can store the returned `historyId` for a future request.",
 	//       "format": "uint64",
 	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/history",
+	//   "path": "gmail/v1/users/{userId}/history",
 	//   "response": {
 	//     "$ref": "ListHistoryResponse"
 	//   },
@@ -4090,6 +4190,9 @@ type UsersLabelsCreateCall struct {
 }
 
 // Create: Creates a new label.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersLabelsService) Create(userId string, label *Label) *UsersLabelsCreateCall {
 	c := &UsersLabelsCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -4124,7 +4227,7 @@ func (c *UsersLabelsCreateCall) Header() http.Header {
 
 func (c *UsersLabelsCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4137,7 +4240,7 @@ func (c *UsersLabelsCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/labels")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/labels")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -4189,6 +4292,7 @@ func (c *UsersLabelsCreateCall) Do(opts ...googleapi.CallOption) (*Label, error)
 	return ret, nil
 	// {
 	//   "description": "Creates a new label.",
+	//   "flatPath": "gmail/v1/users/{userId}/labels",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.labels.create",
 	//   "parameterOrder": [
@@ -4197,13 +4301,13 @@ func (c *UsersLabelsCreateCall) Do(opts ...googleapi.CallOption) (*Label, error)
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/labels",
+	//   "path": "gmail/v1/users/{userId}/labels",
 	//   "request": {
 	//     "$ref": "Label"
 	//   },
@@ -4232,6 +4336,10 @@ type UsersLabelsDeleteCall struct {
 
 // Delete: Immediately and permanently deletes the specified label and
 // removes it from any messages and threads that it is applied to.
+//
+// - id: The ID of the label to delete.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersLabelsService) Delete(userId string, id string) *UsersLabelsDeleteCall {
 	c := &UsersLabelsDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -4266,7 +4374,7 @@ func (c *UsersLabelsDeleteCall) Header() http.Header {
 
 func (c *UsersLabelsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4274,7 +4382,7 @@ func (c *UsersLabelsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/labels/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/labels/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -4302,6 +4410,7 @@ func (c *UsersLabelsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	return nil
 	// {
 	//   "description": "Immediately and permanently deletes the specified label and removes it from any messages and threads that it is applied to.",
+	//   "flatPath": "gmail/v1/users/{userId}/labels/{id}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.labels.delete",
 	//   "parameterOrder": [
@@ -4317,13 +4426,13 @@ func (c *UsersLabelsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/labels/{id}",
+	//   "path": "gmail/v1/users/{userId}/labels/{id}",
 	//   "scopes": [
 	//     "https://mail.google.com/",
 	//     "https://www.googleapis.com/auth/gmail.labels",
@@ -4346,6 +4455,10 @@ type UsersLabelsGetCall struct {
 }
 
 // Get: Gets the specified label.
+//
+// - id: The ID of the label to retrieve.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersLabelsService) Get(userId string, id string) *UsersLabelsGetCall {
 	c := &UsersLabelsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -4390,7 +4503,7 @@ func (c *UsersLabelsGetCall) Header() http.Header {
 
 func (c *UsersLabelsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4401,7 +4514,7 @@ func (c *UsersLabelsGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/labels/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/labels/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -4454,6 +4567,7 @@ func (c *UsersLabelsGetCall) Do(opts ...googleapi.CallOption) (*Label, error) {
 	return ret, nil
 	// {
 	//   "description": "Gets the specified label.",
+	//   "flatPath": "gmail/v1/users/{userId}/labels/{id}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.labels.get",
 	//   "parameterOrder": [
@@ -4469,13 +4583,13 @@ func (c *UsersLabelsGetCall) Do(opts ...googleapi.CallOption) (*Label, error) {
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/labels/{id}",
+	//   "path": "gmail/v1/users/{userId}/labels/{id}",
 	//   "response": {
 	//     "$ref": "Label"
 	//   },
@@ -4502,6 +4616,9 @@ type UsersLabelsListCall struct {
 }
 
 // List: Lists all labels in the user's mailbox.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersLabelsService) List(userId string) *UsersLabelsListCall {
 	c := &UsersLabelsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -4545,7 +4662,7 @@ func (c *UsersLabelsListCall) Header() http.Header {
 
 func (c *UsersLabelsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4556,7 +4673,7 @@ func (c *UsersLabelsListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/labels")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/labels")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -4608,6 +4725,7 @@ func (c *UsersLabelsListCall) Do(opts ...googleapi.CallOption) (*ListLabelsRespo
 	return ret, nil
 	// {
 	//   "description": "Lists all labels in the user's mailbox.",
+	//   "flatPath": "gmail/v1/users/{userId}/labels",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.labels.list",
 	//   "parameterOrder": [
@@ -4616,13 +4734,13 @@ func (c *UsersLabelsListCall) Do(opts ...googleapi.CallOption) (*ListLabelsRespo
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/labels",
+	//   "path": "gmail/v1/users/{userId}/labels",
 	//   "response": {
 	//     "$ref": "ListLabelsResponse"
 	//   },
@@ -4649,8 +4767,11 @@ type UsersLabelsPatchCall struct {
 	header_    http.Header
 }
 
-// Patch: Updates the specified label. This method supports patch
-// semantics.
+// Patch: Patch the specified label.
+//
+// - id: The ID of the label to update.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersLabelsService) Patch(userId string, id string, label *Label) *UsersLabelsPatchCall {
 	c := &UsersLabelsPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -4686,7 +4807,7 @@ func (c *UsersLabelsPatchCall) Header() http.Header {
 
 func (c *UsersLabelsPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4699,7 +4820,7 @@ func (c *UsersLabelsPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/labels/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/labels/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -4751,7 +4872,8 @@ func (c *UsersLabelsPatchCall) Do(opts ...googleapi.CallOption) (*Label, error) 
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates the specified label. This method supports patch semantics.",
+	//   "description": "Patch the specified label.",
+	//   "flatPath": "gmail/v1/users/{userId}/labels/{id}",
 	//   "httpMethod": "PATCH",
 	//   "id": "gmail.users.labels.patch",
 	//   "parameterOrder": [
@@ -4767,13 +4889,13 @@ func (c *UsersLabelsPatchCall) Do(opts ...googleapi.CallOption) (*Label, error) 
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/labels/{id}",
+	//   "path": "gmail/v1/users/{userId}/labels/{id}",
 	//   "request": {
 	//     "$ref": "Label"
 	//   },
@@ -4802,6 +4924,10 @@ type UsersLabelsUpdateCall struct {
 }
 
 // Update: Updates the specified label.
+//
+// - id: The ID of the label to update.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersLabelsService) Update(userId string, id string, label *Label) *UsersLabelsUpdateCall {
 	c := &UsersLabelsUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -4837,7 +4963,7 @@ func (c *UsersLabelsUpdateCall) Header() http.Header {
 
 func (c *UsersLabelsUpdateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -4850,7 +4976,7 @@ func (c *UsersLabelsUpdateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/labels/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/labels/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -4903,6 +5029,7 @@ func (c *UsersLabelsUpdateCall) Do(opts ...googleapi.CallOption) (*Label, error)
 	return ret, nil
 	// {
 	//   "description": "Updates the specified label.",
+	//   "flatPath": "gmail/v1/users/{userId}/labels/{id}",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.labels.update",
 	//   "parameterOrder": [
@@ -4918,13 +5045,13 @@ func (c *UsersLabelsUpdateCall) Do(opts ...googleapi.CallOption) (*Label, error)
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/labels/{id}",
+	//   "path": "gmail/v1/users/{userId}/labels/{id}",
 	//   "request": {
 	//     "$ref": "Label"
 	//   },
@@ -4954,6 +5081,9 @@ type UsersMessagesBatchDeleteCall struct {
 // BatchDelete: Deletes many messages by message ID. Provides no
 // guarantees that messages were not already deleted or even existed at
 // all.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) BatchDelete(userId string, batchdeletemessagesrequest *BatchDeleteMessagesRequest) *UsersMessagesBatchDeleteCall {
 	c := &UsersMessagesBatchDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -4988,7 +5118,7 @@ func (c *UsersMessagesBatchDeleteCall) Header() http.Header {
 
 func (c *UsersMessagesBatchDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5001,7 +5131,7 @@ func (c *UsersMessagesBatchDeleteCall) doRequest(alt string) (*http.Response, er
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/batchDelete")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/batchDelete")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -5028,6 +5158,7 @@ func (c *UsersMessagesBatchDeleteCall) Do(opts ...googleapi.CallOption) error {
 	return nil
 	// {
 	//   "description": "Deletes many messages by message ID. Provides no guarantees that messages were not already deleted or even existed at all.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/batchDelete",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.batchDelete",
 	//   "parameterOrder": [
@@ -5036,13 +5167,13 @@ func (c *UsersMessagesBatchDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/batchDelete",
+	//   "path": "gmail/v1/users/{userId}/messages/batchDelete",
 	//   "request": {
 	//     "$ref": "BatchDeleteMessagesRequest"
 	//   },
@@ -5065,6 +5196,9 @@ type UsersMessagesBatchModifyCall struct {
 }
 
 // BatchModify: Modifies the labels on the specified messages.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) BatchModify(userId string, batchmodifymessagesrequest *BatchModifyMessagesRequest) *UsersMessagesBatchModifyCall {
 	c := &UsersMessagesBatchModifyCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -5099,7 +5233,7 @@ func (c *UsersMessagesBatchModifyCall) Header() http.Header {
 
 func (c *UsersMessagesBatchModifyCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5112,7 +5246,7 @@ func (c *UsersMessagesBatchModifyCall) doRequest(alt string) (*http.Response, er
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/batchModify")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/batchModify")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -5139,6 +5273,7 @@ func (c *UsersMessagesBatchModifyCall) Do(opts ...googleapi.CallOption) error {
 	return nil
 	// {
 	//   "description": "Modifies the labels on the specified messages.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/batchModify",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.batchModify",
 	//   "parameterOrder": [
@@ -5147,13 +5282,13 @@ func (c *UsersMessagesBatchModifyCall) Do(opts ...googleapi.CallOption) error {
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/batchModify",
+	//   "path": "gmail/v1/users/{userId}/messages/batchModify",
 	//   "request": {
 	//     "$ref": "BatchModifyMessagesRequest"
 	//   },
@@ -5177,7 +5312,11 @@ type UsersMessagesDeleteCall struct {
 }
 
 // Delete: Immediately and permanently deletes the specified message.
-// This operation cannot be undone. Prefer messages.trash instead.
+// This operation cannot be undone. Prefer `messages.trash` instead.
+//
+// - id: The ID of the message to delete.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Delete(userId string, id string) *UsersMessagesDeleteCall {
 	c := &UsersMessagesDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -5212,7 +5351,7 @@ func (c *UsersMessagesDeleteCall) Header() http.Header {
 
 func (c *UsersMessagesDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5220,7 +5359,7 @@ func (c *UsersMessagesDeleteCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -5247,7 +5386,8 @@ func (c *UsersMessagesDeleteCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Immediately and permanently deletes the specified message. This operation cannot be undone. Prefer messages.trash instead.",
+	//   "description": "Immediately and permanently deletes the specified message. This operation cannot be undone. Prefer `messages.trash` instead.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/{id}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.messages.delete",
 	//   "parameterOrder": [
@@ -5263,13 +5403,13 @@ func (c *UsersMessagesDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/{id}",
+	//   "path": "gmail/v1/users/{userId}/messages/{id}",
 	//   "scopes": [
 	//     "https://mail.google.com/"
 	//   ]
@@ -5290,6 +5430,13 @@ type UsersMessagesGetCall struct {
 }
 
 // Get: Gets the specified message.
+//
+// - id: The ID of the message to retrieve. This ID is usually retrieved
+//   using `messages.list`. The ID is also contained in the result when
+//   a message is inserted (`messages.insert`) or imported
+//   (`messages.import`).
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Get(userId string, id string) *UsersMessagesGetCall {
 	c := &UsersMessagesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -5301,17 +5448,25 @@ func (r *UsersMessagesService) Get(userId string, id string) *UsersMessagesGetCa
 // message in.
 //
 // Possible values:
-//   "full" (default)
-//   "metadata"
-//   "minimal"
-//   "raw"
+//   "minimal" - Returns only email message ID and labels; does not
+// return the email headers, body, or payload.
+//   "full" (default) - Returns the full email message data with body
+// content parsed in the `payload` field; the `raw` field is not used.
+// Format cannot be used when accessing the api using the gmail.metadata
+// scope.
+//   "raw" - Returns the full email message data with body content in
+// the `raw` field as a base64url encoded string; the `payload` field is
+// not used. Format cannot be used when accessing the api using the
+// gmail.metadata scope.
+//   "metadata" - Returns only email message ID, labels, and email
+// headers.
 func (c *UsersMessagesGetCall) Format(format string) *UsersMessagesGetCall {
 	c.urlParams_.Set("format", format)
 	return c
 }
 
 // MetadataHeaders sets the optional parameter "metadataHeaders": When
-// given and format is METADATA, only include headers specified.
+// given and format is `METADATA`, only include headers specified.
 func (c *UsersMessagesGetCall) MetadataHeaders(metadataHeaders ...string) *UsersMessagesGetCall {
 	c.urlParams_.SetMulti("metadataHeaders", append([]string{}, metadataHeaders...))
 	return c
@@ -5354,7 +5509,7 @@ func (c *UsersMessagesGetCall) Header() http.Header {
 
 func (c *UsersMessagesGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5365,7 +5520,7 @@ func (c *UsersMessagesGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -5418,6 +5573,7 @@ func (c *UsersMessagesGetCall) Do(opts ...googleapi.CallOption) (*Message, error
 	return ret, nil
 	// {
 	//   "description": "Gets the specified message.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/{id}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.messages.get",
 	//   "parameterOrder": [
@@ -5429,46 +5585,49 @@ func (c *UsersMessagesGetCall) Do(opts ...googleapi.CallOption) (*Message, error
 	//       "default": "full",
 	//       "description": "The format to return the message in.",
 	//       "enum": [
-	//         "full",
-	//         "metadata",
 	//         "minimal",
-	//         "raw"
+	//         "full",
+	//         "raw",
+	//         "metadata"
 	//       ],
 	//       "enumDescriptions": [
-	//         "",
-	//         "",
-	//         "",
-	//         ""
+	//         "Returns only email message ID and labels; does not return the email headers, body, or payload.",
+	//         "Returns the full email message data with body content parsed in the `payload` field; the `raw` field is not used. Format cannot be used when accessing the api using the gmail.metadata scope.",
+	//         "Returns the full email message data with body content in the `raw` field as a base64url encoded string; the `payload` field is not used. Format cannot be used when accessing the api using the gmail.metadata scope.",
+	//         "Returns only email message ID, labels, and email headers."
 	//       ],
 	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "id": {
-	//       "description": "The ID of the message to retrieve.",
+	//       "description": "The ID of the message to retrieve. This ID is usually retrieved using `messages.list`. The ID is also contained in the result when a message is inserted (`messages.insert`) or imported (`messages.import`).",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     },
 	//     "metadataHeaders": {
-	//       "description": "When given and format is METADATA, only include headers specified.",
+	//       "description": "When given and format is `METADATA`, only include headers specified.",
 	//       "location": "query",
 	//       "repeated": true,
 	//       "type": "string"
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/{id}",
+	//   "path": "gmail/v1/users/{userId}/messages/{id}",
 	//   "response": {
 	//     "$ref": "Message"
 	//   },
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.action",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
 	//     "https://www.googleapis.com/auth/gmail.metadata",
 	//     "https://www.googleapis.com/auth/gmail.modify",
 	//     "https://www.googleapis.com/auth/gmail.readonly"
@@ -5491,7 +5650,14 @@ type UsersMessagesImportCall struct {
 
 // Import: Imports a message into only this user's mailbox, with
 // standard email delivery scanning and classification similar to
-// receiving via SMTP. Does not send a message.
+// receiving via SMTP. This method doesn't perform SPF checks, so it
+// might not work for some spam messages, such as those attempting to
+// perform domain spoofing. This method does not send a message. Note:
+// This function doesn't trigger forwarding rules or filters set up by
+// the user.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Import(userId string, message *Message) *UsersMessagesImportCall {
 	c := &UsersMessagesImportCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -5511,8 +5677,10 @@ func (c *UsersMessagesImportCall) Deleted(deleted bool) *UsersMessagesImportCall
 // Source for Gmail's internal date of the message.
 //
 // Possible values:
-//   "dateHeader" (default)
-//   "receivedTime"
+//   "receivedTime" - Internal message date set to current time when
+// received by Gmail.
+//   "dateHeader" (default) - Internal message time based on 'Date'
+// header in email, when valid.
 func (c *UsersMessagesImportCall) InternalDateSource(internalDateSource string) *UsersMessagesImportCall {
 	c.urlParams_.Set("internalDateSource", internalDateSource)
 	return c
@@ -5600,7 +5768,7 @@ func (c *UsersMessagesImportCall) Header() http.Header {
 
 func (c *UsersMessagesImportCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5613,7 +5781,7 @@ func (c *UsersMessagesImportCall) doRequest(alt string) (*http.Response, error) 
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/import")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/import")
 	if c.mediaInfo_ != nil {
 		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/gmail/v1/users/{userId}/messages/import")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
@@ -5692,14 +5860,15 @@ func (c *UsersMessagesImportCall) Do(opts ...googleapi.CallOption) (*Message, er
 	}
 	return ret, nil
 	// {
-	//   "description": "Imports a message into only this user's mailbox, with standard email delivery scanning and classification similar to receiving via SMTP. Does not send a message.",
+	//   "description": "Imports a message into only this user's mailbox, with standard email delivery scanning and classification similar to receiving via SMTP. This method doesn't perform SPF checks, so it might not work for some spam messages, such as those attempting to perform domain spoofing. This method does not send a message. Note: This function doesn't trigger forwarding rules or filters set up by the user.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/import",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.import",
 	//   "mediaUpload": {
 	//     "accept": [
-	//       "message/rfc822"
+	//       "message/*"
 	//     ],
-	//     "maxSize": "50MB",
+	//     "maxSize": "52428800",
 	//     "protocols": {
 	//       "resumable": {
 	//         "multipart": true,
@@ -5725,12 +5894,12 @@ func (c *UsersMessagesImportCall) Do(opts ...googleapi.CallOption) (*Message, er
 	//       "default": "dateHeader",
 	//       "description": "Source for Gmail's internal date of the message.",
 	//       "enum": [
-	//         "dateHeader",
-	//         "receivedTime"
+	//         "receivedTime",
+	//         "dateHeader"
 	//       ],
 	//       "enumDescriptions": [
-	//         "",
-	//         ""
+	//         "Internal message date set to current time when received by Gmail.",
+	//         "Internal message time based on 'Date' header in email, when valid."
 	//       ],
 	//       "location": "query",
 	//       "type": "string"
@@ -5749,13 +5918,13 @@ func (c *UsersMessagesImportCall) Do(opts ...googleapi.CallOption) (*Message, er
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/import",
+	//   "path": "gmail/v1/users/{userId}/messages/import",
 	//   "request": {
 	//     "$ref": "Message"
 	//   },
@@ -5785,8 +5954,11 @@ type UsersMessagesInsertCall struct {
 }
 
 // Insert: Directly inserts a message into only this user's mailbox
-// similar to IMAP APPEND, bypassing most scanning and classification.
+// similar to `IMAP APPEND`, bypassing most scanning and classification.
 // Does not send a message.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Insert(userId string, message *Message) *UsersMessagesInsertCall {
 	c := &UsersMessagesInsertCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -5806,8 +5978,10 @@ func (c *UsersMessagesInsertCall) Deleted(deleted bool) *UsersMessagesInsertCall
 // Source for Gmail's internal date of the message.
 //
 // Possible values:
-//   "dateHeader"
-//   "receivedTime" (default)
+//   "receivedTime" (default) - Internal message date set to current
+// time when received by Gmail.
+//   "dateHeader" - Internal message time based on 'Date' header in
+// email, when valid.
 func (c *UsersMessagesInsertCall) InternalDateSource(internalDateSource string) *UsersMessagesInsertCall {
 	c.urlParams_.Set("internalDateSource", internalDateSource)
 	return c
@@ -5879,7 +6053,7 @@ func (c *UsersMessagesInsertCall) Header() http.Header {
 
 func (c *UsersMessagesInsertCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -5892,7 +6066,7 @@ func (c *UsersMessagesInsertCall) doRequest(alt string) (*http.Response, error) 
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages")
 	if c.mediaInfo_ != nil {
 		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/gmail/v1/users/{userId}/messages")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
@@ -5971,14 +6145,15 @@ func (c *UsersMessagesInsertCall) Do(opts ...googleapi.CallOption) (*Message, er
 	}
 	return ret, nil
 	// {
-	//   "description": "Directly inserts a message into only this user's mailbox similar to IMAP APPEND, bypassing most scanning and classification. Does not send a message.",
+	//   "description": "Directly inserts a message into only this user's mailbox similar to `IMAP APPEND`, bypassing most scanning and classification. Does not send a message.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.insert",
 	//   "mediaUpload": {
 	//     "accept": [
-	//       "message/rfc822"
+	//       "message/*"
 	//     ],
-	//     "maxSize": "50MB",
+	//     "maxSize": "52428800",
 	//     "protocols": {
 	//       "resumable": {
 	//         "multipart": true,
@@ -6004,25 +6179,25 @@ func (c *UsersMessagesInsertCall) Do(opts ...googleapi.CallOption) (*Message, er
 	//       "default": "receivedTime",
 	//       "description": "Source for Gmail's internal date of the message.",
 	//       "enum": [
-	//         "dateHeader",
-	//         "receivedTime"
+	//         "receivedTime",
+	//         "dateHeader"
 	//       ],
 	//       "enumDescriptions": [
-	//         "",
-	//         ""
+	//         "Internal message date set to current time when received by Gmail.",
+	//         "Internal message time based on 'Date' header in email, when valid."
 	//       ],
 	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages",
+	//   "path": "gmail/v1/users/{userId}/messages",
 	//   "request": {
 	//     "$ref": "Message"
 	//   },
@@ -6051,6 +6226,9 @@ type UsersMessagesListCall struct {
 }
 
 // List: Lists the messages in the user's mailbox.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) List(userId string) *UsersMessagesListCall {
 	c := &UsersMessagesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -6058,7 +6236,7 @@ func (r *UsersMessagesService) List(userId string) *UsersMessagesListCall {
 }
 
 // IncludeSpamTrash sets the optional parameter "includeSpamTrash":
-// Include messages from SPAM and TRASH in the results.
+// Include messages from `SPAM` and `TRASH` in the results.
 func (c *UsersMessagesListCall) IncludeSpamTrash(includeSpamTrash bool) *UsersMessagesListCall {
 	c.urlParams_.Set("includeSpamTrash", fmt.Sprint(includeSpamTrash))
 	return c
@@ -6072,7 +6250,8 @@ func (c *UsersMessagesListCall) LabelIds(labelIds ...string) *UsersMessagesListC
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of messages to return.
+// of messages to return. This field defaults to 100. The maximum
+// allowed value for this field is 500.
 func (c *UsersMessagesListCall) MaxResults(maxResults int64) *UsersMessagesListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
 	return c
@@ -6087,9 +6266,9 @@ func (c *UsersMessagesListCall) PageToken(pageToken string) *UsersMessagesListCa
 
 // Q sets the optional parameter "q": Only return messages matching the
 // specified query. Supports the same query format as the Gmail search
-// box. For example, "from:someuser@example.com
-// rfc822msgid:<somemsgid@example.com> is:unread". Parameter cannot be
-// used when accessing the api using the gmail.metadata scope.
+// box. For example, "from:someuser@example.com rfc822msgid:
+// is:unread". Parameter cannot be used when accessing the api using
+// the gmail.metadata scope.
 func (c *UsersMessagesListCall) Q(q string) *UsersMessagesListCall {
 	c.urlParams_.Set("q", q)
 	return c
@@ -6132,7 +6311,7 @@ func (c *UsersMessagesListCall) Header() http.Header {
 
 func (c *UsersMessagesListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6143,7 +6322,7 @@ func (c *UsersMessagesListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -6195,6 +6374,7 @@ func (c *UsersMessagesListCall) Do(opts ...googleapi.CallOption) (*ListMessagesR
 	return ret, nil
 	// {
 	//   "description": "Lists the messages in the user's mailbox.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.messages.list",
 	//   "parameterOrder": [
@@ -6203,7 +6383,7 @@ func (c *UsersMessagesListCall) Do(opts ...googleapi.CallOption) (*ListMessagesR
 	//   "parameters": {
 	//     "includeSpamTrash": {
 	//       "default": "false",
-	//       "description": "Include messages from SPAM and TRASH in the results.",
+	//       "description": "Include messages from `SPAM` and `TRASH` in the results.",
 	//       "location": "query",
 	//       "type": "boolean"
 	//     },
@@ -6215,7 +6395,7 @@ func (c *UsersMessagesListCall) Do(opts ...googleapi.CallOption) (*ListMessagesR
 	//     },
 	//     "maxResults": {
 	//       "default": "100",
-	//       "description": "Maximum number of messages to return.",
+	//       "description": "Maximum number of messages to return. This field defaults to 100. The maximum allowed value for this field is 500.",
 	//       "format": "uint32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -6226,19 +6406,19 @@ func (c *UsersMessagesListCall) Do(opts ...googleapi.CallOption) (*ListMessagesR
 	//       "type": "string"
 	//     },
 	//     "q": {
-	//       "description": "Only return messages matching the specified query. Supports the same query format as the Gmail search box. For example, \"from:someuser@example.com rfc822msgid:\u003csomemsgid@example.com\u003e is:unread\". Parameter cannot be used when accessing the api using the gmail.metadata scope.",
+	//       "description": "Only return messages matching the specified query. Supports the same query format as the Gmail search box. For example, `\"from:someuser@example.com rfc822msgid: is:unread\"`. Parameter cannot be used when accessing the api using the gmail.metadata scope.",
 	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages",
+	//   "path": "gmail/v1/users/{userId}/messages",
 	//   "response": {
 	//     "$ref": "ListMessagesResponse"
 	//   },
@@ -6286,6 +6466,10 @@ type UsersMessagesModifyCall struct {
 }
 
 // Modify: Modifies the labels on the specified message.
+//
+// - id: The ID of the message to modify.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Modify(userId string, id string, modifymessagerequest *ModifyMessageRequest) *UsersMessagesModifyCall {
 	c := &UsersMessagesModifyCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -6321,7 +6505,7 @@ func (c *UsersMessagesModifyCall) Header() http.Header {
 
 func (c *UsersMessagesModifyCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6334,7 +6518,7 @@ func (c *UsersMessagesModifyCall) doRequest(alt string) (*http.Response, error) 
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/{id}/modify")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/{id}/modify")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -6387,6 +6571,7 @@ func (c *UsersMessagesModifyCall) Do(opts ...googleapi.CallOption) (*Message, er
 	return ret, nil
 	// {
 	//   "description": "Modifies the labels on the specified message.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/{id}/modify",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.modify",
 	//   "parameterOrder": [
@@ -6402,13 +6587,13 @@ func (c *UsersMessagesModifyCall) Do(opts ...googleapi.CallOption) (*Message, er
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/{id}/modify",
+	//   "path": "gmail/v1/users/{userId}/messages/{id}/modify",
 	//   "request": {
 	//     "$ref": "ModifyMessageRequest"
 	//   },
@@ -6435,8 +6620,11 @@ type UsersMessagesSendCall struct {
 	header_    http.Header
 }
 
-// Send: Sends the specified message to the recipients in the To, Cc,
-// and Bcc headers.
+// Send: Sends the specified message to the recipients in the `To`,
+// `Cc`, and `Bcc` headers.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Send(userId string, message *Message) *UsersMessagesSendCall {
 	c := &UsersMessagesSendCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -6510,7 +6698,7 @@ func (c *UsersMessagesSendCall) Header() http.Header {
 
 func (c *UsersMessagesSendCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6523,7 +6711,7 @@ func (c *UsersMessagesSendCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/send")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/send")
 	if c.mediaInfo_ != nil {
 		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/gmail/v1/users/{userId}/messages/send")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
@@ -6602,14 +6790,15 @@ func (c *UsersMessagesSendCall) Do(opts ...googleapi.CallOption) (*Message, erro
 	}
 	return ret, nil
 	// {
-	//   "description": "Sends the specified message to the recipients in the To, Cc, and Bcc headers.",
+	//   "description": "Sends the specified message to the recipients in the `To`, `Cc`, and `Bcc` headers.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/send",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.send",
 	//   "mediaUpload": {
 	//     "accept": [
-	//       "message/rfc822"
+	//       "message/*"
 	//     ],
-	//     "maxSize": "35MB",
+	//     "maxSize": "36700160",
 	//     "protocols": {
 	//       "resumable": {
 	//         "multipart": true,
@@ -6627,13 +6816,13 @@ func (c *UsersMessagesSendCall) Do(opts ...googleapi.CallOption) (*Message, erro
 	//   "parameters": {
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/send",
+	//   "path": "gmail/v1/users/{userId}/messages/send",
 	//   "request": {
 	//     "$ref": "Message"
 	//   },
@@ -6642,6 +6831,7 @@ func (c *UsersMessagesSendCall) Do(opts ...googleapi.CallOption) (*Message, erro
 	//   },
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
 	//     "https://www.googleapis.com/auth/gmail.compose",
 	//     "https://www.googleapis.com/auth/gmail.modify",
 	//     "https://www.googleapis.com/auth/gmail.send"
@@ -6663,6 +6853,10 @@ type UsersMessagesTrashCall struct {
 }
 
 // Trash: Moves the specified message to the trash.
+//
+// - id: The ID of the message to Trash.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Trash(userId string, id string) *UsersMessagesTrashCall {
 	c := &UsersMessagesTrashCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -6697,7 +6891,7 @@ func (c *UsersMessagesTrashCall) Header() http.Header {
 
 func (c *UsersMessagesTrashCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6705,7 +6899,7 @@ func (c *UsersMessagesTrashCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/{id}/trash")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/{id}/trash")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -6758,6 +6952,7 @@ func (c *UsersMessagesTrashCall) Do(opts ...googleapi.CallOption) (*Message, err
 	return ret, nil
 	// {
 	//   "description": "Moves the specified message to the trash.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/{id}/trash",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.trash",
 	//   "parameterOrder": [
@@ -6773,13 +6968,13 @@ func (c *UsersMessagesTrashCall) Do(opts ...googleapi.CallOption) (*Message, err
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/{id}/trash",
+	//   "path": "gmail/v1/users/{userId}/messages/{id}/trash",
 	//   "response": {
 	//     "$ref": "Message"
 	//   },
@@ -6803,6 +6998,10 @@ type UsersMessagesUntrashCall struct {
 }
 
 // Untrash: Removes the specified message from the trash.
+//
+// - id: The ID of the message to remove from Trash.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesService) Untrash(userId string, id string) *UsersMessagesUntrashCall {
 	c := &UsersMessagesUntrashCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -6837,7 +7036,7 @@ func (c *UsersMessagesUntrashCall) Header() http.Header {
 
 func (c *UsersMessagesUntrashCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -6845,7 +7044,7 @@ func (c *UsersMessagesUntrashCall) doRequest(alt string) (*http.Response, error)
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/{id}/untrash")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/{id}/untrash")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -6898,6 +7097,7 @@ func (c *UsersMessagesUntrashCall) Do(opts ...googleapi.CallOption) (*Message, e
 	return ret, nil
 	// {
 	//   "description": "Removes the specified message from the trash.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/{id}/untrash",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.messages.untrash",
 	//   "parameterOrder": [
@@ -6913,13 +7113,13 @@ func (c *UsersMessagesUntrashCall) Do(opts ...googleapi.CallOption) (*Message, e
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/{id}/untrash",
+	//   "path": "gmail/v1/users/{userId}/messages/{id}/untrash",
 	//   "response": {
 	//     "$ref": "Message"
 	//   },
@@ -6945,6 +7145,11 @@ type UsersMessagesAttachmentsGetCall struct {
 }
 
 // Get: Gets the specified message attachment.
+//
+// - id: The ID of the attachment.
+// - messageId: The ID of the message containing the attachment.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersMessagesAttachmentsService) Get(userId string, messageId string, id string) *UsersMessagesAttachmentsGetCall {
 	c := &UsersMessagesAttachmentsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -6990,7 +7195,7 @@ func (c *UsersMessagesAttachmentsGetCall) Header() http.Header {
 
 func (c *UsersMessagesAttachmentsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -7001,7 +7206,7 @@ func (c *UsersMessagesAttachmentsGetCall) doRequest(alt string) (*http.Response,
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/messages/{messageId}/attachments/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/messages/{messageId}/attachments/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -7055,6 +7260,7 @@ func (c *UsersMessagesAttachmentsGetCall) Do(opts ...googleapi.CallOption) (*Mes
 	return ret, nil
 	// {
 	//   "description": "Gets the specified message attachment.",
+	//   "flatPath": "gmail/v1/users/{userId}/messages/{messageId}/attachments/{id}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.messages.attachments.get",
 	//   "parameterOrder": [
@@ -7077,18 +7283,20 @@ func (c *UsersMessagesAttachmentsGetCall) Do(opts ...googleapi.CallOption) (*Mes
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/messages/{messageId}/attachments/{id}",
+	//   "path": "gmail/v1/users/{userId}/messages/{messageId}/attachments/{id}",
 	//   "response": {
 	//     "$ref": "MessagePartBody"
 	//   },
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.action",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
 	//     "https://www.googleapis.com/auth/gmail.modify",
 	//     "https://www.googleapis.com/auth/gmail.readonly"
 	//   ]
@@ -7109,6 +7317,9 @@ type UsersSettingsGetAutoForwardingCall struct {
 
 // GetAutoForwarding: Gets the auto-forwarding setting for the specified
 // account.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) GetAutoForwarding(userId string) *UsersSettingsGetAutoForwardingCall {
 	c := &UsersSettingsGetAutoForwardingCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -7152,7 +7363,7 @@ func (c *UsersSettingsGetAutoForwardingCall) Header() http.Header {
 
 func (c *UsersSettingsGetAutoForwardingCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -7163,7 +7374,7 @@ func (c *UsersSettingsGetAutoForwardingCall) doRequest(alt string) (*http.Respon
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/autoForwarding")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/autoForwarding")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -7215,6 +7426,7 @@ func (c *UsersSettingsGetAutoForwardingCall) Do(opts ...googleapi.CallOption) (*
 	return ret, nil
 	// {
 	//   "description": "Gets the auto-forwarding setting for the specified account.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/autoForwarding",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.getAutoForwarding",
 	//   "parameterOrder": [
@@ -7229,7 +7441,7 @@ func (c *UsersSettingsGetAutoForwardingCall) Do(opts ...googleapi.CallOption) (*
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/autoForwarding",
+	//   "path": "gmail/v1/users/{userId}/settings/autoForwarding",
 	//   "response": {
 	//     "$ref": "AutoForwarding"
 	//   },
@@ -7255,6 +7467,9 @@ type UsersSettingsGetImapCall struct {
 }
 
 // GetImap: Gets IMAP settings.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) GetImap(userId string) *UsersSettingsGetImapCall {
 	c := &UsersSettingsGetImapCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -7298,7 +7513,7 @@ func (c *UsersSettingsGetImapCall) Header() http.Header {
 
 func (c *UsersSettingsGetImapCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -7309,7 +7524,7 @@ func (c *UsersSettingsGetImapCall) doRequest(alt string) (*http.Response, error)
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/imap")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/imap")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -7361,6 +7576,7 @@ func (c *UsersSettingsGetImapCall) Do(opts ...googleapi.CallOption) (*ImapSettin
 	return ret, nil
 	// {
 	//   "description": "Gets IMAP settings.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/imap",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.getImap",
 	//   "parameterOrder": [
@@ -7375,7 +7591,7 @@ func (c *UsersSettingsGetImapCall) Do(opts ...googleapi.CallOption) (*ImapSettin
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/imap",
+	//   "path": "gmail/v1/users/{userId}/settings/imap",
 	//   "response": {
 	//     "$ref": "ImapSettings"
 	//   },
@@ -7401,6 +7617,9 @@ type UsersSettingsGetLanguageCall struct {
 }
 
 // GetLanguage: Gets language settings.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) GetLanguage(userId string) *UsersSettingsGetLanguageCall {
 	c := &UsersSettingsGetLanguageCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -7444,7 +7663,7 @@ func (c *UsersSettingsGetLanguageCall) Header() http.Header {
 
 func (c *UsersSettingsGetLanguageCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -7455,7 +7674,7 @@ func (c *UsersSettingsGetLanguageCall) doRequest(alt string) (*http.Response, er
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/language")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/language")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -7507,6 +7726,7 @@ func (c *UsersSettingsGetLanguageCall) Do(opts ...googleapi.CallOption) (*Langua
 	return ret, nil
 	// {
 	//   "description": "Gets language settings.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/language",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.getLanguage",
 	//   "parameterOrder": [
@@ -7521,7 +7741,7 @@ func (c *UsersSettingsGetLanguageCall) Do(opts ...googleapi.CallOption) (*Langua
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/language",
+	//   "path": "gmail/v1/users/{userId}/settings/language",
 	//   "response": {
 	//     "$ref": "LanguageSettings"
 	//   },
@@ -7547,6 +7767,9 @@ type UsersSettingsGetPopCall struct {
 }
 
 // GetPop: Gets POP settings.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) GetPop(userId string) *UsersSettingsGetPopCall {
 	c := &UsersSettingsGetPopCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -7590,7 +7813,7 @@ func (c *UsersSettingsGetPopCall) Header() http.Header {
 
 func (c *UsersSettingsGetPopCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -7601,7 +7824,7 @@ func (c *UsersSettingsGetPopCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/pop")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/pop")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -7653,6 +7876,7 @@ func (c *UsersSettingsGetPopCall) Do(opts ...googleapi.CallOption) (*PopSettings
 	return ret, nil
 	// {
 	//   "description": "Gets POP settings.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/pop",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.getPop",
 	//   "parameterOrder": [
@@ -7667,7 +7891,7 @@ func (c *UsersSettingsGetPopCall) Do(opts ...googleapi.CallOption) (*PopSettings
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/pop",
+	//   "path": "gmail/v1/users/{userId}/settings/pop",
 	//   "response": {
 	//     "$ref": "PopSettings"
 	//   },
@@ -7693,6 +7917,9 @@ type UsersSettingsGetVacationCall struct {
 }
 
 // GetVacation: Gets vacation responder settings.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) GetVacation(userId string) *UsersSettingsGetVacationCall {
 	c := &UsersSettingsGetVacationCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -7736,7 +7963,7 @@ func (c *UsersSettingsGetVacationCall) Header() http.Header {
 
 func (c *UsersSettingsGetVacationCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -7747,7 +7974,7 @@ func (c *UsersSettingsGetVacationCall) doRequest(alt string) (*http.Response, er
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/vacation")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/vacation")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -7799,6 +8026,7 @@ func (c *UsersSettingsGetVacationCall) Do(opts ...googleapi.CallOption) (*Vacati
 	return ret, nil
 	// {
 	//   "description": "Gets vacation responder settings.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/vacation",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.getVacation",
 	//   "parameterOrder": [
@@ -7813,7 +8041,7 @@ func (c *UsersSettingsGetVacationCall) Do(opts ...googleapi.CallOption) (*Vacati
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/vacation",
+	//   "path": "gmail/v1/users/{userId}/settings/vacation",
 	//   "response": {
 	//     "$ref": "VacationSettings"
 	//   },
@@ -7840,10 +8068,12 @@ type UsersSettingsUpdateAutoForwardingCall struct {
 
 // UpdateAutoForwarding: Updates the auto-forwarding setting for the
 // specified account. A verified forwarding address must be specified
-// when auto-forwarding is enabled.
+// when auto-forwarding is enabled. This method is only available to
+// service account clients that have been delegated domain-wide
+// authority.
 //
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) UpdateAutoForwarding(userId string, autoforwarding *AutoForwarding) *UsersSettingsUpdateAutoForwardingCall {
 	c := &UsersSettingsUpdateAutoForwardingCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -7878,7 +8108,7 @@ func (c *UsersSettingsUpdateAutoForwardingCall) Header() http.Header {
 
 func (c *UsersSettingsUpdateAutoForwardingCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -7891,7 +8121,7 @@ func (c *UsersSettingsUpdateAutoForwardingCall) doRequest(alt string) (*http.Res
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/autoForwarding")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/autoForwarding")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -7942,7 +8172,8 @@ func (c *UsersSettingsUpdateAutoForwardingCall) Do(opts ...googleapi.CallOption)
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/autoForwarding",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.settings.updateAutoForwarding",
 	//   "parameterOrder": [
@@ -7957,7 +8188,7 @@ func (c *UsersSettingsUpdateAutoForwardingCall) Do(opts ...googleapi.CallOption)
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/autoForwarding",
+	//   "path": "gmail/v1/users/{userId}/settings/autoForwarding",
 	//   "request": {
 	//     "$ref": "AutoForwarding"
 	//   },
@@ -7983,6 +8214,9 @@ type UsersSettingsUpdateImapCall struct {
 }
 
 // UpdateImap: Updates IMAP settings.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) UpdateImap(userId string, imapsettings *ImapSettings) *UsersSettingsUpdateImapCall {
 	c := &UsersSettingsUpdateImapCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -8017,7 +8251,7 @@ func (c *UsersSettingsUpdateImapCall) Header() http.Header {
 
 func (c *UsersSettingsUpdateImapCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -8030,7 +8264,7 @@ func (c *UsersSettingsUpdateImapCall) doRequest(alt string) (*http.Response, err
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/imap")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/imap")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -8082,6 +8316,7 @@ func (c *UsersSettingsUpdateImapCall) Do(opts ...googleapi.CallOption) (*ImapSet
 	return ret, nil
 	// {
 	//   "description": "Updates IMAP settings.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/imap",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.settings.updateImap",
 	//   "parameterOrder": [
@@ -8096,7 +8331,7 @@ func (c *UsersSettingsUpdateImapCall) Do(opts ...googleapi.CallOption) (*ImapSet
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/imap",
+	//   "path": "gmail/v1/users/{userId}/settings/imap",
 	//   "request": {
 	//     "$ref": "ImapSettings"
 	//   },
@@ -8121,13 +8356,15 @@ type UsersSettingsUpdateLanguageCall struct {
 	header_          http.Header
 }
 
-// UpdateLanguage: Updates language settings.
+// UpdateLanguage: Updates language settings. If successful, the return
+// object contains the `displayLanguage` that was saved for the user,
+// which may differ from the value passed into the request. This is
+// because the requested `displayLanguage` may not be directly supported
+// by Gmail but have a close variant that is, and so the variant may be
+// chosen and saved instead.
 //
-// If successful, the return object contains the displayLanguage that
-// was saved for the user, which may differ from the value passed into
-// the request. This is because the requested displayLanguage may not be
-// directly supported by Gmail but have a close variant that is, and so
-// the variant may be chosen and saved instead.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) UpdateLanguage(userId string, languagesettings *LanguageSettings) *UsersSettingsUpdateLanguageCall {
 	c := &UsersSettingsUpdateLanguageCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -8162,7 +8399,7 @@ func (c *UsersSettingsUpdateLanguageCall) Header() http.Header {
 
 func (c *UsersSettingsUpdateLanguageCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -8175,7 +8412,7 @@ func (c *UsersSettingsUpdateLanguageCall) doRequest(alt string) (*http.Response,
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/language")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/language")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -8226,7 +8463,8 @@ func (c *UsersSettingsUpdateLanguageCall) Do(opts ...googleapi.CallOption) (*Lan
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates language settings.\n\nIf successful, the return object contains the displayLanguage that was saved for the user, which may differ from the value passed into the request. This is because the requested displayLanguage may not be directly supported by Gmail but have a close variant that is, and so the variant may be chosen and saved instead.",
+	//   "description": "Updates language settings. If successful, the return object contains the `displayLanguage` that was saved for the user, which may differ from the value passed into the request. This is because the requested `displayLanguage` may not be directly supported by Gmail but have a close variant that is, and so the variant may be chosen and saved instead.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/language",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.settings.updateLanguage",
 	//   "parameterOrder": [
@@ -8241,7 +8479,7 @@ func (c *UsersSettingsUpdateLanguageCall) Do(opts ...googleapi.CallOption) (*Lan
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/language",
+	//   "path": "gmail/v1/users/{userId}/settings/language",
 	//   "request": {
 	//     "$ref": "LanguageSettings"
 	//   },
@@ -8267,6 +8505,9 @@ type UsersSettingsUpdatePopCall struct {
 }
 
 // UpdatePop: Updates POP settings.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) UpdatePop(userId string, popsettings *PopSettings) *UsersSettingsUpdatePopCall {
 	c := &UsersSettingsUpdatePopCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -8301,7 +8542,7 @@ func (c *UsersSettingsUpdatePopCall) Header() http.Header {
 
 func (c *UsersSettingsUpdatePopCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -8314,7 +8555,7 @@ func (c *UsersSettingsUpdatePopCall) doRequest(alt string) (*http.Response, erro
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/pop")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/pop")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -8366,6 +8607,7 @@ func (c *UsersSettingsUpdatePopCall) Do(opts ...googleapi.CallOption) (*PopSetti
 	return ret, nil
 	// {
 	//   "description": "Updates POP settings.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/pop",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.settings.updatePop",
 	//   "parameterOrder": [
@@ -8380,7 +8622,7 @@ func (c *UsersSettingsUpdatePopCall) Do(opts ...googleapi.CallOption) (*PopSetti
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/pop",
+	//   "path": "gmail/v1/users/{userId}/settings/pop",
 	//   "request": {
 	//     "$ref": "PopSettings"
 	//   },
@@ -8406,6 +8648,9 @@ type UsersSettingsUpdateVacationCall struct {
 }
 
 // UpdateVacation: Updates vacation responder settings.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsService) UpdateVacation(userId string, vacationsettings *VacationSettings) *UsersSettingsUpdateVacationCall {
 	c := &UsersSettingsUpdateVacationCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -8440,7 +8685,7 @@ func (c *UsersSettingsUpdateVacationCall) Header() http.Header {
 
 func (c *UsersSettingsUpdateVacationCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -8453,7 +8698,7 @@ func (c *UsersSettingsUpdateVacationCall) doRequest(alt string) (*http.Response,
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/vacation")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/vacation")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -8505,6 +8750,7 @@ func (c *UsersSettingsUpdateVacationCall) Do(opts ...googleapi.CallOption) (*Vac
 	return ret, nil
 	// {
 	//   "description": "Updates vacation responder settings.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/vacation",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.settings.updateVacation",
 	//   "parameterOrder": [
@@ -8519,7 +8765,7 @@ func (c *UsersSettingsUpdateVacationCall) Do(opts ...googleapi.CallOption) (*Vac
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/vacation",
+	//   "path": "gmail/v1/users/{userId}/settings/vacation",
 	//   "request": {
 	//     "$ref": "VacationSettings"
 	//   },
@@ -8545,23 +8791,20 @@ type UsersSettingsDelegatesCreateCall struct {
 }
 
 // Create: Adds a delegate with its verification status set directly to
-// accepted, without sending any verification email. The delegate user
+// `accepted`, without sending any verification email. The delegate user
 // must be a member of the same G Suite organization as the delegator
-// user.
-//
-// Gmail imposes limtations on the number of delegates and delegators
-// each user in a G Suite organization can have. These limits depend on
-// your organization, but in general each user can have up to 25
-// delegates and up to 10 delegators.
-//
-// Note that a delegate user must be referred to by their primary email
-// address, and not an email alias.
-//
-// Also note that when a new delegate is created, there may be up to a
-// one minute delay before the new delegate is available for use.
-//
+// user. Gmail imposes limitations on the number of delegates and
+// delegators each user in a G Suite organization can have. These limits
+// depend on your organization, but in general each user can have up to
+// 25 delegates and up to 10 delegators. Note that a delegate user must
+// be referred to by their primary email address, and not an email
+// alias. Also note that when a new delegate is created, there may be up
+// to a one minute delay before the new delegate is available for use.
 // This method is only available to service account clients that have
 // been delegated domain-wide authority.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsDelegatesService) Create(userId string, delegate *Delegate) *UsersSettingsDelegatesCreateCall {
 	c := &UsersSettingsDelegatesCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -8596,7 +8839,7 @@ func (c *UsersSettingsDelegatesCreateCall) Header() http.Header {
 
 func (c *UsersSettingsDelegatesCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -8609,7 +8852,7 @@ func (c *UsersSettingsDelegatesCreateCall) doRequest(alt string) (*http.Response
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/delegates")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/delegates")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -8660,7 +8903,8 @@ func (c *UsersSettingsDelegatesCreateCall) Do(opts ...googleapi.CallOption) (*De
 	}
 	return ret, nil
 	// {
-	//   "description": "Adds a delegate with its verification status set directly to accepted, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.\n\nGmail imposes limtations on the number of delegates and delegators each user in a G Suite organization can have. These limits depend on your organization, but in general each user can have up to 25 delegates and up to 10 delegators.\n\nNote that a delegate user must be referred to by their primary email address, and not an email alias.\n\nAlso note that when a new delegate is created, there may be up to a one minute delay before the new delegate is available for use.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Adds a delegate with its verification status set directly to `accepted`, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user. Gmail imposes limitations on the number of delegates and delegators each user in a G Suite organization can have. These limits depend on your organization, but in general each user can have up to 25 delegates and up to 10 delegators. Note that a delegate user must be referred to by their primary email address, and not an email alias. Also note that when a new delegate is created, there may be up to a one minute delay before the new delegate is available for use. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/delegates",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.settings.delegates.create",
 	//   "parameterOrder": [
@@ -8675,7 +8919,7 @@ func (c *UsersSettingsDelegatesCreateCall) Do(opts ...googleapi.CallOption) (*De
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/delegates",
+	//   "path": "gmail/v1/users/{userId}/settings/delegates",
 	//   "request": {
 	//     "$ref": "Delegate"
 	//   },
@@ -8702,13 +8946,15 @@ type UsersSettingsDelegatesDeleteCall struct {
 
 // Delete: Removes the specified delegate (which can be of any
 // verification status), and revokes any verification that may have been
-// required for using it.
+// required for using it. Note that a delegate user must be referred to
+// by their primary email address, and not an email alias. This method
+// is only available to service account clients that have been delegated
+// domain-wide authority.
 //
-// Note that a delegate user must be referred to by their primary email
-// address, and not an email alias.
-//
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - delegateEmail: The email address of the user to be removed as a
+//   delegate.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsDelegatesService) Delete(userId string, delegateEmail string) *UsersSettingsDelegatesDeleteCall {
 	c := &UsersSettingsDelegatesDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -8743,7 +8989,7 @@ func (c *UsersSettingsDelegatesDeleteCall) Header() http.Header {
 
 func (c *UsersSettingsDelegatesDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -8751,7 +8997,7 @@ func (c *UsersSettingsDelegatesDeleteCall) doRequest(alt string) (*http.Response
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/delegates/{delegateEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/delegates/{delegateEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -8778,7 +9024,8 @@ func (c *UsersSettingsDelegatesDeleteCall) Do(opts ...googleapi.CallOption) erro
 	}
 	return nil
 	// {
-	//   "description": "Removes the specified delegate (which can be of any verification status), and revokes any verification that may have been required for using it.\n\nNote that a delegate user must be referred to by their primary email address, and not an email alias.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Removes the specified delegate (which can be of any verification status), and revokes any verification that may have been required for using it. Note that a delegate user must be referred to by their primary email address, and not an email alias. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/delegates/{delegateEmail}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.settings.delegates.delete",
 	//   "parameterOrder": [
@@ -8800,7 +9047,7 @@ func (c *UsersSettingsDelegatesDeleteCall) Do(opts ...googleapi.CallOption) erro
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/delegates/{delegateEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/delegates/{delegateEmail}",
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/gmail.settings.sharing"
 	//   ]
@@ -8820,13 +9067,15 @@ type UsersSettingsDelegatesGetCall struct {
 	header_       http.Header
 }
 
-// Get: Gets the specified delegate.
-//
-// Note that a delegate user must be referred to by their primary email
-// address, and not an email alias.
-//
+// Get: Gets the specified delegate. Note that a delegate user must be
+// referred to by their primary email address, and not an email alias.
 // This method is only available to service account clients that have
 // been delegated domain-wide authority.
+//
+// - delegateEmail: The email address of the user whose delegate
+//   relationship is to be retrieved.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsDelegatesService) Get(userId string, delegateEmail string) *UsersSettingsDelegatesGetCall {
 	c := &UsersSettingsDelegatesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -8871,7 +9120,7 @@ func (c *UsersSettingsDelegatesGetCall) Header() http.Header {
 
 func (c *UsersSettingsDelegatesGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -8882,7 +9131,7 @@ func (c *UsersSettingsDelegatesGetCall) doRequest(alt string) (*http.Response, e
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/delegates/{delegateEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/delegates/{delegateEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -8934,7 +9183,8 @@ func (c *UsersSettingsDelegatesGetCall) Do(opts ...googleapi.CallOption) (*Deleg
 	}
 	return ret, nil
 	// {
-	//   "description": "Gets the specified delegate.\n\nNote that a delegate user must be referred to by their primary email address, and not an email alias.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Gets the specified delegate. Note that a delegate user must be referred to by their primary email address, and not an email alias. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/delegates/{delegateEmail}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.delegates.get",
 	//   "parameterOrder": [
@@ -8956,7 +9206,7 @@ func (c *UsersSettingsDelegatesGetCall) Do(opts ...googleapi.CallOption) (*Deleg
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/delegates/{delegateEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/delegates/{delegateEmail}",
 	//   "response": {
 	//     "$ref": "Delegate"
 	//   },
@@ -8981,10 +9231,12 @@ type UsersSettingsDelegatesListCall struct {
 	header_      http.Header
 }
 
-// List: Lists the delegates for the specified account.
+// List: Lists the delegates for the specified account. This method is
+// only available to service account clients that have been delegated
+// domain-wide authority.
 //
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsDelegatesService) List(userId string) *UsersSettingsDelegatesListCall {
 	c := &UsersSettingsDelegatesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9028,7 +9280,7 @@ func (c *UsersSettingsDelegatesListCall) Header() http.Header {
 
 func (c *UsersSettingsDelegatesListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9039,7 +9291,7 @@ func (c *UsersSettingsDelegatesListCall) doRequest(alt string) (*http.Response, 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/delegates")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/delegates")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -9090,7 +9342,8 @@ func (c *UsersSettingsDelegatesListCall) Do(opts ...googleapi.CallOption) (*List
 	}
 	return ret, nil
 	// {
-	//   "description": "Lists the delegates for the specified account.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Lists the delegates for the specified account. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/delegates",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.delegates.list",
 	//   "parameterOrder": [
@@ -9105,7 +9358,7 @@ func (c *UsersSettingsDelegatesListCall) Do(opts ...googleapi.CallOption) (*List
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/delegates",
+	//   "path": "gmail/v1/users/{userId}/settings/delegates",
 	//   "response": {
 	//     "$ref": "ListDelegatesResponse"
 	//   },
@@ -9130,7 +9383,11 @@ type UsersSettingsFiltersCreateCall struct {
 	header_    http.Header
 }
 
-// Create: Creates a filter.
+// Create: Creates a filter. Note: you can only create a maximum of
+// 1,000 filters.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsFiltersService) Create(userId string, filter *Filter) *UsersSettingsFiltersCreateCall {
 	c := &UsersSettingsFiltersCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9165,7 +9422,7 @@ func (c *UsersSettingsFiltersCreateCall) Header() http.Header {
 
 func (c *UsersSettingsFiltersCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9178,7 +9435,7 @@ func (c *UsersSettingsFiltersCreateCall) doRequest(alt string) (*http.Response, 
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/filters")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/filters")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -9229,7 +9486,8 @@ func (c *UsersSettingsFiltersCreateCall) Do(opts ...googleapi.CallOption) (*Filt
 	}
 	return ret, nil
 	// {
-	//   "description": "Creates a filter.",
+	//   "description": "Creates a filter. Note: you can only create a maximum of 1,000 filters.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/filters",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.settings.filters.create",
 	//   "parameterOrder": [
@@ -9244,7 +9502,7 @@ func (c *UsersSettingsFiltersCreateCall) Do(opts ...googleapi.CallOption) (*Filt
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/filters",
+	//   "path": "gmail/v1/users/{userId}/settings/filters",
 	//   "request": {
 	//     "$ref": "Filter"
 	//   },
@@ -9269,7 +9527,11 @@ type UsersSettingsFiltersDeleteCall struct {
 	header_    http.Header
 }
 
-// Delete: Deletes a filter.
+// Delete: Immediately and permanently deletes the specified filter.
+//
+// - id: The ID of the filter to be deleted.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsFiltersService) Delete(userId string, id string) *UsersSettingsFiltersDeleteCall {
 	c := &UsersSettingsFiltersDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9304,7 +9566,7 @@ func (c *UsersSettingsFiltersDeleteCall) Header() http.Header {
 
 func (c *UsersSettingsFiltersDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9312,7 +9574,7 @@ func (c *UsersSettingsFiltersDeleteCall) doRequest(alt string) (*http.Response, 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/filters/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/filters/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -9339,7 +9601,8 @@ func (c *UsersSettingsFiltersDeleteCall) Do(opts ...googleapi.CallOption) error 
 	}
 	return nil
 	// {
-	//   "description": "Deletes a filter.",
+	//   "description": "Immediately and permanently deletes the specified filter.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/filters/{id}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.settings.filters.delete",
 	//   "parameterOrder": [
@@ -9361,7 +9624,7 @@ func (c *UsersSettingsFiltersDeleteCall) Do(opts ...googleapi.CallOption) error 
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/filters/{id}",
+	//   "path": "gmail/v1/users/{userId}/settings/filters/{id}",
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/gmail.settings.basic"
 	//   ]
@@ -9382,6 +9645,10 @@ type UsersSettingsFiltersGetCall struct {
 }
 
 // Get: Gets a filter.
+//
+// - id: The ID of the filter to be fetched.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsFiltersService) Get(userId string, id string) *UsersSettingsFiltersGetCall {
 	c := &UsersSettingsFiltersGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9426,7 +9693,7 @@ func (c *UsersSettingsFiltersGetCall) Header() http.Header {
 
 func (c *UsersSettingsFiltersGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9437,7 +9704,7 @@ func (c *UsersSettingsFiltersGetCall) doRequest(alt string) (*http.Response, err
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/filters/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/filters/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -9490,6 +9757,7 @@ func (c *UsersSettingsFiltersGetCall) Do(opts ...googleapi.CallOption) (*Filter,
 	return ret, nil
 	// {
 	//   "description": "Gets a filter.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/filters/{id}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.filters.get",
 	//   "parameterOrder": [
@@ -9511,7 +9779,7 @@ func (c *UsersSettingsFiltersGetCall) Do(opts ...googleapi.CallOption) (*Filter,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/filters/{id}",
+	//   "path": "gmail/v1/users/{userId}/settings/filters/{id}",
 	//   "response": {
 	//     "$ref": "Filter"
 	//   },
@@ -9537,6 +9805,9 @@ type UsersSettingsFiltersListCall struct {
 }
 
 // List: Lists the message filters of a Gmail user.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsFiltersService) List(userId string) *UsersSettingsFiltersListCall {
 	c := &UsersSettingsFiltersListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9580,7 +9851,7 @@ func (c *UsersSettingsFiltersListCall) Header() http.Header {
 
 func (c *UsersSettingsFiltersListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9591,7 +9862,7 @@ func (c *UsersSettingsFiltersListCall) doRequest(alt string) (*http.Response, er
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/filters")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/filters")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -9643,6 +9914,7 @@ func (c *UsersSettingsFiltersListCall) Do(opts ...googleapi.CallOption) (*ListFi
 	return ret, nil
 	// {
 	//   "description": "Lists the message filters of a Gmail user.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/filters",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.filters.list",
 	//   "parameterOrder": [
@@ -9657,7 +9929,7 @@ func (c *UsersSettingsFiltersListCall) Do(opts ...googleapi.CallOption) (*ListFi
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/filters",
+	//   "path": "gmail/v1/users/{userId}/settings/filters",
 	//   "response": {
 	//     "$ref": "ListFiltersResponse"
 	//   },
@@ -9684,11 +9956,13 @@ type UsersSettingsForwardingAddressesCreateCall struct {
 
 // Create: Creates a forwarding address. If ownership verification is
 // required, a message will be sent to the recipient and the resource's
-// verification status will be set to pending; otherwise, the resource
-// will be created with verification status set to accepted.
+// verification status will be set to `pending`; otherwise, the resource
+// will be created with verification status set to `accepted`. This
+// method is only available to service account clients that have been
+// delegated domain-wide authority.
 //
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsForwardingAddressesService) Create(userId string, forwardingaddress *ForwardingAddress) *UsersSettingsForwardingAddressesCreateCall {
 	c := &UsersSettingsForwardingAddressesCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9723,7 +9997,7 @@ func (c *UsersSettingsForwardingAddressesCreateCall) Header() http.Header {
 
 func (c *UsersSettingsForwardingAddressesCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9736,7 +10010,7 @@ func (c *UsersSettingsForwardingAddressesCreateCall) doRequest(alt string) (*htt
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/forwardingAddresses")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/forwardingAddresses")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -9787,7 +10061,8 @@ func (c *UsersSettingsForwardingAddressesCreateCall) Do(opts ...googleapi.CallOp
 	}
 	return ret, nil
 	// {
-	//   "description": "Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to `pending`; otherwise, the resource will be created with verification status set to `accepted`. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/forwardingAddresses",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.settings.forwardingAddresses.create",
 	//   "parameterOrder": [
@@ -9802,7 +10077,7 @@ func (c *UsersSettingsForwardingAddressesCreateCall) Do(opts ...googleapi.CallOp
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/forwardingAddresses",
+	//   "path": "gmail/v1/users/{userId}/settings/forwardingAddresses",
 	//   "request": {
 	//     "$ref": "ForwardingAddress"
 	//   },
@@ -9828,10 +10103,13 @@ type UsersSettingsForwardingAddressesDeleteCall struct {
 }
 
 // Delete: Deletes the specified forwarding address and revokes any
-// verification that may have been required.
+// verification that may have been required. This method is only
+// available to service account clients that have been delegated
+// domain-wide authority.
 //
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - forwardingEmail: The forwarding address to be deleted.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsForwardingAddressesService) Delete(userId string, forwardingEmail string) *UsersSettingsForwardingAddressesDeleteCall {
 	c := &UsersSettingsForwardingAddressesDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9866,7 +10144,7 @@ func (c *UsersSettingsForwardingAddressesDeleteCall) Header() http.Header {
 
 func (c *UsersSettingsForwardingAddressesDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9874,7 +10152,7 @@ func (c *UsersSettingsForwardingAddressesDeleteCall) doRequest(alt string) (*htt
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/forwardingAddresses/{forwardingEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -9901,7 +10179,8 @@ func (c *UsersSettingsForwardingAddressesDeleteCall) Do(opts ...googleapi.CallOp
 	}
 	return nil
 	// {
-	//   "description": "Deletes the specified forwarding address and revokes any verification that may have been required.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.settings.forwardingAddresses.delete",
 	//   "parameterOrder": [
@@ -9923,7 +10202,7 @@ func (c *UsersSettingsForwardingAddressesDeleteCall) Do(opts ...googleapi.CallOp
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/forwardingAddresses/{forwardingEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}",
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/gmail.settings.sharing"
 	//   ]
@@ -9944,6 +10223,10 @@ type UsersSettingsForwardingAddressesGetCall struct {
 }
 
 // Get: Gets the specified forwarding address.
+//
+// - forwardingEmail: The forwarding address to be retrieved.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsForwardingAddressesService) Get(userId string, forwardingEmail string) *UsersSettingsForwardingAddressesGetCall {
 	c := &UsersSettingsForwardingAddressesGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -9988,7 +10271,7 @@ func (c *UsersSettingsForwardingAddressesGetCall) Header() http.Header {
 
 func (c *UsersSettingsForwardingAddressesGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -9999,7 +10282,7 @@ func (c *UsersSettingsForwardingAddressesGetCall) doRequest(alt string) (*http.R
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/forwardingAddresses/{forwardingEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -10052,6 +10335,7 @@ func (c *UsersSettingsForwardingAddressesGetCall) Do(opts ...googleapi.CallOptio
 	return ret, nil
 	// {
 	//   "description": "Gets the specified forwarding address.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.forwardingAddresses.get",
 	//   "parameterOrder": [
@@ -10073,7 +10357,7 @@ func (c *UsersSettingsForwardingAddressesGetCall) Do(opts ...googleapi.CallOptio
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/forwardingAddresses/{forwardingEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}",
 	//   "response": {
 	//     "$ref": "ForwardingAddress"
 	//   },
@@ -10099,6 +10383,9 @@ type UsersSettingsForwardingAddressesListCall struct {
 }
 
 // List: Lists the forwarding addresses for the specified account.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsForwardingAddressesService) List(userId string) *UsersSettingsForwardingAddressesListCall {
 	c := &UsersSettingsForwardingAddressesListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -10142,7 +10429,7 @@ func (c *UsersSettingsForwardingAddressesListCall) Header() http.Header {
 
 func (c *UsersSettingsForwardingAddressesListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -10153,7 +10440,7 @@ func (c *UsersSettingsForwardingAddressesListCall) doRequest(alt string) (*http.
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/forwardingAddresses")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/forwardingAddresses")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -10205,6 +10492,7 @@ func (c *UsersSettingsForwardingAddressesListCall) Do(opts ...googleapi.CallOpti
 	return ret, nil
 	// {
 	//   "description": "Lists the forwarding addresses for the specified account.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/forwardingAddresses",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.forwardingAddresses.list",
 	//   "parameterOrder": [
@@ -10219,7 +10507,7 @@ func (c *UsersSettingsForwardingAddressesListCall) Do(opts ...googleapi.CallOpti
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/forwardingAddresses",
+	//   "path": "gmail/v1/users/{userId}/settings/forwardingAddresses",
 	//   "response": {
 	//     "$ref": "ListForwardingAddressesResponse"
 	//   },
@@ -10249,12 +10537,14 @@ type UsersSettingsSendAsCreateCall struct {
 // validate the configuration before creating the alias. If ownership
 // verification is required for the alias, a message will be sent to the
 // email address and the resource's verification status will be set to
-// pending; otherwise, the resource will be created with verification
-// status set to accepted. If a signature is provided, Gmail will
-// sanitize the HTML before saving it with the alias.
+// `pending`; otherwise, the resource will be created with verification
+// status set to `accepted`. If a signature is provided, Gmail will
+// sanitize the HTML before saving it with the alias. This method is
+// only available to service account clients that have been delegated
+// domain-wide authority.
 //
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsSendAsService) Create(userId string, sendas *SendAs) *UsersSettingsSendAsCreateCall {
 	c := &UsersSettingsSendAsCreateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -10289,7 +10579,7 @@ func (c *UsersSettingsSendAsCreateCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsCreateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -10302,7 +10592,7 @@ func (c *UsersSettingsSendAsCreateCall) doRequest(alt string) (*http.Response, e
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -10353,7 +10643,8 @@ func (c *UsersSettingsSendAsCreateCall) Do(opts ...googleapi.CallOption) (*SendA
 	}
 	return ret, nil
 	// {
-	//   "description": "Creates a custom \"from\" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Creates a custom \"from\" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to `pending`; otherwise, the resource will be created with verification status set to `accepted`. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.settings.sendAs.create",
 	//   "parameterOrder": [
@@ -10368,7 +10659,7 @@ func (c *UsersSettingsSendAsCreateCall) Do(opts ...googleapi.CallOption) (*SendA
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs",
 	//   "request": {
 	//     "$ref": "SendAs"
 	//   },
@@ -10394,10 +10685,13 @@ type UsersSettingsSendAsDeleteCall struct {
 }
 
 // Delete: Deletes the specified send-as alias. Revokes any verification
-// that may have been required for using it.
+// that may have been required for using it. This method is only
+// available to service account clients that have been delegated
+// domain-wide authority.
 //
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - sendAsEmail: The send-as alias to be deleted.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsSendAsService) Delete(userId string, sendAsEmail string) *UsersSettingsSendAsDeleteCall {
 	c := &UsersSettingsSendAsDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -10432,7 +10726,7 @@ func (c *UsersSettingsSendAsDeleteCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -10440,7 +10734,7 @@ func (c *UsersSettingsSendAsDeleteCall) doRequest(alt string) (*http.Response, e
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -10467,7 +10761,8 @@ func (c *UsersSettingsSendAsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Deletes the specified send-as alias. Revokes any verification that may have been required for using it.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Deletes the specified send-as alias. Revokes any verification that may have been required for using it. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.settings.sendAs.delete",
 	//   "parameterOrder": [
@@ -10489,7 +10784,7 @@ func (c *UsersSettingsSendAsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/gmail.settings.sharing"
 	//   ]
@@ -10511,6 +10806,10 @@ type UsersSettingsSendAsGetCall struct {
 
 // Get: Gets the specified send-as alias. Fails with an HTTP 404 error
 // if the specified address is not a member of the collection.
+//
+// - sendAsEmail: The send-as alias to be retrieved.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsSendAsService) Get(userId string, sendAsEmail string) *UsersSettingsSendAsGetCall {
 	c := &UsersSettingsSendAsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -10555,7 +10854,7 @@ func (c *UsersSettingsSendAsGetCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -10566,7 +10865,7 @@ func (c *UsersSettingsSendAsGetCall) doRequest(alt string) (*http.Response, erro
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -10619,6 +10918,7 @@ func (c *UsersSettingsSendAsGetCall) Do(opts ...googleapi.CallOption) (*SendAs, 
 	return ret, nil
 	// {
 	//   "description": "Gets the specified send-as alias. Fails with an HTTP 404 error if the specified address is not a member of the collection.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.sendAs.get",
 	//   "parameterOrder": [
@@ -10640,7 +10940,7 @@ func (c *UsersSettingsSendAsGetCall) Do(opts ...googleapi.CallOption) (*SendAs, 
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "response": {
 	//     "$ref": "SendAs"
 	//   },
@@ -10668,6 +10968,9 @@ type UsersSettingsSendAsListCall struct {
 // List: Lists the send-as aliases for the specified account. The result
 // includes the primary send-as address associated with the account as
 // well as any custom "from" aliases.
+//
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsSendAsService) List(userId string) *UsersSettingsSendAsListCall {
 	c := &UsersSettingsSendAsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -10711,7 +11014,7 @@ func (c *UsersSettingsSendAsListCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -10722,7 +11025,7 @@ func (c *UsersSettingsSendAsListCall) doRequest(alt string) (*http.Response, err
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -10774,6 +11077,7 @@ func (c *UsersSettingsSendAsListCall) Do(opts ...googleapi.CallOption) (*ListSen
 	return ret, nil
 	// {
 	//   "description": "Lists the send-as aliases for the specified account. The result includes the primary send-as address associated with the account as well as any custom \"from\" aliases.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.sendAs.list",
 	//   "parameterOrder": [
@@ -10788,7 +11092,7 @@ func (c *UsersSettingsSendAsListCall) Do(opts ...googleapi.CallOption) (*ListSen
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs",
 	//   "response": {
 	//     "$ref": "ListSendAsResponse"
 	//   },
@@ -10814,12 +11118,11 @@ type UsersSettingsSendAsPatchCall struct {
 	header_     http.Header
 }
 
-// Patch: Updates a send-as alias. If a signature is provided, Gmail
-// will sanitize the HTML before saving it with the alias.
+// Patch: Patch the specified send-as alias.
 //
-// Addresses other than the primary address for the account can only be
-// updated by service account clients that have been delegated
-// domain-wide authority. This method supports patch semantics.
+// - sendAsEmail: The send-as alias to be updated.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsSendAsService) Patch(userId string, sendAsEmail string, sendas *SendAs) *UsersSettingsSendAsPatchCall {
 	c := &UsersSettingsSendAsPatchCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -10855,7 +11158,7 @@ func (c *UsersSettingsSendAsPatchCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsPatchCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -10868,7 +11171,7 @@ func (c *UsersSettingsSendAsPatchCall) doRequest(alt string) (*http.Response, er
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -10920,7 +11223,8 @@ func (c *UsersSettingsSendAsPatchCall) Do(opts ...googleapi.CallOption) (*SendAs
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.\n\nAddresses other than the primary address for the account can only be updated by service account clients that have been delegated domain-wide authority. This method supports patch semantics.",
+	//   "description": "Patch the specified send-as alias.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "httpMethod": "PATCH",
 	//   "id": "gmail.users.settings.sendAs.patch",
 	//   "parameterOrder": [
@@ -10942,7 +11246,7 @@ func (c *UsersSettingsSendAsPatchCall) Do(opts ...googleapi.CallOption) (*SendAs
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "request": {
 	//     "$ref": "SendAs"
 	//   },
@@ -10970,11 +11274,14 @@ type UsersSettingsSendAsUpdateCall struct {
 }
 
 // Update: Updates a send-as alias. If a signature is provided, Gmail
-// will sanitize the HTML before saving it with the alias.
+// will sanitize the HTML before saving it with the alias. Addresses
+// other than the primary address for the account can only be updated by
+// service account clients that have been delegated domain-wide
+// authority.
 //
-// Addresses other than the primary address for the account can only be
-// updated by service account clients that have been delegated
-// domain-wide authority.
+// - sendAsEmail: The send-as alias to be updated.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsSendAsService) Update(userId string, sendAsEmail string, sendas *SendAs) *UsersSettingsSendAsUpdateCall {
 	c := &UsersSettingsSendAsUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11010,7 +11317,7 @@ func (c *UsersSettingsSendAsUpdateCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsUpdateCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -11023,7 +11330,7 @@ func (c *UsersSettingsSendAsUpdateCall) doRequest(alt string) (*http.Response, e
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -11075,7 +11382,8 @@ func (c *UsersSettingsSendAsUpdateCall) Do(opts ...googleapi.CallOption) (*SendA
 	}
 	return ret, nil
 	// {
-	//   "description": "Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.\n\nAddresses other than the primary address for the account can only be updated by service account clients that have been delegated domain-wide authority.",
+	//   "description": "Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias. Addresses other than the primary address for the account can only be updated by service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "httpMethod": "PUT",
 	//   "id": "gmail.users.settings.sendAs.update",
 	//   "parameterOrder": [
@@ -11097,7 +11405,7 @@ func (c *UsersSettingsSendAsUpdateCall) Do(opts ...googleapi.CallOption) (*SendA
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}",
 	//   "request": {
 	//     "$ref": "SendAs"
 	//   },
@@ -11124,10 +11432,13 @@ type UsersSettingsSendAsVerifyCall struct {
 }
 
 // Verify: Sends a verification email to the specified send-as alias
-// address. The verification status must be pending.
+// address. The verification status must be `pending`. This method is
+// only available to service account clients that have been delegated
+// domain-wide authority.
 //
-// This method is only available to service account clients that have
-// been delegated domain-wide authority.
+// - sendAsEmail: The send-as alias to be verified.
+// - userId: User's email address. The special value "me" can be used to
+//   indicate the authenticated user.
 func (r *UsersSettingsSendAsService) Verify(userId string, sendAsEmail string) *UsersSettingsSendAsVerifyCall {
 	c := &UsersSettingsSendAsVerifyCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11162,7 +11473,7 @@ func (c *UsersSettingsSendAsVerifyCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsVerifyCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -11170,7 +11481,7 @@ func (c *UsersSettingsSendAsVerifyCall) doRequest(alt string) (*http.Response, e
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}/verify")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/verify")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11197,7 +11508,8 @@ func (c *UsersSettingsSendAsVerifyCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Sends a verification email to the specified send-as alias address. The verification status must be pending.\n\nThis method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "description": "Sends a verification email to the specified send-as alias address. The verification status must be `pending`. This method is only available to service account clients that have been delegated domain-wide authority.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/verify",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.settings.sendAs.verify",
 	//   "parameterOrder": [
@@ -11219,7 +11531,7 @@ func (c *UsersSettingsSendAsVerifyCall) Do(opts ...googleapi.CallOption) error {
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}/verify",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/verify",
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/gmail.settings.sharing"
 	//   ]
@@ -11241,6 +11553,12 @@ type UsersSettingsSendAsSmimeInfoDeleteCall struct {
 
 // Delete: Deletes the specified S/MIME config for the specified send-as
 // alias.
+//
+// - id: The immutable ID for the SmimeInfo.
+// - sendAsEmail: The email address that appears in the "From:" header
+//   for mail sent using this alias.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersSettingsSendAsSmimeInfoService) Delete(userId string, sendAsEmail string, id string) *UsersSettingsSendAsSmimeInfoDeleteCall {
 	c := &UsersSettingsSendAsSmimeInfoDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11276,7 +11594,7 @@ func (c *UsersSettingsSendAsSmimeInfoDeleteCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsSmimeInfoDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -11284,7 +11602,7 @@ func (c *UsersSettingsSendAsSmimeInfoDeleteCall) doRequest(alt string) (*http.Re
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -11313,6 +11631,7 @@ func (c *UsersSettingsSendAsSmimeInfoDeleteCall) Do(opts ...googleapi.CallOption
 	return nil
 	// {
 	//   "description": "Deletes the specified S/MIME config for the specified send-as alias.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.settings.sendAs.smimeInfo.delete",
 	//   "parameterOrder": [
@@ -11335,13 +11654,13 @@ func (c *UsersSettingsSendAsSmimeInfoDeleteCall) Do(opts ...googleapi.CallOption
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/gmail.settings.basic",
 	//     "https://www.googleapis.com/auth/gmail.settings.sharing"
@@ -11365,6 +11684,12 @@ type UsersSettingsSendAsSmimeInfoGetCall struct {
 
 // Get: Gets the specified S/MIME config for the specified send-as
 // alias.
+//
+// - id: The immutable ID for the SmimeInfo.
+// - sendAsEmail: The email address that appears in the "From:" header
+//   for mail sent using this alias.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersSettingsSendAsSmimeInfoService) Get(userId string, sendAsEmail string, id string) *UsersSettingsSendAsSmimeInfoGetCall {
 	c := &UsersSettingsSendAsSmimeInfoGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11410,7 +11735,7 @@ func (c *UsersSettingsSendAsSmimeInfoGetCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsSmimeInfoGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -11421,7 +11746,7 @@ func (c *UsersSettingsSendAsSmimeInfoGetCall) doRequest(alt string) (*http.Respo
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -11475,6 +11800,7 @@ func (c *UsersSettingsSendAsSmimeInfoGetCall) Do(opts ...googleapi.CallOption) (
 	return ret, nil
 	// {
 	//   "description": "Gets the specified S/MIME config for the specified send-as alias.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.sendAs.smimeInfo.get",
 	//   "parameterOrder": [
@@ -11497,13 +11823,13 @@ func (c *UsersSettingsSendAsSmimeInfoGetCall) Do(opts ...googleapi.CallOption) (
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
 	//   "response": {
 	//     "$ref": "SmimeInfo"
 	//   },
@@ -11532,6 +11858,11 @@ type UsersSettingsSendAsSmimeInfoInsertCall struct {
 
 // Insert: Insert (upload) the given S/MIME config for the specified
 // send-as alias. Note that pkcs12 format is required for the key.
+//
+// - sendAsEmail: The email address that appears in the "From:" header
+//   for mail sent using this alias.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersSettingsSendAsSmimeInfoService) Insert(userId string, sendAsEmail string, smimeinfo *SmimeInfo) *UsersSettingsSendAsSmimeInfoInsertCall {
 	c := &UsersSettingsSendAsSmimeInfoInsertCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11567,7 +11898,7 @@ func (c *UsersSettingsSendAsSmimeInfoInsertCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsSmimeInfoInsertCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -11580,7 +11911,7 @@ func (c *UsersSettingsSendAsSmimeInfoInsertCall) doRequest(alt string) (*http.Re
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11633,6 +11964,7 @@ func (c *UsersSettingsSendAsSmimeInfoInsertCall) Do(opts ...googleapi.CallOption
 	return ret, nil
 	// {
 	//   "description": "Insert (upload) the given S/MIME config for the specified send-as alias. Note that pkcs12 format is required for the key.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.settings.sendAs.smimeInfo.insert",
 	//   "parameterOrder": [
@@ -11648,13 +11980,13 @@ func (c *UsersSettingsSendAsSmimeInfoInsertCall) Do(opts ...googleapi.CallOption
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
 	//   "request": {
 	//     "$ref": "SmimeInfo"
 	//   },
@@ -11682,6 +12014,11 @@ type UsersSettingsSendAsSmimeInfoListCall struct {
 }
 
 // List: Lists S/MIME configs for the specified send-as alias.
+//
+// - sendAsEmail: The email address that appears in the "From:" header
+//   for mail sent using this alias.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersSettingsSendAsSmimeInfoService) List(userId string, sendAsEmail string) *UsersSettingsSendAsSmimeInfoListCall {
 	c := &UsersSettingsSendAsSmimeInfoListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11726,7 +12063,7 @@ func (c *UsersSettingsSendAsSmimeInfoListCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsSmimeInfoListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -11737,7 +12074,7 @@ func (c *UsersSettingsSendAsSmimeInfoListCall) doRequest(alt string) (*http.Resp
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -11790,6 +12127,7 @@ func (c *UsersSettingsSendAsSmimeInfoListCall) Do(opts ...googleapi.CallOption) 
 	return ret, nil
 	// {
 	//   "description": "Lists S/MIME configs for the specified send-as alias.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.settings.sendAs.smimeInfo.list",
 	//   "parameterOrder": [
@@ -11805,13 +12143,13 @@ func (c *UsersSettingsSendAsSmimeInfoListCall) Do(opts ...googleapi.CallOption) 
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
 	//   "response": {
 	//     "$ref": "ListSmimeInfoResponse"
 	//   },
@@ -11840,6 +12178,12 @@ type UsersSettingsSendAsSmimeInfoSetDefaultCall struct {
 
 // SetDefault: Sets the default S/MIME config for the specified send-as
 // alias.
+//
+// - id: The immutable ID for the SmimeInfo.
+// - sendAsEmail: The email address that appears in the "From:" header
+//   for mail sent using this alias.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersSettingsSendAsSmimeInfoService) SetDefault(userId string, sendAsEmail string, id string) *UsersSettingsSendAsSmimeInfoSetDefaultCall {
 	c := &UsersSettingsSendAsSmimeInfoSetDefaultCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11875,7 +12219,7 @@ func (c *UsersSettingsSendAsSmimeInfoSetDefaultCall) Header() http.Header {
 
 func (c *UsersSettingsSendAsSmimeInfoSetDefaultCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -11883,7 +12227,7 @@ func (c *UsersSettingsSendAsSmimeInfoSetDefaultCall) doRequest(alt string) (*htt
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11912,6 +12256,7 @@ func (c *UsersSettingsSendAsSmimeInfoSetDefaultCall) Do(opts ...googleapi.CallOp
 	return nil
 	// {
 	//   "description": "Sets the default S/MIME config for the specified send-as alias.",
+	//   "flatPath": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.settings.sendAs.smimeInfo.setDefault",
 	//   "parameterOrder": [
@@ -11934,13 +12279,13 @@ func (c *UsersSettingsSendAsSmimeInfoSetDefaultCall) Do(opts ...googleapi.CallOp
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault",
+	//   "path": "gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault",
 	//   "scopes": [
 	//     "https://www.googleapis.com/auth/gmail.settings.basic",
 	//     "https://www.googleapis.com/auth/gmail.settings.sharing"
@@ -11960,8 +12305,13 @@ type UsersThreadsDeleteCall struct {
 	header_    http.Header
 }
 
-// Delete: Immediately and permanently deletes the specified thread.
-// This operation cannot be undone. Prefer threads.trash instead.
+// Delete: Immediately and permanently deletes the specified thread. Any
+// messages that belong to the thread are also deleted. This operation
+// cannot be undone. Prefer `threads.trash` instead.
+//
+// - id: ID of the Thread to delete.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersThreadsService) Delete(userId string, id string) *UsersThreadsDeleteCall {
 	c := &UsersThreadsDeleteCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -11996,7 +12346,7 @@ func (c *UsersThreadsDeleteCall) Header() http.Header {
 
 func (c *UsersThreadsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -12004,7 +12354,7 @@ func (c *UsersThreadsDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/threads/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/threads/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -12031,7 +12381,8 @@ func (c *UsersThreadsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	}
 	return nil
 	// {
-	//   "description": "Immediately and permanently deletes the specified thread. This operation cannot be undone. Prefer threads.trash instead.",
+	//   "description": "Immediately and permanently deletes the specified thread. Any messages that belong to the thread are also deleted. This operation cannot be undone. Prefer `threads.trash` instead.",
+	//   "flatPath": "gmail/v1/users/{userId}/threads/{id}",
 	//   "httpMethod": "DELETE",
 	//   "id": "gmail.users.threads.delete",
 	//   "parameterOrder": [
@@ -12047,13 +12398,13 @@ func (c *UsersThreadsDeleteCall) Do(opts ...googleapi.CallOption) error {
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/threads/{id}",
+	//   "path": "gmail/v1/users/{userId}/threads/{id}",
 	//   "scopes": [
 	//     "https://mail.google.com/"
 	//   ]
@@ -12074,6 +12425,10 @@ type UsersThreadsGetCall struct {
 }
 
 // Get: Gets the specified thread.
+//
+// - id: The ID of the thread to retrieve.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersThreadsService) Get(userId string, id string) *UsersThreadsGetCall {
 	c := &UsersThreadsGetCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -12085,9 +12440,14 @@ func (r *UsersThreadsService) Get(userId string, id string) *UsersThreadsGetCall
 // messages in.
 //
 // Possible values:
-//   "full" (default)
-//   "metadata"
-//   "minimal"
+//   "full" (default) - Returns the full email message data with body
+// content parsed in the `payload` field; the `raw` field is not used.
+// Format cannot be used when accessing the api using the gmail.metadata
+// scope.
+//   "metadata" - Returns only email message IDs, labels, and email
+// headers.
+//   "minimal" - Returns only email message IDs and labels; does not
+// return the email headers, body, or payload.
 func (c *UsersThreadsGetCall) Format(format string) *UsersThreadsGetCall {
 	c.urlParams_.Set("format", format)
 	return c
@@ -12137,7 +12497,7 @@ func (c *UsersThreadsGetCall) Header() http.Header {
 
 func (c *UsersThreadsGetCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -12148,7 +12508,7 @@ func (c *UsersThreadsGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/threads/{id}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/threads/{id}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12201,6 +12561,7 @@ func (c *UsersThreadsGetCall) Do(opts ...googleapi.CallOption) (*Thread, error) 
 	return ret, nil
 	// {
 	//   "description": "Gets the specified thread.",
+	//   "flatPath": "gmail/v1/users/{userId}/threads/{id}",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.threads.get",
 	//   "parameterOrder": [
@@ -12217,9 +12578,9 @@ func (c *UsersThreadsGetCall) Do(opts ...googleapi.CallOption) (*Thread, error) 
 	//         "minimal"
 	//       ],
 	//       "enumDescriptions": [
-	//         "",
-	//         "",
-	//         ""
+	//         "Returns the full email message data with body content parsed in the `payload` field; the `raw` field is not used. Format cannot be used when accessing the api using the gmail.metadata scope.",
+	//         "Returns only email message IDs, labels, and email headers.",
+	//         "Returns only email message IDs and labels; does not return the email headers, body, or payload."
 	//       ],
 	//       "location": "query",
 	//       "type": "string"
@@ -12238,18 +12599,21 @@ func (c *UsersThreadsGetCall) Do(opts ...googleapi.CallOption) (*Thread, error) 
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/threads/{id}",
+	//   "path": "gmail/v1/users/{userId}/threads/{id}",
 	//   "response": {
 	//     "$ref": "Thread"
 	//   },
 	//   "scopes": [
 	//     "https://mail.google.com/",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.action",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
+	//     "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
 	//     "https://www.googleapis.com/auth/gmail.metadata",
 	//     "https://www.googleapis.com/auth/gmail.modify",
 	//     "https://www.googleapis.com/auth/gmail.readonly"
@@ -12270,6 +12634,9 @@ type UsersThreadsListCall struct {
 }
 
 // List: Lists the threads in the user's mailbox.
+//
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersThreadsService) List(userId string) *UsersThreadsListCall {
 	c := &UsersThreadsListCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -12277,7 +12644,7 @@ func (r *UsersThreadsService) List(userId string) *UsersThreadsListCall {
 }
 
 // IncludeSpamTrash sets the optional parameter "includeSpamTrash":
-// Include threads from SPAM and TRASH in the results.
+// Include threads from `SPAM` and `TRASH` in the results.
 func (c *UsersThreadsListCall) IncludeSpamTrash(includeSpamTrash bool) *UsersThreadsListCall {
 	c.urlParams_.Set("includeSpamTrash", fmt.Sprint(includeSpamTrash))
 	return c
@@ -12291,7 +12658,8 @@ func (c *UsersThreadsListCall) LabelIds(labelIds ...string) *UsersThreadsListCal
 }
 
 // MaxResults sets the optional parameter "maxResults": Maximum number
-// of threads to return.
+// of threads to return. This field defaults to 100. The maximum allowed
+// value for this field is 500.
 func (c *UsersThreadsListCall) MaxResults(maxResults int64) *UsersThreadsListCall {
 	c.urlParams_.Set("maxResults", fmt.Sprint(maxResults))
 	return c
@@ -12306,9 +12674,9 @@ func (c *UsersThreadsListCall) PageToken(pageToken string) *UsersThreadsListCall
 
 // Q sets the optional parameter "q": Only return threads matching the
 // specified query. Supports the same query format as the Gmail search
-// box. For example, "from:someuser@example.com rfc822msgid: is:unread".
-// Parameter cannot be used when accessing the api using the
-// gmail.metadata scope.
+// box. For example, "from:someuser@example.com rfc822msgid:
+// is:unread". Parameter cannot be used when accessing the api using
+// the gmail.metadata scope.
 func (c *UsersThreadsListCall) Q(q string) *UsersThreadsListCall {
 	c.urlParams_.Set("q", q)
 	return c
@@ -12351,7 +12719,7 @@ func (c *UsersThreadsListCall) Header() http.Header {
 
 func (c *UsersThreadsListCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -12362,7 +12730,7 @@ func (c *UsersThreadsListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/threads")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/threads")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12414,6 +12782,7 @@ func (c *UsersThreadsListCall) Do(opts ...googleapi.CallOption) (*ListThreadsRes
 	return ret, nil
 	// {
 	//   "description": "Lists the threads in the user's mailbox.",
+	//   "flatPath": "gmail/v1/users/{userId}/threads",
 	//   "httpMethod": "GET",
 	//   "id": "gmail.users.threads.list",
 	//   "parameterOrder": [
@@ -12422,7 +12791,7 @@ func (c *UsersThreadsListCall) Do(opts ...googleapi.CallOption) (*ListThreadsRes
 	//   "parameters": {
 	//     "includeSpamTrash": {
 	//       "default": "false",
-	//       "description": "Include threads from SPAM and TRASH in the results.",
+	//       "description": "Include threads from `SPAM` and `TRASH` in the results.",
 	//       "location": "query",
 	//       "type": "boolean"
 	//     },
@@ -12434,7 +12803,7 @@ func (c *UsersThreadsListCall) Do(opts ...googleapi.CallOption) (*ListThreadsRes
 	//     },
 	//     "maxResults": {
 	//       "default": "100",
-	//       "description": "Maximum number of threads to return.",
+	//       "description": "Maximum number of threads to return. This field defaults to 100. The maximum allowed value for this field is 500.",
 	//       "format": "uint32",
 	//       "location": "query",
 	//       "type": "integer"
@@ -12445,19 +12814,19 @@ func (c *UsersThreadsListCall) Do(opts ...googleapi.CallOption) (*ListThreadsRes
 	//       "type": "string"
 	//     },
 	//     "q": {
-	//       "description": "Only return threads matching the specified query. Supports the same query format as the Gmail search box. For example, \"from:someuser@example.com rfc822msgid: is:unread\". Parameter cannot be used when accessing the api using the gmail.metadata scope.",
+	//       "description": "Only return threads matching the specified query. Supports the same query format as the Gmail search box. For example, `\"from:someuser@example.com rfc822msgid: is:unread\"`. Parameter cannot be used when accessing the api using the gmail.metadata scope.",
 	//       "location": "query",
 	//       "type": "string"
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/threads",
+	//   "path": "gmail/v1/users/{userId}/threads",
 	//   "response": {
 	//     "$ref": "ListThreadsResponse"
 	//   },
@@ -12506,6 +12875,10 @@ type UsersThreadsModifyCall struct {
 
 // Modify: Modifies the labels applied to the thread. This applies to
 // all messages in the thread.
+//
+// - id: The ID of the thread to modify.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersThreadsService) Modify(userId string, id string, modifythreadrequest *ModifyThreadRequest) *UsersThreadsModifyCall {
 	c := &UsersThreadsModifyCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -12541,7 +12914,7 @@ func (c *UsersThreadsModifyCall) Header() http.Header {
 
 func (c *UsersThreadsModifyCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -12554,7 +12927,7 @@ func (c *UsersThreadsModifyCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders.Set("Content-Type", "application/json")
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/threads/{id}/modify")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/threads/{id}/modify")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -12607,6 +12980,7 @@ func (c *UsersThreadsModifyCall) Do(opts ...googleapi.CallOption) (*Thread, erro
 	return ret, nil
 	// {
 	//   "description": "Modifies the labels applied to the thread. This applies to all messages in the thread.",
+	//   "flatPath": "gmail/v1/users/{userId}/threads/{id}/modify",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.threads.modify",
 	//   "parameterOrder": [
@@ -12622,13 +12996,13 @@ func (c *UsersThreadsModifyCall) Do(opts ...googleapi.CallOption) (*Thread, erro
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/threads/{id}/modify",
+	//   "path": "gmail/v1/users/{userId}/threads/{id}/modify",
 	//   "request": {
 	//     "$ref": "ModifyThreadRequest"
 	//   },
@@ -12654,7 +13028,12 @@ type UsersThreadsTrashCall struct {
 	header_    http.Header
 }
 
-// Trash: Moves the specified thread to the trash.
+// Trash: Moves the specified thread to the trash. Any messages that
+// belong to the thread are also moved to the trash.
+//
+// - id: The ID of the thread to Trash.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersThreadsService) Trash(userId string, id string) *UsersThreadsTrashCall {
 	c := &UsersThreadsTrashCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -12689,7 +13068,7 @@ func (c *UsersThreadsTrashCall) Header() http.Header {
 
 func (c *UsersThreadsTrashCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -12697,7 +13076,7 @@ func (c *UsersThreadsTrashCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/threads/{id}/trash")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/threads/{id}/trash")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -12749,7 +13128,8 @@ func (c *UsersThreadsTrashCall) Do(opts ...googleapi.CallOption) (*Thread, error
 	}
 	return ret, nil
 	// {
-	//   "description": "Moves the specified thread to the trash.",
+	//   "description": "Moves the specified thread to the trash. Any messages that belong to the thread are also moved to the trash.",
+	//   "flatPath": "gmail/v1/users/{userId}/threads/{id}/trash",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.threads.trash",
 	//   "parameterOrder": [
@@ -12765,13 +13145,13 @@ func (c *UsersThreadsTrashCall) Do(opts ...googleapi.CallOption) (*Thread, error
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/threads/{id}/trash",
+	//   "path": "gmail/v1/users/{userId}/threads/{id}/trash",
 	//   "response": {
 	//     "$ref": "Thread"
 	//   },
@@ -12794,7 +13174,12 @@ type UsersThreadsUntrashCall struct {
 	header_    http.Header
 }
 
-// Untrash: Removes the specified thread from the trash.
+// Untrash: Removes the specified thread from the trash. Any messages
+// that belong to the thread are also removed from the trash.
+//
+// - id: The ID of the thread to remove from Trash.
+// - userId: The user's email address. The special value `me` can be
+//   used to indicate the authenticated user.
 func (r *UsersThreadsService) Untrash(userId string, id string) *UsersThreadsUntrashCall {
 	c := &UsersThreadsUntrashCall{s: r.s, urlParams_: make(gensupport.URLParams)}
 	c.userId = userId
@@ -12829,7 +13214,7 @@ func (c *UsersThreadsUntrashCall) Header() http.Header {
 
 func (c *UsersThreadsUntrashCall) doRequest(alt string) (*http.Response, error) {
 	reqHeaders := make(http.Header)
-	reqHeaders.Set("x-goog-api-client", "gl-go/1.11.0 gdcl/20191216")
+	reqHeaders.Set("x-goog-api-client", "gl-go/"+gensupport.GoVersion()+" gdcl/"+internal.Version)
 	for k, v := range c.header_ {
 		reqHeaders[k] = v
 	}
@@ -12837,7 +13222,7 @@ func (c *UsersThreadsUntrashCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "{userId}/threads/{id}/untrash")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "gmail/v1/users/{userId}/threads/{id}/untrash")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -12889,7 +13274,8 @@ func (c *UsersThreadsUntrashCall) Do(opts ...googleapi.CallOption) (*Thread, err
 	}
 	return ret, nil
 	// {
-	//   "description": "Removes the specified thread from the trash.",
+	//   "description": "Removes the specified thread from the trash. Any messages that belong to the thread are also removed from the trash.",
+	//   "flatPath": "gmail/v1/users/{userId}/threads/{id}/untrash",
 	//   "httpMethod": "POST",
 	//   "id": "gmail.users.threads.untrash",
 	//   "parameterOrder": [
@@ -12905,13 +13291,13 @@ func (c *UsersThreadsUntrashCall) Do(opts ...googleapi.CallOption) (*Thread, err
 	//     },
 	//     "userId": {
 	//       "default": "me",
-	//       "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+	//       "description": "The user's email address. The special value `me` can be used to indicate the authenticated user.",
 	//       "location": "path",
 	//       "required": true,
 	//       "type": "string"
 	//     }
 	//   },
-	//   "path": "{userId}/threads/{id}/untrash",
+	//   "path": "gmail/v1/users/{userId}/threads/{id}/untrash",
 	//   "response": {
 	//     "$ref": "Thread"
 	//   },
