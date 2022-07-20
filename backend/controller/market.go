@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/iost-official/explorer/backend/model"
+	"github.com/GincoInc/iost-explorer/backend/model"
 	"github.com/labstack/echo"
 )
 

@@ -3,7 +3,7 @@ package common
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 	"strconv"
 )
 

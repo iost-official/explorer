@@ -2,7 +2,7 @@ package blockchain
 
 import (
 	"fmt"
-	"github.com/iost-official/explorer/backend/util"
+	"github.com/GincoInc/iost-explorer/backend/util"
 	"github.com/spf13/viper"
 )
 

@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iost-official/explorer/backend/model/blockchain"
-	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain/rpcpb"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 )
 
 func UpdateBlocks(ws *sync.WaitGroup) {

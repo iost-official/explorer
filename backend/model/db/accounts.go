@@ -10,8 +10,8 @@ import (
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	"github.com/iost-official/explorer/backend/model/blockchain"
-	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain/rpcpb"
 )
 
 type VoteTx struct {

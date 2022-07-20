@@ -3,15 +3,15 @@ package config
 import (
 	"fmt"
 
-	"github.com/iost-official/explorer/backend/model/blockchain"
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 	"github.com/spf13/viper"
 )
 
 func ReadConfig(configPath string) {
 	viper.SetConfigName("config")
 	if configPath == "" {
-		viper.AddConfigPath("$GOPATH/src/github.com/iost-official/explorer/backend/config")
+		viper.AddConfigPath("$GOPATH/src/github.com/GincoInc/iost-explorer/backend/config")
 	} else {
 		viper.AddConfigPath(configPath)
 	}

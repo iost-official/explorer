@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/iost-official/explorer/backend/model/blockchain/rpcpb"
-	"github.com/iost-official/explorer/backend/util/transport"
+	"github.com/GincoInc/iost-explorer/backend/model/blockchain/rpcpb"
+	"github.com/GincoInc/iost-explorer/backend/util/transport"
 )
 
 func GetBlockByNum(num int64, complete bool) (*rpcpb.BlockResponse, error) {

@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/iost-official/explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
 	"github.com/labstack/echo"
 )
 

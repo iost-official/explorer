@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/iost-official/explorer/backend/model/db"
-	"github.com/iost-official/explorer/backend/util/common"
+	"github.com/GincoInc/iost-explorer/backend/model/db"
+	"github.com/GincoInc/iost-explorer/backend/util/common"
 )
 
 func main() {

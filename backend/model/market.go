@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
-	"github.com/iost-official/explorer/backend/model/cache"
-	"github.com/iost-official/explorer/backend/util"
+	"github.com/GincoInc/iost-explorer/backend/model/cache"
+	"github.com/GincoInc/iost-explorer/backend/util"
 	"io/ioutil"
 	"net/http"
 	"time"

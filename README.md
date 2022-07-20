@@ -1,54 +1,44 @@
 # IOST Blockchain Explorer
 
 ### Prerequisites
-* Golang 1.10.1 (or newer) is required to build this project
+* Golang 1.16.0 (or newer) is required to build this project
 * Mongodb 4.0 (or newer) is required, We recommend Redis stable version
 * node.js 8.10   (or newer) is required
 
 ## Installation
 ```bash
 get repo first:
-git clone https://github.com/iost-official/explorer
+git clone git@github.com:GincoInc/iost-explorer.git
 ```
 
-### Frontend
+### MongoDB
 ```bash
-#  Change Directory
-cd explorer/frontend/
-
-# build
-npm install
-
-# run in test
-npm run dev
-
-# run production build
-npm run build
-```
-
-### Backend
-```bash
-#  Change Directory
-cd explorer/backend/
-
-# build
-make
-
-# run
-./explorer
+docker-compose up
 ```
 
 ### Mongo Cron Task
 ```bash
-#  Change Directory
-cd explorer/backend/task
-
-# build
+cd backend/task/
+make clean
 make
-
-# run
-./explorer-task
+./explorer-task # ignore password
 ```
+
+### Backend
+```bash
+cd backend/
+make clean
+make
+./explorer # ignore password
+```
+
+### Frontend
+```bash
+cd frontend/
+npm install
+npm run dev
+```
+
 ## Contribution
 
 Contribution of any forms is appreciated!

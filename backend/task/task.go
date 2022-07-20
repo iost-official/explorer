@@ -3,8 +3,8 @@ package main
 import (
 	"sync"
 
-	"github.com/iost-official/explorer/backend/config"
-	"github.com/iost-official/explorer/backend/task/cron"
+	"github.com/GincoInc/iost-explorer/backend/config"
+	"github.com/GincoInc/iost-explorer/backend/task/cron"
 )
 
 var ws = new(sync.WaitGroup)
