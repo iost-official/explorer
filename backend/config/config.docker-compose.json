@@ -2,7 +2,7 @@
   "port": "8080",
   "rpcHost": "13.52.105.102:30002",
   "mongodb": {
-    "host": "127.0.0.1",
+    "host": "host.docker.internal",
     "port": "27017",
     "user": "",
     "password": "",

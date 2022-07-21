@@ -11,25 +11,12 @@ get repo first:
 git clone git@github.com:GincoInc/iost-explorer.git
 ```
 
-### MongoDB
-```bash
-docker-compose up
-```
-
-### Mongo Cron Task
-```bash
-cd backend/task/
-make clean
-make
-./explorer-task # ignore password
-```
-
-### Backend
+### Backend (Docker Compose)
 ```bash
 cd backend/
-make clean
-make
-./explorer # ignore password
+cp config/config.docker-compose.json ./config/config.json
+make docker-build
+docker-compose up
 ```
 
 ### Frontend
