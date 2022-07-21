@@ -1,0 +1,21 @@
+{
+  "port": "8080",
+  "rpcHost": "13.52.105.102:30002",
+  "mongodb": {
+    "host": "host.docker.internal",
+    "port": "27017",
+    "user": "",
+    "password": "",
+    "db": "explorer"
+  },
+  "googleCaptcha": {
+    "secret": ""
+  },
+  "twilio": {
+    "sid": ""
+  },
+  "transferAccount": {
+    "address": "IOST2g5LzaXkjAwpxCnCm29HK69wdbyRKbfG4BQQT7Yuqk57bgTFkY",
+    "key": "319xGCaLZP5D4sAVCEX4LDAMgzaZ3LJiXgCVxB8y1igTmUCkHj6DJRCH4C8myor1P3rZHttFneApzznHqvqqTpiu"
+  }
+}
