@@ -11,19 +11,51 @@ get repo first:
 git clone git@github.com:GincoInc/iost-explorer.git
 ```
 
-### Backend (Docker Compose)
-```bash
-cd backend/
-cp config/config.docker-compose.json ./config/config.json
-make docker-build
-docker-compose up
-```
-
 ### Frontend
 ```bash
+#  Change Directory
 cd frontend/
+
+# build
 npm install
+
+# run in test
 npm run dev
+
+# run production build
+npm run build
+```
+
+### Backend
+```bash
+#  Change Directory
+cd backend/
+
+# build
+make
+
+# run
+./explorer
+```
+
+### Mongo Cron Task
+```bash
+#  Change Directory
+cd backend/task
+
+# build
+make
+
+# run
+./explorer-task
+```
+
+### Docker Compose (run all services)
+```bash
+cp ./frontend/config/index.docker-compose.js ./frontend/config/index.js
+cp ./backend/config/config.docker-compose.json ./backend/config/config.json
+make docker-build
+docker-compose up
 ```
 
 ## Contribution
