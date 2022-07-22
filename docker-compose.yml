@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db:/data/db
+      - ./configdb:/data/configdb
+  backend-api:
+    image: asia.gcr.io/ginco-registry/iost-explorer-backend-api:latest
+    restart: always
+    ports:
+      - 8088:8088
+  backend-task:
+    image: asia.gcr.io/ginco-registry/iost-explorer-backend-task:latest
+    restart: always
+  frontend:
+    image: asia.gcr.io/ginco-registry/iost-explorer-frontend:latest
+    restart: always
+    ports:
+      - 8080:8080
